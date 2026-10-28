@@ -3,12 +3,26 @@ import path from "node:path";
 import { chromium } from "@playwright/test";
 
 const origin = "http://localhost:3000";
-const outDir = path.join("docs", "evidence", "T01");
+const foundationDir = path.join("docs", "evidence", "T01");
+const operatorDir = path.join("docs", "evidence", "T02");
 const shots = [
   { urlPath: "/", width: 390, height: 844, shotName: "ar-390.png" },
   { urlPath: "/", width: 1440, height: 900, shotName: "ar-1440.png" },
   { urlPath: "/en", width: 390, height: 844, shotName: "en-390.png" },
   { urlPath: "/en", width: 1440, height: 900, shotName: "en-1440.png" },
+];
+const signShots = [
+  { urlPath: "/operator/sign-in", width: 390, height: 844, shotName: "sign-in-ar-390.png" },
+  { urlPath: "/operator/sign-in", width: 1440, height: 900, shotName: "sign-in-ar-1440.png" },
+  { urlPath: "/en/operator/sign-in", width: 390, height: 844, shotName: "sign-in-en-390.png" },
+  { urlPath: "/en/operator/sign-in", width: 1440, height: 900, shotName: "sign-in-en-1440.png" },
+];
+const headerTargets = [
+  { method: "GET", urlPath: "/" },
+  { method: "GET", urlPath: "/en" },
+  { method: "GET", urlPath: "/operator/sign-in" },
+  { method: "GET", urlPath: "/en/operator/sign-in" },
+  { method: "POST", urlPath: "/api/operator/media-objects/presign" },
 ];
 
 function locationPath(value) {
@@ -20,10 +34,32 @@ function locationPath(value) {
   }
 }
 
-fs.mkdirSync(outDir, { recursive: true });
+function redactValue(value) {
+  return value
+    .replace(/sb-[A-Za-z0-9_-]*auth-token/gi, "[redacted-secret]")
+    .replace(/https:\/\/[a-z0-9]+\.supabase\.co/gi, "https://[redacted-project]")
+    .replace(/[a-z0-9]{16,}\.r2\.cloudflarestorage\.com/gi, "[redacted-project].r2.cloudflarestorage.com")
+    .replace(/supabase\.co/gi, "[redacted-project]");
+}
+
+function redactHeaders(raw) {
+  const headers = {};
+  for (const [key, value] of Object.entries(raw)) {
+    headers[key] = key === "set-cookie" ? "[redacted-secret]" : redactValue(String(value));
+  }
+  return headers;
+}
+
+function operatorPath(urlPath) {
+  return urlPath.includes("/operator");
+}
+
+fs.mkdirSync(foundationDir, { recursive: true });
+fs.mkdirSync(operatorDir, { recursive: true });
 const browser = await chromium.launch();
-const captures = [];
+const problems = [];
 try {
+  const captures = [];
   for (const shot of shots) {
     const context = await browser.newContext({
       viewport: { width: shot.width, height: shot.height },
@@ -42,7 +78,7 @@ try {
     }));
     const cookies = await context.cookies();
     await page.screenshot({
-      path: path.join(outDir, shot.shotName),
+      path: path.join(foundationDir, shot.shotName),
       fullPage: true,
     });
     captures.push({
@@ -70,10 +106,13 @@ try {
       location,
     },
   };
-  fs.writeFileSync(path.join(outDir, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  fs.writeFileSync(
+    path.join(foundationDir, "report.json"),
+    `${JSON.stringify(report, null, 2)}\n`,
+    "utf8",
+  );
   await probe.close();
 
-  const problems = [];
   for (const row of captures) {
     if (row.status !== 200) problems.push(`${row.url} ${row.width} status ${row.status}`);
     if (row.cookieCount !== 0) problems.push(`${row.url} ${row.width} cookies ${row.cookieCount}`);
@@ -91,10 +130,84 @@ try {
   if (redirect.status() !== 308 || locationPath(location) !== "/") {
     problems.push(`/ar status ${redirect.status()} location ${location}`);
   }
-  if (problems.length > 0) {
-    for (const problem of problems) console.error(problem);
-    process.exitCode = 1;
+
+  for (const shot of signShots) {
+    const context = await browser.newContext({
+      viewport: { width: shot.width, height: shot.height },
+    });
+    const page = await context.newPage();
+    const response = await page.goto(`${origin}${shot.urlPath}`, { waitUntil: "networkidle" });
+    const status = response ? response.status() : 0;
+    if (status !== 200) problems.push(`${shot.urlPath} ${shot.width} status ${status}`);
+    await page.screenshot({
+      path: path.join(operatorDir, shot.shotName),
+      fullPage: true,
+    });
+    await context.close();
   }
+
+  const headerContext = await browser.newContext();
+  const headerRows = [];
+  for (const target of headerTargets) {
+    const response =
+      target.method === "POST"
+        ? await headerContext.request.post(`${origin}${target.urlPath}`, {
+            data: {},
+            maxRedirects: 0,
+          })
+        : await headerContext.request.get(`${origin}${target.urlPath}`);
+    const headers = redactHeaders(response.headers());
+    headerRows.push({
+      url: `${origin}${target.urlPath}`,
+      status: response.status(),
+      headers,
+    });
+    const policy = headers["content-security-policy"] ?? "";
+    if (!policy.includes("nonce-")) problems.push(`${target.urlPath} missing nonce`);
+    if (!policy.includes("frame-ancestors 'none'")) problems.push(`${target.urlPath} missing frame-ancestors`);
+    if (!policy.includes("[redacted-project].r2.cloudflarestorage.com")) {
+      problems.push(`${target.urlPath} missing storage host`);
+    }
+    const transport = headers["strict-transport-security"] ?? "";
+    if (!transport.includes("max-age=63072000")) problems.push(`${target.urlPath} hsts`);
+    if (/includeSubDomains/i.test(transport) || /preload/i.test(transport)) {
+      problems.push(`${target.urlPath} hsts extra`);
+    }
+    if (headers["x-content-type-options"] !== "nosniff") problems.push(`${target.urlPath} nosniff`);
+    if (headers["referrer-policy"] !== "strict-origin-when-cross-origin") {
+      problems.push(`${target.urlPath} referrer`);
+    }
+    if (headers["permissions-policy"] !== "camera=(), microphone=(), geolocation=()") {
+      problems.push(`${target.urlPath} permissions`);
+    }
+    if (operatorPath(target.urlPath)) {
+      const cache = headers["cache-control"] ?? "";
+      if (!cache.includes("no-store")) problems.push(`${target.urlPath} cache`);
+      if (headers["x-robots-tag"] !== "noindex, nofollow") problems.push(`${target.urlPath} robots`);
+    } else if (headers["set-cookie"]) {
+      problems.push(`${target.urlPath} set-cookie`);
+    }
+    if (target.method === "POST" && response.status() !== 401) {
+      problems.push(`${target.urlPath} status ${response.status()}`);
+    }
+    if (target.method === "GET" && response.status() !== 200) {
+      problems.push(`${target.urlPath} status ${response.status()}`);
+    }
+  }
+  const serialised = `${JSON.stringify({ captures: headerRows }, null, 2)}\n`;
+  if (/supabase\.co/i.test(serialised) || /[0-9a-f]{32}\.r2\.cloudflarestorage/i.test(serialised)) {
+    problems.push("headers leaked a project reference");
+  }
+  if (/sb-[A-Za-z0-9_-]*auth-token/i.test(serialised)) {
+    problems.push("headers leaked a cookie name");
+  }
+  fs.writeFileSync(path.join(operatorDir, "headers.json"), serialised, "utf8");
+  await headerContext.close();
 } finally {
   await browser.close();
+}
+
+if (problems.length > 0) {
+  for (const problem of problems) console.error(problem);
+  process.exitCode = 1;
 }
