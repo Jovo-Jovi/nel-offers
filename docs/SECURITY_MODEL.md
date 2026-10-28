@@ -68,6 +68,9 @@ reviewer rehearsal, Opus review before merge (T02).
 
 - Bucket `nel-offers-media`: private; no `r2.dev` public access; no custom domain.
 - Credentials: the bucket-scoped read/write token, server-only (§1).
+- The S3 client uses path-style addressing, so every presigned URL's host is
+  `<R2_ACCOUNT_ID>.r2.cloudflarestorage.com`. That host, built from the environment, is the one
+  the Content Security Policy names.
 - **Route handlers.** The presign and finalise handlers live under `src/app/api/operator/**`
   and refuse any caller that is not `is_operator()` at `aal2`.
 - **Upload.** The browser checks the selected file against `DECISIONS.md` OD-01 item 10
@@ -98,6 +101,10 @@ Set for every response, with a nonce-based Content Security Policy:
 - `X-Content-Type-Options: nosniff` · `Referrer-Policy: strict-origin-when-cross-origin` ·
   `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
 - Dashboard responses: `Cache-Control: no-store` and `X-Robots-Tag: noindex, nofollow`.
+- A nonce needs a page rendered per request, so Next.js Cache Components and partial
+  prefetching stay off: the scaffold's `cacheComponents` and `partialPrefetching` settings are
+  removed (Next.js 16 guide `content-security-policy.md`: a prerendered shell cannot carry a
+  nonce).
 
 ## 7. Dependencies and CI
 

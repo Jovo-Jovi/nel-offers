@@ -35,3 +35,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run build` exit 0. `npm audit --omit=dev --audit-level=high` exit 0. `npm run evidence` exit 0.
 - Implements SECURITY_MODEL.md §1 and §7, DESIGN_SYSTEM.md §§3–8, DECISIONS.md OD-01 item 4, GLOSSARY.md §4, DATA_MODEL.md §6, BOUNDARY_MODEL.md §4 and §5, PHASES.md §5.
 - Deviation: the scaffold sets `cacheComponents`, which refuses `dynamicParams`. A locale segment outside `src/i18n/config.ts` is not found via `notFound()` in the locale layout. `next build` and `next start` warn that a lockfile outside this repository was ignored, and both exited 0.
+
+## 2026-10-28 — Reviewer session 2 (T01 verdict)
+
+- Fetched `t01-foundation` at `23babfbc`. Re-ran the bundle verification (19/19 at LANDING
+  and HEAD), the four guards and their self-checks, lint, typecheck, a clean build, the audit
+  and the usage check. Served the build and checked status, redirects, cookies and `<html>`
+  attributes. Compared every catalogue string with `DESIGN_SYSTEM.md` §9: 28 keys, 0
+  mismatches. Viewed the four screenshots.
+- Planted violations in a scratch tree: every guard failed as it should. Gaps logged as
+  carry-forwards: literals reports only the first finding per rule and file; design misses
+  JSX style objects and matches a variable named `dir`; naming's SQL mode reads comments and
+  string literals and flags `auth.users`.
+- Verdict T01: PASS. T02 issued with the reviewer-authored migration and RLS proof,
+  rehearsed on PostgreSQL 16 with a Supabase stub: proof 47/47, and 42/47 with three planted
+  policy and grant defects.

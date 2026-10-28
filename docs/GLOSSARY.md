@@ -66,7 +66,9 @@ Scope: names we choose in `src/**`, `supabase/**`, `scripts/**`, `e2e/**` —
 file and directory names, route segments under `src/app/**`, declared identifiers in `.ts`,
 `.tsx`, `.mjs` (`type`, `interface`, `class`, `enum`, `function`, `const`, `let`, `var`,
 parameters, destructured bindings, object-literal keys of our own types), and SQL
-identifiers in `supabase/migrations/**` (tables, columns, functions, policies, indexes).
+identifiers in `supabase/**` (tables, columns, constraints, functions, parameters, variables,
+policies, triggers, indexes) — not SQL comments, not string literals, and not names in the
+platform's own `auth` schema (`auth.users`, `auth.uid()`, `auth.jwt()`).
 
 Method: split each name into words at case, `_`, `-` and `.` boundaries and lower-case them.
 Remove every occurrence of a permitted compound (`campaign offer media`, then `campaign offer`,
@@ -74,7 +76,8 @@ Remove every occurrence of a permitted compound (`campaign offer media`, then `c
 left — singular or plural (`offers`, `files`, `items`, `results`) — fails. So
 `campaignOfferId` passes and `campaignOfferItem` and `mediaObjectFile` fail.
 
-Certification: the guard exits 0 on the repository, and its `--self-check` mode runs a
+Certification: the guard exits 0 on the repository and reports every finding, not only the
+first in a file; and its `--self-check` mode runs a
 built-in list of must-fail and must-pass names through the same matcher twice — once as
 strings and once as files written to a temporary directory outside the repository — and
 prints both counts. A stdin pass does not certify file-mode scope.

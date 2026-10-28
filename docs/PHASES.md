@@ -18,7 +18,7 @@ ticked.
 
 ## 2. Tasks
 
-- [ ] **T01 — Foundation and blueprint landing.** Land the reviewer bundle byte-exact
+- [x] **T01 — Foundation and blueprint landing.** Land the reviewer bundle byte-exact
   (blueprint, ledgers with ids allocated, tokens, mark, template, verifier). Scaffold Next.js
   16 with TypeScript strict, Tailwind 4, ESLint. Locale routing and catalogues; `<html lang
   dir data-locale>` from the locale; the coming-soon home in both locales (no data source yet).
