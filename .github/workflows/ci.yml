@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run guard:naming
+      - run: npm run guard:design
+      - run: npm run guard:literals
+      - run: npm run guard:boundary
+      - run: node scripts/guard/naming.mjs --self-check
+      - run: node scripts/guard/design.mjs --self-check
+      - run: node scripts/guard/literals.mjs --self-check
+      - run: node scripts/guard/boundary.mjs --self-check
+      - run: node scripts/usage/report.mjs --check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
