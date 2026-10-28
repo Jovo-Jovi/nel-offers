@@ -1,0 +1,161 @@
+# NELO — Design System
+
+Precedence rank 6. Inherits NEL's tokens and mark, unchanged. The designer's files and the
+laboratory's pack in `docs/research/` are evidence for layout and copy, never authority: where
+one conflicts with this document, this document wins and the conflict is raised as an
+amendment.
+
+## 1. Principles
+
+1. One visual family with the NEL site, reached by copying its tokens and mark once — never by
+   linking to NEL's repository, CSS or CDN.
+2. Arabic first. Every layout is designed in RTL and mirrored by logical properties, never by a
+   second stylesheet.
+3. A rule that protects a measurable floor is written as its certification condition, not as a
+   blanket ban.
+
+## 2. Inherited artefacts
+
+Copied by the reviewer from `Jovo-Jovi/nel-nile-egypt-labs` at commit
+`b95a75b3d3cdb2fb5e4e6867a77ac4bd5c56ed3a`, landed byte-exact in T01. SHA-256 of the committed
+bytes:
+
+| Path in this repository | SHA-256 | Note |
+|---|---|---|
+| `src/styles/tokens.css` | `784a9d2c062d4736fa33b14e2bd1a0614c2bebc7523cd08d0a573205b325e06b` | Comments cite NEL's own records (§, D-, OD-, P-numbers); they are provenance, not NELO decisions. |
+| `public/mark/nel-mark.png` | `95bcdf2da6a6533ba6593b1413f6bebc6c7b055a8a0c4b6f234157ac1134ea3e` | 537 × 752 px PNG. |
+
+Neither file is edited in this repository. A change to either is a new OD.
+
+## 3. Colour
+
+The eleven `--nel-color-*` tokens in `tokens.css` and its `color-mix` recipes are the whole
+palette. A new recipe is permitted when it is a `color-mix` of existing tokens and its contrast
+is computed and recorded here: ≥ 4.5:1 for text, ≥ 3:1 for UI boundaries and icons. No hex,
+`rgb()` or named colour appears anywhere else in source.
+
+## 4. Type
+
+- **IBM Plex Sans Arabic**, weights 400, 500 and 600, from the npm package
+  `@fontsource/ibm-plex-sans-arabic` (Arabic and Latin subsets), served from our own origin.
+  The one `font-family` declaration lives in `src/styles/fonts.css`; the three weight
+  stylesheets are imported once, from that file or from the locale root layout.
+- Sizes from `--nel-size-*`; spacing from `--nel-space-*`; radius from `--nel-radius-*`.
+- Line height follows the locale fork in `tokens.css`, keyed on `data-locale` on `<html>`.
+
+## 5. Bilingual and RTL
+
+- Locales live in `src/i18n/config.ts` only: `ar` (default, RTL, served without prefix) and
+  `en` (LTR, under `/en`). `<html lang dir data-locale>` is set once, from the active locale.
+  Never on individual elements.
+- Catalogues `src/i18n/ar.ts` and `src/i18n/en.ts`. The English catalogue is typed as the
+  Arabic one's shape, so a missing key fails `typecheck`. No fallback from one locale to the
+  other at run time.
+- **Logical properties only**: `margin-inline-*`, `padding-inline-*`, `inset-inline-*`,
+  `text-align: start | end`, `border-inline-*`; Tailwind `ms- me- ps- pe- start- end-
+  text-start text-end border-s border-e rounded-s rounded-e`.
+- **Latin runs inside Arabic text are isolated** through one component,
+  `src/components/latin-run.tsx`, which renders `<bdi>` with its direction taken from
+  `src/i18n/config.ts`: the code, the English name, phone numbers, URLs and prices. Digits-only
+  runs need the explicit direction — with no strong character, `<bdi>` alone would take the
+  surrounding RTL direction and reorder groups.
+- **Digits are Western in both locales.** Numbers and dates are formatted with `Intl`, using
+  the active locale with the `-u-nu-latn` extension. Dates are plain calendar dates, formatted
+  with `timeZone: 'UTC'` so no shift occurs.
+- Directional icons (arrows, chevrons) mirror. The mark, numerals and media controls do not.
+- The language switch keeps the Visitor on the same `CampaignOffer` when there is one.
+
+## 6. Tailwind
+
+Tailwind CSS 4. `globals.css` imports `tokens.css` and `fonts.css`, then maps tokens into
+Tailwind's theme with `@theme inline` (colours, sizes, spacing, radius). Utility classes use
+only those mapped names. No arbitrary colour values (`bg-[#…]`), no default palette colours.
+
+## 7. `guard:design` — what it certifies
+
+Over `src/**/*.{ts,tsx,css}` (excluding `src/styles/tokens.css`):
+
+1. No physical property: CSS `margin-left|right`, `padding-left|right`, `left:`, `right:`,
+   `border-left|right`, `text-align: left|right`, `float: left|right`; Tailwind `ml- mr- pl-
+   pr- left- right- text-left text-right border-l border-r rounded-l rounded-r` and their
+   responsive or state variants.
+2. No colour literal: `#rgb`, `#rrggbb`, `rgb(`, `rgba(`, `hsl(`, or a default Tailwind
+   palette class (`bg-red-500` and the like).
+3. No `font-family` outside `src/styles/fonts.css`.
+4. No `dir=` attribute except on `<html>` and in `src/components/latin-run.tsx`.
+
+Certification as in `GLOSSARY.md` §4, with `--self-check`.
+
+## 8. Composition
+
+From the design pack (`docs/research/`, slide 1 home, slides 2–26 one page per code),
+reconciled with `PRODUCT_BRIEF.md`:
+
+**Home.** Header: mark at inline-start, site name, campaign title. Heading, intro line, search
+box. A list of cards in display order; each card shows its two-digit position in the visible
+list, the analysis name in the page's locale, and "view details" with a mirroring arrow.
+Footer: WhatsApp and hotline as text from `Campaign`, the NEL site link, the language switch.
+States: published with matches · published with no match for the search · published with
+nothing visible today · unpublished (coming soon, no `CampaignOffer` at all).
+
+**Search** runs in the browser over the visible list. A card matches when the normalised query
+is a substring of its normalised `name_ar` or `name_en`. Normalising: trim and collapse spaces;
+lower-case Latin; drop Arabic diacritics (U+064B–U+0652) and tatweel (U+0640); read `أ إ آ ٱ`
+as `ا`, `ى` as `ي`, `ة` as `ه`. An empty query shows every visible card.
+
+**CampaignOffer page.** Heading "offer details — code"; code; the name in the page's locale
+first and the other locale's name second; main video (poster: the main image, if any) or main
+image; price with currency; the date line (start and end when there is a start, end only
+otherwise); conditions in the page's locale, when present; gallery of up to three images;
+actions WhatsApp, call, order; footer as home. A code that is not visible today renders the
+not-found state, in the page's locale.
+
+**Evidence widths.** Phone 390 × 844 and desktop 1440 × 900, both locales, every task that
+renders a page.
+
+## 9. Copy
+
+`Source`: **pack** = the design pack, slide named; **template** = the template's read-me sheet;
+**draft** = written by the reviewer, awaiting Andrew's confirmation (carry-forward).
+
+| Key | Arabic | English | Source |
+|---|---|---|---|
+| `site.name` | معامل النيل مصر | Nile Egypt Labs | pack s1 · template |
+| `site.campaignTitle` | عروض الافتتاح | Opening offers | template |
+| `home.heading` | عروض التحاليل الطبية | Analysis offers | pack s1 · en draft |
+| `home.intro` | اختَر التحليل لعرض التفاصيل والسعر ومدة العرض ووسائل الطلب. | Choose an analysis to see its details, price, offer period and how to order. | pack s1 · en draft |
+| `home.searchPlaceholder` | ابحث باسم التحليل... | Search by analysis name… | pack s1 · en draft |
+| `home.noMatches` | لا توجد تحاليل مطابقة للبحث. | No analysis matches your search. | draft |
+| `home.nothingVisible` | لا توجد عروض متاحة اليوم. | No offers are available today. | draft |
+| `home.comingSoon` | العروض ستُتاح قريبًا. | Offers will be available soon. | draft |
+| `home.viewDetails` | عرض التفاصيل | View details | pack s1 · en draft |
+| `campaignOffer.pageHeading` | تفاصيل العرض — كود {code} | Offer details — code {code} | pack s2 · en draft |
+| `campaignOffer.codeLabel` | كود العرض | Offer code | pack s2 · en draft |
+| `campaignOffer.priceLabel` | سعر العرض | Offer price | pack s2 · en draft |
+| `campaignOffer.currency` | جنيه مصري | EGP | pack s2 · en draft |
+| `campaignOffer.endsOn` | ينتهي العرض في {end} | Offer ends on {end} | pack s2 · en draft |
+| `campaignOffer.validFromTo` | العرض من {start} إلى {end} | Offer runs from {start} to {end} | draft |
+| `campaignOffer.conditionsHeading` | شروط العرض | Offer conditions | pack s2 · en draft |
+| `campaignOffer.galleryAlt` | صورة {position} — {name} | Image {position} — {name} | draft |
+| `campaignOffer.orderMessage` | أرغب في طلب العرض {code} — {name} | I would like to order offer {code} — {name} | draft |
+| `campaignOffer.notFound` | هذا العرض غير متاح. | This offer is not available. | draft |
+| `actions.whatsapp` | واتساب | WhatsApp | pack s2 |
+| `actions.call` | اتصل {hotline} | Call {hotline} | pack s2 · en draft |
+| `actions.order` | اطلب العرض | Order this offer | pack s2 · en draft |
+| `footer.whatsapp` | واتساب {number} | WhatsApp {number} | pack s1 |
+| `footer.hotline` | الخط الساخن {number} | Hotline {number} | pack s1 · en draft |
+| `footer.nelSite` | موقع معامل النيل مصر | Nile Egypt Labs website | draft |
+| `nav.allCampaignOffers` | كل العروض | All offers | draft |
+| `nav.switchLocale` | English | العربية | draft |
+| `a11y.mark` | شعار معامل النيل مصر | Nile Egypt Labs logo | draft |
+
+Not used until Andrew confirms the audience: the pack's "دليل العروض الإلكترونية — Lab to
+Lab" and "عروض مخصصة للمعامل والأطباء". Dashboard copy is written by the builder in both
+catalogues in T02–T03 and verified by the reviewer.
+
+## 10. The designer's UI
+
+Applied in T04 over working pages. The designer's files must be in `docs/research/` with
+their hashes before T04 is issued. They may change layout, spacing, imagery treatment and
+component shape inside §§3–7; they may not add a colour, a font, a physical property, a
+literal business value, or copy outside §9 without an amendment.

@@ -1,0 +1,150 @@
+# NELO — Phases
+
+Four tasks, four gates, two days. One task per branch; a task starts only when the previous
+one is pushed and verified. The reviewer ticks a task at its verdict; a halted task is never
+ticked.
+
+## 1. Map
+
+| Phase | Task | Branch | Risk | Review gate | Gate | Non-waivable / acceptance checks | Target |
+|---|---|---|---|---|---|---|---|
+| P00 Prepare | — | — | — | — | **G0** OD-01 signed | — | 28 Oct |
+| P01 Foundation | **T01** | `t01-foundation` | 2 | reviewer only | **G1** | Boundary (public tree) · Bilingual | 29 Oct, morning |
+| P02 Data, sign-in, storage | **T02** | `t02-data-auth-storage` | 3 | Opus review before merge | **G2** | Boundary (schema, routes, bucket) | 29 Oct, afternoon |
+| P03 Operator dashboard | **T03** | `t03-dashboard` | 2 | reviewer only | **G3** | Boundary · Offer content (synthetic) · Data integrity · Bilingual | 30 Oct, morning |
+| P04 Public site and go-live | **T04** | `t04-public-golive` | 2 (DNS: OD-01 item 18) | reviewer only | **G4** launch | Offer content (real) · Boundary · Data integrity · Bilingual | 30 Oct, afternoon |
+
+"Reviewer only" on a Risk-2 task becomes "Sonnet review before merge" when the human asks.
+
+## 2. Tasks
+
+- [ ] **T01 — Foundation and blueprint landing.** Land the reviewer bundle byte-exact
+  (blueprint, ledgers with ids allocated, tokens, mark, template, verifier). Scaffold Next.js
+  16 with TypeScript strict, Tailwind 4, ESLint. Locale routing and catalogues; `<html lang
+  dir data-locale>` from the locale; the coming-soon home in both locales (no data source yet).
+  Font package, tokens wired through `@theme inline`, the mark in the header. The four guards
+  with `--self-check`. CI. `.gitattributes`, `.env.example`. Rendered evidence at both widths in
+  both locales.
+- [ ] **T02 — Data, Operator sign-in, storage, headers.** Reviewer-authored migration (tables,
+  constraints, triggers, visibility and drift functions, `is_operator()`, RLS, the import
+  apply function), applied by the human. Supabase clients (publishable key only). Operator
+  sign-in, TOTP enrolment and verification, `aal2` enforcement. R2 presign and finalise route
+  handlers; server-side presigning of view links. Security headers with nonce CSP. Vercel project with environment values set by the
+  human; R2 CORS applied by the human. Boundary evidence for schema, routes and bucket.
+- [ ] **T03 — Operator dashboard.** Overview, CampaignOffers list with Remove, template
+  download, export, import with preview and confirm, media-object bulk upload with the media
+  edge controls, Campaign settings, publish switch. Unit specs for the parser and the name
+  rules; end-to-end specs on synthetic sheets and media; the round-trip property; the offer
+  content check on synthetic data; `scan:media-objects`.
+- [ ] **T04 — Public site, the designer's UI, go-live.** Home with search, CampaignOffer page,
+  actions and links, not-found and coming-soon states, built to the designer's files within
+  `DESIGN_SYSTEM.md`. Rendered evidence and end-to-end specs in both locales and widths. Then
+  §4 with the human.
+
+## 3. Gate evidence
+
+| Gate | Must show |
+|---|---|
+| G1 | The verifier PASS on the committed bytes; guards and `--self-check` outputs; lint, typecheck, build; four screenshots; zero cookies and no off-origin request on public pages; the remote comparison line. |
+| G2 | The migration's committed hash equal to the rehearsed hash; human-attested column inventory; RLS proofs (anon cannot read hidden rows or write anything; `aal1` cannot read Operator data); presign refusal cases; header dump; bucket privacy human-attested. |
+| G3 | Unit and end-to-end specs; `campaign_offer_drift()` = 0 and the `CampaignOffer` count, human-attested; round-trip zero changes; `scan:media-objects` zero hits; orphan `MediaObject` count zero; dashboard screenshots in both locales. |
+| G4 | Everything in G1–G3 re-run on production with the real sheet and media; §4 complete. |
+
+## 4. Go-live list (with the human)
+
+1. Every synthetic `CampaignOffer` removed through the dashboard; then the reviewer-authored
+   synthetic reset run in the SQL Editor; the count of codes starting `SYN-` and the orphan
+   count are zero, human-attested; `scan:media-objects` reports zero objects without a
+   `MediaObject` row. Any account created only for specs is removed from Supabase Auth.
+2. An Operator imports the laboratory's real sheet and uploads its media.
+3. `campaign_offer_drift()` returns zero rows; `scan:media-objects` returns zero hits; orphan
+   `MediaObject` count is zero.
+4. Contact values entered and tried from the settings page.
+5. Copy confirmed by Andrew, or the open drafts listed in the verdict.
+6. Vercel: `offers.nileegyptlabs.com` added to the project; GoDaddy: one CNAME record `offers`
+   to the target Vercel names; Vercel verifies; the certificate is served.
+7. `NEXT_PUBLIC_SITE_URL`, the R2 CORS origins and the Supabase Auth site URL point at the
+   production address.
+8. The repository is made private again (OD-01 item 2); an anonymous `git ls-remote` fails
+   and the unauthenticated API answers 404.
+9. An Operator switches the campaign on.
+10. Production screenshots, both locales, both widths.
+
+## 5. Usage ledger
+
+Every agent run of the project is one line in `docs/usage/runs.jsonl`, appended by
+`npm run usage:record` (`scripts/usage/record.mjs`) and totalled by `npm run usage:report`
+(`scripts/usage/report.mjs`) into `docs/usage/README.md`. Neither file is ever edited by hand:
+the record script only appends, and the report is regenerated whole.
+
+**Who reports what.** A run's figures come from the tool that ran it, never from an estimate.
+
+| Stage | Run | Figures from |
+|---|---|---|
+| `blueprint` | one answered message of the human while the reviewer writes or amends the blueprint | the reviewer's own session records, summed once that answer is complete |
+| `reviewer` | one answered message of the human in which the reviewer issues a verdict or a prompt | the same |
+| `builder` | one Grok run on a task, fix runs included | Cursor's usage for that run, read by the human |
+| `review-gate` | an Opus or Sonnet review before merge | that tool's own usage report, read by the human |
+
+A subagent the reviewer starts is its own run, in the stage of the answer that started it.
+The human gives the reviewer the figures of every builder and review-gate run; the reviewer
+quotes every completed run since the previous fence, as `npm run usage:record` commands, in the
+next fence; the builder runs them. A reviewer answer is recorded in a later fence, once it is
+complete — never by the answer that issues the fence. A run whose figures cannot be had is
+recorded with `--not-reported`.
+
+**Record** — one JSON object per line, keys in this order:
+
+| Key | Value |
+|---|---|
+| `run_at` | ISO 8601 UTC time the run ended, to the second |
+| `tool` | `^[a-z0-9-]+$` — e.g. `claude-app`, `cursor`, `claude-code` |
+| `model` | the model id as the tool reports it, `^[A-Za-z0-9._:-]+$` |
+| `stage` | `blueprint` · `builder` · `reviewer` · `review-gate` |
+| `task` | `blueprint` · `T01`–`T04`, optionally with a fix suffix `-F` or `-F2`… · `go-live` |
+| `input` · `output` · `cache_read` · `cache_write` | whole numbers ≥ 0 as reported; all four `null` when not reported |
+| `cost_usd` | the tool's own cost figure, or `null` |
+| `source` | `tool-report` · `session-records` · `not-reported` |
+| `note` | optional, ≤ 120 characters, no names |
+
+`usage:record` takes one flag per key (`--run-at --tool --model --stage --task --input
+--output --cache-read --cache-write [--cost-usd] --source [--note]`, or `--not-reported` in
+place of the four token flags), validates every value, appends exactly one line, and prints it.
+It never rewrites an existing line.
+
+**Report** — `docs/usage/README.md`, regenerated whole. `usage:report -- --check` exits
+non-zero when the file differs from what the records produce; CI runs it. The page is:
+
+```
+# Usage
+
+Every agent run of this project, totalled from docs/usage/runs.jsonl: one line per run,
+appended by npm run usage:record (scripts/usage/record.mjs). Never edit that file by hand.
+This page is regenerated by npm run usage:report and is never edited by hand either.
+
+Tokens are as each tool reported them. Cache read and cache write are kept apart from input.
+Cost is the tool's own figure where it gives one; otherwise "—". No prices are kept in this
+repository; cost is worked out outside it from the token totals.
+Reviewer runs are measured from the reviewer's own session records once each answer is
+complete.
+Not in these totals: any run not recorded in runs.jsonl.
+
+Runs: <n> · Not reported: <n> · Last run: <latest run_at>
+
+## Total
+| Runs | Input | Output | Cache read | Cache write | Cost (USD) |
+
+## By model
+| Tool | Model | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
+
+## By stage
+| Stage | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
+
+## By task
+| Task | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
+```
+
+Numbers use thousands separators and Western digits. A not-reported run counts in Runs and
+adds nothing to the token columns. Cost shows the sum when every run in the row reports one,
+and "—" otherwise. Rows: models by tool, then model; stages in the order of the table above;
+tasks as `blueprint`, `T01`, its fix runs, `T02` … `T04`, `go-live`.

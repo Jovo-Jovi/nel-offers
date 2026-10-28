@@ -1,0 +1,106 @@
+/* DESIGN_SYSTEM.md §3, §4, §5 — values copied verbatim, not recomputed. */
+
+:root {
+  /* §3 Colour — eleven tokens exactly (D-29). Do not add a twelfth. */
+  --nel-color-primary: #2E3192;
+  --nel-color-primary-strong: #181D8C;
+  --nel-color-accent: #CC3533;
+  --nel-color-background: #FAFAFC;
+  --nel-color-surface: #FFFFFF;
+  --nel-color-border: #8B8CA7;
+  --nel-color-text: #1D1D35;
+  --nel-color-muted: #656686;
+  --nel-color-success: #1E7A4C;
+  --nel-color-warning: #8A5A00;
+  --nel-color-error: #B3261E;
+
+  /* §4 Size scale — nine steps (v3 adds 4xl/5xl). 4xl and 5xl step down two
+     levels below md (to 2xl and 3xl respectively) — see the media query
+     below — because a 56px/72px headline on a 360px phone is one word per
+     line. 5xl is reserved for lg and above; nothing in this build uses it.
+     The landing headline uses 5xl from 1024px. */
+  --nel-size-xs: 12px;
+  --nel-size-sm: 14px;
+  --nel-size-base: 16px;
+  --nel-size-lg: 18px;
+  --nel-size-xl: 24px;
+  --nel-size-2xl: 32px;
+  --nel-size-3xl: 40px;
+  --nel-size-4xl: 32px;
+  --nel-size-5xl: 40px;
+
+  /* §5 Spacing scale — nine steps, 4px base */
+  --nel-space-4: 4px;
+  --nel-space-8: 8px;
+  --nel-space-12: 12px;
+  --nel-space-16: 16px;
+  --nel-space-24: 24px;
+  --nel-space-32: 32px;
+  --nel-space-48: 48px;
+  --nel-space-64: 64px;
+  --nel-space-96: 96px;
+
+  /* §5 Radius set — six values; 20px panel per P09-T03 and OD-31 */
+  --nel-radius-none: 0;
+  --nel-radius-sm: 4px;
+  --nel-radius-md: 8px;
+  --nel-radius-panel: 20px;
+  --nel-radius-well: 32px;
+  --nel-radius-full: 9999px;
+
+  /* §4 Line-height fork, en/ar, computed from font metrics and copied verbatim */
+  --nel-line-height-body-en: 1.50;
+  --nel-line-height-body-ar: 1.75;
+  --nel-line-height-heading-en: 1.20;
+  --nel-line-height-heading-ar: 1.40;
+  --nel-line-height-tight-en: 1.10;
+  --nel-line-height-tight-ar: 1.25;
+
+  /* §5 Elevation — three levels, each a 1px border plus a shadow, never
+     translucency. The border width (1px) and the box-shadow values below
+     are copied from the §5 table and were ratified there. Shadow colour is
+     the text token at low alpha, never neutral black. */
+  --nel-elevation-0-border-width: 0;
+  --nel-elevation-0-shadow: none;
+  --nel-elevation-1-border-width: 1px;
+  --nel-elevation-1-shadow: 0 1px 3px rgba(29, 29, 53, 0.08), 0 1px 2px rgba(29, 29, 53, 0.05);
+  --nel-elevation-2-border-width: 1px;
+  --nel-elevation-2-shadow: 0 8px 24px rgba(29, 29, 53, 0.10), 0 2px 8px rgba(29, 29, 53, 0.06);
+
+  /* Motion — colour and border only, 150ms. No bounce, no fade of text. */
+  --nel-duration: 150ms;
+
+  /* OD-31 — shared surface recipes, each derived from the eleven colours;
+     none is a new colour (D-29). */
+  --nel-well: color-mix(in srgb, var(--nel-color-primary) 7%, var(--nel-color-surface));
+  --nel-panel-edge: color-mix(in srgb, var(--nel-color-border) 28%, var(--nel-color-surface));
+  --nel-glass: color-mix(in srgb, var(--nel-color-surface) 92%, transparent);
+  --nel-glass-strong: color-mix(in srgb, var(--nel-color-surface) 96%, transparent);
+  --nel-glass-edge: color-mix(in srgb, var(--nel-color-surface) 58%, transparent);
+  --nel-glass-blur: blur(22px) saturate(1.6);
+  --nel-glow-primary: color-mix(in srgb, var(--nel-color-primary) 4.5%, transparent);
+  --nel-glow-accent: color-mix(in srgb, var(--nel-color-accent) 5.5%, transparent);
+  --nel-band-card: color-mix(in srgb, var(--nel-color-surface) 12%, var(--nel-color-primary));
+  --nel-band-edge: color-mix(in srgb, var(--nel-color-surface) 24%, var(--nel-color-primary));
+  --nel-orb-primary: color-mix(in srgb, var(--nel-color-primary) 34%, transparent);
+  --nel-orb-accent: color-mix(in srgb, var(--nel-color-accent) 22%, transparent);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nel-size-4xl: 56px;
+    --nel-size-5xl: 72px;
+  }
+}
+
+[data-locale="ar"] {
+  --nel-line-height-body: var(--nel-line-height-body-ar);
+  --nel-line-height-heading: var(--nel-line-height-heading-ar);
+  --nel-line-height-tight: var(--nel-line-height-tight-ar);
+}
+
+[data-locale="en"] {
+  --nel-line-height-body: var(--nel-line-height-body-en);
+  --nel-line-height-heading: var(--nel-line-height-heading-en);
+  --nel-line-height-tight: var(--nel-line-height-tight-en);
+}

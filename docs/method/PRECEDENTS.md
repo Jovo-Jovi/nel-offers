@@ -1,0 +1,42 @@
+# NELO — Precedents
+
+Binding procedural rulings. Consult before re-deriving an established pattern. A precedent
+binds every prompt issued and every verdict returned. To change one, supersede it explicitly
+and name what it replaces. Never deviate silently.
+
+Rows marked with a NEL source restate rulings proven on the NEL build, narrowed to this
+project. They are this project's own rulings from the moment they land.
+
+**Next free id: PR-30**
+
+| Id | Ruling | Source |
+|---|---|---|
+| PR-01 | **Counts are computed, never asserted.** State the command that produced the number. A figure read from a statistics source — a dashboard, a table-size estimate, an MCP tool's row field — is an estimate, never a count. Binds reviewer and builder equally. | NEL rows 01, 38 |
+| PR-02 | **The reviewer describes** a carry-forward or precedent row. The landing task allocates the id from the live maximum and reports it back. The reviewer never assigns ids. | NEL row 02 |
+| PR-03 | **One task per branch at a time.** Task N+1 does not start until N is pushed and the reviewer has verified it. | NEL row 03 |
+| PR-04 | **Prompts are self-contained.** Every payload a prompt refers to sits inside the same fence. A bulk payload that must land byte-exact is attached instead, and the fence names its filename, its SHA-256 and a way to verify every file in it; the builder verifies before editing and halts on any mismatch. | NEL rows 04, 29 |
+| PR-05 | Every STOP block separates **HALT** conditions from **REDACT-AND-CONTINUE** conditions. | NEL row 05 |
+| PR-06 | **Windows / PowerShell.** One command per line, no `&&`. Formatted-table output is lost by the capture layer: pipe through `Select-Object -ExpandProperty` and `Write-Output`. Empty output from a formatted command, or from a pattern mangled by backtick escaping, is an artefact — never a zero result and never grounds to halt. Verify patterns with a tool whose escaping is predictable, and say which. | NEL rows 07, 14, 24 |
+| PR-07 | **No credentials** in prompts, chat, reports, commits or fixtures. Access is granted by adding an account, never by sending a password. Fixtures are synthetic, and visibly so. | NEL row 10 |
+| PR-08 | **Push target is a task branch, never `main`.** The builder reports the remote comparison line — local `HEAD` and the remote branch head, equal. The human opens and merges. | NEL rows 11, 12 |
+| PR-09 | **Canonical paths.** `SESSION_CONTEXT.md` and `DEVELOPMENT_JOURNAL.md` live at `docs/`. `docs/method/` holds method documents; `PRECEDENTS.md` and `CARRY_FORWARDS.md` are the binding pair. | NEL rows 13, 17 |
+| PR-10 | **Residual halt and repair.** Halt on any outcome that would land a duplicated sentence, a self-contradicting passage, or a document that fails its own rules, even where no enumerated condition covers it. Where halting would strand the task, the builder may land the repair only if it is labelled UNRATIFIED in the file and listed under RESIDUAL REPAIRS at the top of the report. The reviewer ratifies or reverts at verdict. | NEL rows 15, 19 |
+| PR-11 | **Published business data** — WhatsApp, hotline, the NEL link — is permitted in `CARRY_FORWARDS.md` and `docs/research/`, and forbidden as a literal in application source. At run time the `Campaign` record is its only home. | NEL row 16 |
+| PR-12 | **Reviewer authority.** A ruling exists only if it is quoted verbatim inside a task fence or cited by id in this file. Nothing said in conversation is authority. An edit believed necessary but not in the fence is a HALT; the builder never attributes an edit to a ruling it cannot quote. | NEL row 18 |
+| PR-13 | **A connected MCP server or CLI login is not authorisation.** No tool that touches a cloud account — Supabase, Vercel, Cloudflare, GitHub, GoDaddy — is called from a build fence unless the fence names the tool and the call. Read-only calls included. | NEL row 20 |
+| PR-14 | A fence whose commands require an artefact names the task that landed it. Absent that, the builder halts at precondition, not at the step that trips. | NEL row 22 |
+| PR-15 | **A Done-when must be true of the payload its own fence lands.** A mismatch is a fence defect owned by the reviewer; the builder reports it and never resolves it by editing mandated text. | NEL row 25 |
+| PR-16 | **Tool-mandated names are outside the vocabulary rule:** file names and keys fixed by a tool (`package.json`, `dependencies`, `next.config.ts`) and third-party APIs at their call sites. Every name we declare is inside it. | NEL row 26 |
+| PR-17 | **Ledger arithmetic.** A Done-when count over a ledger the same fence mutates states its arithmetic — base count by command, plus additions, minus closures — never a bare number. | NEL row 28 |
+| PR-18 | **Certification, not blanket bans.** A rule that protects a measurable floor states the condition that certifies a case, rather than forbidding the class. | NEL row 30 |
+| PR-19 | **Tooling is never authority.** A skill, editor rule, plugin or generator that conflicts with a document loses; the conflict is raised as an amendment, never reconciled in code. | NEL row 31 |
+| PR-20 | **A guard's string proof certifies its pattern, never its file-mode scope.** Every guard proves both, file mode against files in a scratch directory outside the repository. | NEL row 33 |
+| PR-21 | **Reachability.** A task that moves, replaces or re-roots a route reports its reachable and unreachable file sets by name. File existence is not evidence that a surface survived. | NEL row 34 |
+| PR-22 | **Byte-exact checks hash the committed bytes**, read with `git show <ref>:<path>` through Python's `subprocess` with no shell pipe — never the working file. `.gitattributes` fixes LF for text. A frozen-artefact digest that does not match its known value halts the task. | NEL rows 35, 37 |
+| PR-23 | **Source documents carrying a real person's contact details never enter the repository.** Only redacted extractions do: `[redacted-email]`, `[redacted-phone]`, first name only. | NEL row 39 |
+| PR-24 | **Live database reads.** The fence names each SELECT verbatim; the human runs it in the Supabase SQL Editor; the builder records the result as human-attested. | NEL row 40 |
+| PR-25 | **Renders after a database change.** A fence that measures rendered pages after a database change deletes `.next` first (`Remove-Item -Recurse -Force .next`), then builds. | NEL row 41 |
+| PR-26 | **Visibility before push.** Every write fence first checks, with an anonymous `git ls-remote` (credential helpers disabled) and the unauthenticated GitHub API, that the repository's visibility is the one `DECISIONS.md` currently signs. A mismatch is a HALT. | NELO, 28 Oct 2026: the repository was found public before any decision said so |
+| PR-27 | **Public-repository rules**, binding while the repository is public. No credential, key, token, connection string, Supabase project reference or project URL in any commit — exposure is immediate, and a later commit does not unpublish it. No CI trigger runs fork-supplied code with repository context: `pull_request_target` is forbidden, a `pull_request` job runs only when the head repository is this one, and no workflow reads a secret. No assessment of a third-party system's operational weaknesses in a tracked file. The return to private is a go-live item, not a courtesy. | NEL rows 21, 23, 27; NELO OD-01 item 2 |
+| PR-28 | **Offer content is the laboratory's.** No code, seed, fixture, design mock, builder or reviewer supplies a real analysis name, price, date or condition. Sheet → confirm → publish is the only path. Fixtures use `SYN-` codes and names that say they are synthetic. | NELO, OD-01 |
+| PR-29 | **NEL decoupling.** The only NEL artefacts in this repository are the two files listed in `DESIGN_SYSTEM.md` §2, at their hashes. Nothing at build or run time references NEL's repository, database, bucket, account or key. | NELO, OD-01 item 3 |
