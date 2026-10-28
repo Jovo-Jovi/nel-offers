@@ -2,7 +2,7 @@ import "server-only";
 import type { OperatorClient } from "@/lib/supabase/server";
 
 const secretLimit = 128;
-const qrLimit = 100 * 1000;
+const qrLimit = 500 * 1000;
 
 export type TotpPane =
   | { kind: "verify"; factorId: string }
