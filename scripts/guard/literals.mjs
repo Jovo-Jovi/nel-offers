@@ -49,23 +49,28 @@ function stringLiterals(text, sourceName) {
   return values;
 }
 
+function pushMatches(findings, rel, text, pattern, flags, rule) {
+  const re = new RegExp(pattern, flags.includes("g") ? flags : `${flags}g`);
+  let match;
+  while ((match = re.exec(text))) {
+    findings.push(`${rel}:${lineAt(text, match.index)}: rule ${rule}`);
+    if (match[0].length === 0) re.lastIndex += 1;
+  }
+}
+
 function findingsFor(rel, text) {
   const findings = [];
   if (!isTarget(rel)) return findings;
   const code = /\.(?:ts|tsx|css)$/.test(rel);
   if (code) {
-    const phone = /wa\.me\/[0-9+]/.exec(text) ?? /tel:[0-9+]/.exec(text);
-    if (phone) findings.push(`${rel}:${lineAt(text, phone.index)}: rule 1`);
-    const host = /nileegyptlabs/i.exec(text);
-    if (host) findings.push(`${rel}:${lineAt(text, host.index)}: rule 2`);
-    const digits = /\d{5,}/.exec(text);
-    if (digits) findings.push(`${rel}:${lineAt(text, digits.index)}: rule 3`);
-    const day = /20\d\d-[01]\d-[0-3]\d/.exec(text);
-    if (day) findings.push(`${rel}:${lineAt(text, day.index)}: rule 4`);
+    pushMatches(findings, rel, text, "wa\\.me\\/[0-9+]", "g", 1);
+    pushMatches(findings, rel, text, "tel:[0-9+]", "g", 1);
+    pushMatches(findings, rel, text, "nileegyptlabs", "gi", 2);
+    pushMatches(findings, rel, text, "\\d{5,}", "g", 3);
+    pushMatches(findings, rel, text, "20\\d\\d-[01]\\d-[0-3]\\d", "g", 4);
   }
   if (isCatalogue(rel)) {
-    const short = /\d{3,}/.exec(text);
-    if (short) findings.push(`${rel}:${lineAt(text, short.index)}: rule 5`);
+    pushMatches(findings, rel, text, "\\d{3,}", "g", 5);
   }
   if (/\.(?:ts|tsx)$/.test(rel) && rel !== "src/i18n/config.ts") {
     for (const literal of stringLiterals(text, rel)) {
@@ -109,6 +114,12 @@ function runSelfCheck() {
       text: 'export const catalogue = { home: { comingSoon: "100" } };\n',
     },
     { expect: "fail", path: "src/proxy.ts", text: 'export const code = "en";\n' },
+    {
+      expect: "fail",
+      path: "src/pair.ts",
+      text: "export const wide = 10000;\nexport const wider = 20000;\n",
+      min: 2,
+    },
     { expect: "pass", path: "src/plain.ts", text: 'export const label = "hello";\n' },
     { expect: "pass", path: "src/scale.ts", text: "export const byteLimit = 100 * 1024;\n" },
     { expect: "pass", path: "src/i18n/config.ts", text: 'export const code = "ar";\n' },
@@ -119,17 +130,21 @@ function runSelfCheck() {
   function count(group, mode) {
     let hits = 0;
     for (const sample of group) {
-      let flagged;
-      if (mode === "string") flagged = findingsFor(sample.path, sample.text).length > 0;
+      let findings;
+      if (mode === "string") findings = findingsFor(sample.path, sample.text);
       else {
         const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "nelo-literals-"));
         const dest = path.join(scratch, ...sample.path.split("/"));
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(dest, sample.text, "utf8");
-        flagged = scanRoot(scratch).length > 0;
+        findings = scanRoot(scratch);
         fs.rmSync(scratch, { recursive: true, force: true });
       }
-      if ((sample.expect === "fail") === flagged) hits += 1;
+      const ok =
+        typeof sample.min === "number"
+          ? findings.length >= sample.min
+          : (findings.length > 0) === (sample.expect === "fail");
+      if (ok) hits += 1;
     }
     return hits;
   }

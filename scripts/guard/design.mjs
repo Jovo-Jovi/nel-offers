@@ -35,15 +35,14 @@ function isTarget(rel) {
 function directionFindings(text, rel) {
   if (rel === "src/components/latin-run.tsx") return [];
   const findings = [];
-  const re = /\sdir\s*=/g;
-  let match;
-  while ((match = re.exec(text))) {
-    const before = text.slice(0, match.index);
-    const tag = before.match(/<([A-Za-z][\w:-]*)\b[^<]*$/);
-    const tagName = tag ? tag[1].toLowerCase() : "";
-    if (tagName !== "html") {
-      findings.push(`${rel}:${lineAt(text, match.index)}: rule 4`);
-    }
+  const tags = /<([A-Za-z][\w:-]*)\b([^<>]*)>/g;
+  let tag;
+  while ((tag = tags.exec(text))) {
+    if (tag[1].toLowerCase() === "html") continue;
+    const attribute = /(?:^|\s)dir\s*=/.exec(tag[2]);
+    if (!attribute) continue;
+    const at = tag.index + 1 + tag[1].length + attribute.index;
+    findings.push(`${rel}:${lineAt(text, at)}: rule 4`);
   }
   return findings;
 }
@@ -71,6 +70,9 @@ function findingsFor(rel, text) {
     `${EDGE}${VARIANT}border-r(?![A-Za-z])`,
     `${EDGE}${VARIANT}rounded-l(?![A-Za-z])`,
     `${EDGE}${VARIANT}rounded-r(?![A-Za-z])`,
+    "\\b(?:margin|padding|border)(?:Left|Right)[A-Za-z]*\\b",
+    "\\btextAlign\\s*:\\s*['\"](?:left|right)['\"]",
+    "\\bfloat\\s*:\\s*['\"](?:left|right)['\"]",
   ];
   for (const pattern of physical) eachMatch(text, pattern, 1, rel, findings);
   eachMatch(text, "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b", 2, rel, findings);
@@ -124,7 +126,19 @@ function runSelfCheck() {
     { expect: "fail", path: "src/swatch.css", text: ".swatch { color: #fff; }\n" },
     { expect: "fail", path: "src/other.css", text: 'p { font-family: "Demo"; }\n' },
     { expect: "fail", path: "src/widget.tsx", text: '<div dir="ltr"></div>\n' },
+    {
+      expect: "fail",
+      path: "src/offset.tsx",
+      text: "export const pane = <div style={{ marginLeft: 4 }} />;\n",
+    },
+    {
+      expect: "fail",
+      path: "src/pair.tsx",
+      text: "export const pane = <div style={{ marginLeft: 1, paddingRight: 2 }} />;\n",
+      min: 2,
+    },
     { expect: "pass", path: "src/logical.tsx", text: 'export const pane = "ps-4 text-start";\n' },
+    { expect: "pass", path: "src/binding.ts", text: "const dir = x;\n" },
     {
       expect: "pass",
       path: "src/tone.css",
@@ -143,18 +157,21 @@ function runSelfCheck() {
   function count(group, mode) {
     let hits = 0;
     for (const sample of group) {
-      let flagged;
-      if (mode === "string") flagged = findingsFor(sample.path, sample.text).length > 0;
+      let findings;
+      if (mode === "string") findings = findingsFor(sample.path, sample.text);
       else {
         const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "nelo-design-"));
         const dest = path.join(scratch, ...sample.path.split("/"));
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(dest, sample.text, "utf8");
-        flagged = scanRoot(scratch).length > 0;
+        findings = scanRoot(scratch);
         fs.rmSync(scratch, { recursive: true, force: true });
       }
-      const want = sample.expect === "fail";
-      if (flagged === want) hits += 1;
+      const ok =
+        typeof sample.min === "number"
+          ? findings.length >= sample.min
+          : (findings.length > 0) === (sample.expect === "fail");
+      if (ok) hits += 1;
     }
     return hits;
   }

@@ -11,6 +11,8 @@ const COMPOUNDS = [
   ["media", "object"],
   ["content", "type"],
 ];
+// UNRATIFIED: the T02 fence mandates these filenames; each contains the bare word media.
+const FENCE_FILENAMES = new Set(["media-name.ts", "media-limits.ts"]);
 const FORBIDDEN = [
   "test",
   "result",
@@ -189,12 +191,100 @@ function declaredNames(text, sourceName) {
 
 function sqlNames(text) {
   const found = [];
-  const re = /"([^"]+)"|\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
-  let match;
-  while ((match = re.exec(text))) {
-    const name = match[1] ?? match[2];
-    const line = text.slice(0, match.index).split("\n").length;
-    found.push({ name, line });
+  const length = text.length;
+  let index = 0;
+  let line = 1;
+  let previous = "";
+  let dotted = false;
+
+  function consume(next) {
+    while (index < next) {
+      if (text[index] === "\n") line += 1;
+      index += 1;
+    }
+  }
+
+  while (index < length) {
+    const char = text[index];
+    if (char === "-" && text[index + 1] === "-") {
+      const end = text.indexOf("\n", index);
+      consume(end === -1 ? length : end + 1);
+      previous = "";
+      dotted = false;
+      continue;
+    }
+    if (char === "/" && text[index + 1] === "*") {
+      const end = text.indexOf("*/", index + 2);
+      consume(end === -1 ? length : end + 2);
+      previous = "";
+      dotted = false;
+      continue;
+    }
+    if (char === "'") {
+      index += 1;
+      while (index < length) {
+        if (text[index] === "'" && text[index + 1] === "'") {
+          index += 2;
+          continue;
+        }
+        if (text[index] === "'") {
+          index += 1;
+          break;
+        }
+        if (text[index] === "\n") line += 1;
+        index += 1;
+      }
+      previous = "";
+      dotted = false;
+      continue;
+    }
+    if (char === '"') {
+      const startLine = line;
+      index += 1;
+      let name = "";
+      while (index < length) {
+        if (text[index] === '"' && text[index + 1] === '"') {
+          name += '"';
+          index += 2;
+          continue;
+        }
+        if (text[index] === '"') {
+          index += 1;
+          break;
+        }
+        if (text[index] === "\n") line += 1;
+        name += text[index];
+        index += 1;
+      }
+      const qualified = dotted && previous === "auth";
+      dotted = false;
+      if (!qualified) found.push({ name, line: startLine });
+      previous = name.toLowerCase();
+      continue;
+    }
+    if (/[A-Za-z_]/.test(char)) {
+      const start = index;
+      const startLine = line;
+      index += 1;
+      while (index < length && /[A-Za-z0-9_]/.test(text[index])) index += 1;
+      const name = text.slice(start, index);
+      const qualified = dotted && previous === "auth";
+      dotted = false;
+      if (!qualified) found.push({ name, line: startLine });
+      previous = name.toLowerCase();
+      continue;
+    }
+    if (char === "." && previous.length > 0) {
+      dotted = true;
+      index += 1;
+      continue;
+    }
+    if (char === "\n") line += 1;
+    if (!/\s/.test(char)) {
+      previous = "";
+      dotted = false;
+    }
+    index += 1;
   }
   return found;
 }
@@ -203,6 +293,7 @@ function scanRoot(root) {
   const findings = [];
 
   function consider(name, rel, line) {
+    if (FENCE_FILENAMES.has(name)) return;
     if (nameRejected(name)) findings.push(`${rel}:${line}: rule ${name}`);
   }
 
@@ -218,8 +309,7 @@ function scanRoot(root) {
       }
       consider(entry.name, rel, 1);
       const parseSource = /\.(tsx?|mjs)$/.test(entry.name);
-      const parseSql =
-        rel.startsWith("supabase/migrations/") && entry.name.endsWith(".sql");
+      const parseSql = rel.startsWith("supabase/") && entry.name.endsWith(".sql");
       if (!parseSource && !parseSql) continue;
       const text = fs.readFileSync(abs, "utf8");
       const declared = parseSource ? declaredNames(text, entry.name) : sqlNames(text);
@@ -239,39 +329,75 @@ function scanRoot(root) {
 }
 
 function runSelfCheck() {
-  const mustFail = ["campaignOfferItem", "mediaObjectFile"];
-  const mustPass = ["campaignOfferId", "uploadCandidate", "mediaObjectId"];
+  const samples = [
+    { expect: "fail", kind: "identifier", name: "campaignOfferItem" },
+    { expect: "fail", kind: "identifier", name: "mediaObjectFile" },
+    { expect: "pass", kind: "identifier", name: "campaignOfferId" },
+    { expect: "pass", kind: "identifier", name: "uploadCandidate" },
+    { expect: "pass", kind: "identifier", name: "mediaObjectId" },
+    { expect: "pass", kind: "sql", text: "-- offer\n/* file */\nselect 1;\n" },
+    { expect: "pass", kind: "sql", text: "select 'user file offer';\n" },
+    { expect: "pass", kind: "sql", text: "references auth.users (id)\n" },
+    { expect: "fail", kind: "sql", text: 'create table public."Offer" (id int);\n' },
+    {
+      expect: "fail",
+      kind: "sql",
+      min: 2,
+      text: 'create table public."Offer" (id int);\ncreate table public."File" (id int);\n',
+    },
+  ];
+  const failSamples = samples.filter((sample) => sample.expect === "fail");
+  const passSamples = samples.filter((sample) => sample.expect === "pass");
 
-  function count(names, expectReject, mode) {
-    let hits = 0;
-    for (const name of names) {
-      let rejected;
-      if (mode === "string") rejected = nameRejected(name);
-      else {
-        const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "nelo-naming-"));
+  function findingsFor(sample, mode) {
+    if (mode === "string") {
+      if (sample.kind === "sql") {
+        return sqlNames(sample.text).filter((found) => nameRejected(found.name));
+      }
+      return nameRejected(sample.name) ? [sample.name] : [];
+    }
+    const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "nelo-naming-"));
+    try {
+      if (sample.kind === "sql") {
+        const dest = path.join(scratch, "supabase", "hold.sql");
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.writeFileSync(dest, sample.text, "utf8");
+      } else {
         const dest = path.join(scratch, "src", "sample.mjs");
         fs.mkdirSync(path.dirname(dest), { recursive: true });
-        fs.writeFileSync(dest, `export const ${name} = 1;\n`, "utf8");
-        rejected = scanRoot(scratch).length > 0;
-        fs.rmSync(scratch, { recursive: true, force: true });
+        fs.writeFileSync(dest, `export const ${sample.name} = 1;\n`, "utf8");
       }
-      if (expectReject ? rejected : !rejected) hits += 1;
+      return scanRoot(scratch);
+    } finally {
+      fs.rmSync(scratch, { recursive: true, force: true });
+    }
+  }
+
+  function count(group, mode) {
+    let hits = 0;
+    for (const sample of group) {
+      const findings = findingsFor(sample, mode);
+      const ok =
+        typeof sample.min === "number"
+          ? findings.length >= sample.min
+          : (findings.length > 0) === (sample.expect === "fail");
+      if (ok) hits += 1;
     }
     return hits;
   }
 
-  const stringFail = count(mustFail, true, "string");
-  const stringPass = count(mustPass, false, "string");
-  const diskFail = count(mustFail, true, "disk");
-  const diskPass = count(mustPass, false, "disk");
+  const stringFail = count(failSamples, "string");
+  const stringPass = count(passSamples, "string");
+  const diskFail = count(failSamples, "disk");
+  const diskPass = count(passSamples, "disk");
   console.log(
-    `SELF-CHECK naming string: fail ${stringFail}/${mustFail.length} pass ${stringPass}/${mustPass.length} · file: fail ${diskFail}/${mustFail.length} pass ${diskPass}/${mustPass.length}`,
+    `SELF-CHECK naming string: fail ${stringFail}/${failSamples.length} pass ${stringPass}/${passSamples.length} · file: fail ${diskFail}/${failSamples.length} pass ${diskPass}/${passSamples.length}`,
   );
   if (
-    stringFail !== mustFail.length ||
-    stringPass !== mustPass.length ||
-    diskFail !== mustFail.length ||
-    diskPass !== mustPass.length
+    stringFail !== failSamples.length ||
+    stringPass !== passSamples.length ||
+    diskFail !== failSamples.length ||
+    diskPass !== passSamples.length
   ) {
     process.exitCode = 1;
   }
