@@ -43,5 +43,25 @@ export const catalogue: Catalogue = {
   },
   a11y: {
     mark: "Nile Egypt Labs logo"
+  },
+  operator: {
+    signInHeading: "Operator sign-in",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    submit: "Sign in",
+    signInError: "The email or password is incorrect.",
+    recovery: "Recovery is done by the project owner.",
+    enrolHeading: "Set up verification",
+    verifyHeading: "Verification code",
+    enrolLead: "Scan the code or enter the secret, then enter the six-digit code.",
+    verifyLead: "Enter the six-digit code.",
+    secretLabel: "Secret",
+    codeLabel: "Code",
+    verify: "Verify",
+    totpError: "The code is incorrect.",
+    overviewHeading: "Overview",
+    signedIn: "The Operator is signed in.",
+    signOut: "Sign out",
+    qrAlt: "Verification code"
   }
 };

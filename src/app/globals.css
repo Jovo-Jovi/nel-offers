@@ -79,3 +79,46 @@ body {
 .site-main p {
   font-size: var(--nel-size-xl);
 }
+
+.operator-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--nel-space-12);
+  max-inline-size: calc(var(--nel-space-96) * 5);
+}
+
+.operator-form label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nel-space-4);
+}
+
+.operator-form input {
+  font: inherit;
+  color: inherit;
+  background: var(--nel-color-surface);
+  border: 1px solid var(--nel-color-border);
+  border-radius: var(--nel-radius-sm);
+  padding-inline: var(--nel-space-8);
+  padding-block: var(--nel-space-8);
+}
+
+.operator-form button {
+  font: inherit;
+  color: var(--nel-color-background);
+  background: var(--nel-color-primary);
+  border: 0;
+  border-radius: var(--nel-radius-sm);
+  padding-inline: var(--nel-space-16);
+  padding-block: var(--nel-space-8);
+}
+
+.operator-qr {
+  inline-size: calc(var(--nel-space-96) * 2);
+  block-size: auto;
+}
+
+.operator-secret {
+  overflow-wrap: anywhere;
+}
