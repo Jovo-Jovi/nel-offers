@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-15**
+**Next free id: CF-20**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -19,7 +19,12 @@ cell of any row is ever edited. Closed rows stay.
 | CF-08 | The NEL site address to link to is not confirmed. | Andrew (laboratory) | 2026-10-28 | publish switch | OPEN |
 | CF-09 | Access to the GoDaddy DNS for `nileegyptlabs.com` — who holds it, and when the `offers` CNAME can be added. | the human · Andrew (laboratory) | 2026-10-28 | go-live | OPEN |
 | CF-10 | The one or two Operator account holders are not named. The human creates their accounts after T02 and delivers access outside the repository. | Andrew (laboratory) · the human | 2026-10-28 | go-live | OPEN |
-| CF-11 | `guard:literals` reports only the first match per rule in each file. Certification holds — any violation fails the run — but a report can hide further findings. Fixed by T02. | builder | 2026-10-28 | T02 | OPEN |
-| CF-12 | `guard:design` does not read physical properties in JSX `style` objects (`marginLeft`), and its `dir=` rule also matches a variable named `dir`. `DESIGN_SYSTEM.md` §7 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | OPEN |
-| CF-13 | `guard:naming` reads SQL comments and string literals and flags the platform's `auth.users`, so the reviewer-authored migration fails it. `GLOSSARY.md` §4 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | OPEN |
+| CF-11 | `guard:literals` reports only the first match per rule in each file. Certification holds — any violation fails the run — but a report can hide further findings. Fixed by T02. | builder | 2026-10-28 | T02 | CLOSED (T02) |
+| CF-12 | `guard:design` does not read physical properties in JSX `style` objects (`marginLeft`), and its `dir=` rule also matches a variable named `dir`. `DESIGN_SYSTEM.md` §7 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | CLOSED (T02) |
+| CF-13 | `guard:naming` reads SQL comments and string literals and flags the platform's `auth.users`, so the reviewer-authored migration fails it. `GLOSSARY.md` §4 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | CLOSED (T02) |
 | CF-14 | Not-found responses (`/fr`, `/en/fr`, an unknown code) render the framework page: no `lang`, no `dir`, no catalogue copy. `DESIGN_SYSTEM.md` §8 requires a not-found state in the page's locale. | builder | 2026-10-28 | T04 | OPEN |
+| CF-15 | `finalise` deletes the uploaded object on every failure, and `attach_media_object` fails on a key that is already recorded, so a repeated finalise for one key deletes an object that a `MediaObject` row still references. No upload UI exists before T03. Fixed by T03. | builder | 2026-10-29 | T03 | OPEN |
+| CF-16 | `guard:naming` skips the filenames `media-name.ts` and `media-limits.ts` (UNRATIFIED residual repair in T02) because the T02 fence itself mandated names holding the bare noun `media` — a fence defect. T03 renames both files and removes the exemption. | reviewer · builder | 2026-10-29 | T03 | OPEN |
+| CF-17 | Vercel's GitHub app cannot see `Jovo-Jovi/nel-offers`: no preview per branch and no production deployment from `main`, so T02's "Vercel preview Ready" criterion could not be met. The human grants the app access to the repository and connects it in the Vercel project. | the human | 2026-10-29 | go-live | OPEN |
+| CF-18 | Vercel Hobby is for personal, non-commercial use under Vercel's terms, and NELO is client work (OD-02 item 2). The human decides before go-live whether the project moves to Pro. | the human | 2026-10-29 | go-live | OPEN |
+| CF-19 | T02 was run and reported before two of its preconditions held (an "Operator" row; the RLS proof 47/47). The proof and a sign-in through TOTP are attested by the human at the T03 handover and quoted in the T03 report. | the human · builder | 2026-10-29 | T03 | OPEN |

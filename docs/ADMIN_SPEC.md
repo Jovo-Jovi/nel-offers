@@ -10,6 +10,12 @@ Overview · CampaignOffers · Import · Media objects · Campaign settings · la
 sign out. Route segments: `overview`, `campaign-offers`, `import`, `media-objects`,
 `campaign-settings`, `sign-in`, `totp`.
 
+One protected layout checks the session (`aal2` and `is_operator()`) for every page except
+`sign-in` and `totp`. Every page has a skeleton loading state. The look is the application theme
+(OD-02 item 4): cards, clear primary buttons, and motion that confirms an action — a progress bar
+per upload, a switch that slides, a toast for each outcome — and none under
+`prefers-reduced-motion`.
+
 ## 2. Sign-in and TOTP
 
 1. **Sign-in** — email and password. One generic error for any failure ("email or password is
@@ -78,10 +84,17 @@ URL. Each is validated as in `DATA_MODEL.md` §2.1, with the error beside the fi
 form, the three links the public site will build (WhatsApp, call, NEL site) are shown so the
 Operator can try them.
 
+- **Card price switch** — "show the price on the home cards", on by default (OD-02 item 5).
+- **Campaign banner** — one image for the home hero (OD-02 item 6): choose, preview, upload with
+  the same browser checks and re-encoding as §5, replace, or remove. Removing deletes the object
+  in R2.
+
 ## 7. Publish switch
 
 - **On** requires every contact value and at least one `CampaignOffer`; a confirmation states
-  how many are visible today. Records `published_at` and `published_by`.
+  how many `CampaignOffer`s exist and that each shows only between its own dates. Records
+  `published_at` and `published_by`. Once on, the overview's counts — from the visibility
+  function — show how many are visible today.
 - **Off** is immediate after a confirmation. The public site shows the coming-soon state.
 
 ## 8. Copy
@@ -100,3 +113,8 @@ reviewer. No dashboard string carries a business value.
 - **Lost TOTP** — delete the account's factor in Supabase Auth; the Operator enrols again at
   the next sign-in.
 - **Lost password** — set a new password for the account in Supabase Auth.
+- **Enrol at once.** The first person to sign in with an account's password enrols its TOTP
+  factor, so each Operator signs in and enrols right after the account is created.
+- **Spec account** — one extra account, used only by end-to-end specs, created the same way; its
+  email, password and TOTP secret live only in `.env.local` as `E2E_OPERATOR_EMAIL`,
+  `E2E_OPERATOR_PASSWORD` and `E2E_OPERATOR_TOTP_SECRET`. It is removed at go-live.

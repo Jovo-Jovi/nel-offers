@@ -65,3 +65,23 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `check:r2` did not need `WHEN_REQUIRED` checksum settings.
 - Deviation: `next build` and `next start` still warn that a lockfile outside this repository was ignored. Both exited 0.
 - Deviation: the local env file has no `NEXT_PUBLIC_SITE_URL`. This task does not read that name.
+
+## 2026-10-29 — Reviewer session 3 (T02 verdict)
+
+- Fetched `t02-data-auth-storage` at `29f9cd52`. Re-ran the bundle verification (7/7 at LANDING
+  and HEAD), the four guards with their self-checks, lint, typecheck, the unit specs, a clean
+  build, the audit and a secret sweep of every T02 commit. Served the build: public pages set no
+  cookie, every response carries the nonce CSP and the static headers, operator responses add
+  `no-store` and `X-Robots-Tag`, an anonymous overview redirects to sign-in, both upload routes
+  answer 401, and nonces differ per request.
+- Re-probed the three guard gaps of T01 in a scratch tree; each is now caught. CF-11, CF-12 and
+  CF-13 close.
+- Read the proxy, the Operator gate, sign-in, TOTP, the R2 client and both upload routes. One
+  defect: a repeated finalise deletes a recorded object. Logged with the naming guard's filename
+  exemption (a T02 fence defect), the Vercel GitHub connection, Vercel Hobby's terms and the
+  unmet T02 preconditions.
+- Verdict T02: FAIL on missing evidence only — the RLS proof on the real project, a sign-in
+  through TOTP, the column check. The human attests them at the T03 handover; with them the gate
+  closes as PASS and PR #2 is merged. T03 issued with OD-02, migration 2 and its proof, rehearsed
+  on PostgreSQL 16 with a Supabase stub: presentation proof 17/17, RLS proof still 47/47, and
+  each fails on planted defects.

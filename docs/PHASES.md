@@ -10,8 +10,8 @@ ticked.
 |---|---|---|---|---|---|---|---|
 | P00 Prepare | — | — | — | — | **G0** OD-01 signed | — | 28 Oct |
 | P01 Foundation | **T01** | `t01-foundation` | 2 | reviewer only | **G1** | Boundary (public tree) · Bilingual | 29 Oct, morning |
-| P02 Data, sign-in, storage | **T02** | `t02-data-auth-storage` | 3 | Opus review before merge | **G2** | Boundary (schema, routes, bucket) | 29 Oct, afternoon |
-| P03 Operator dashboard | **T03** | `t03-dashboard` | 2 | reviewer only | **G3** | Boundary · Offer content (synthetic) · Data integrity · Bilingual | 30 Oct, morning |
+| P02 Data, sign-in, storage | **T02** | `t02-data-auth-storage` | 3 | waived by the human (OD-02) | **G2** | Boundary (schema, routes, bucket) | 29 Oct, afternoon |
+| P03 Operator dashboard | **T03** | `t03-dashboard` | 3 | waived by the human (OD-02) | **G3** | Boundary · Offer content (synthetic) · Data integrity · Bilingual | 30 Oct, morning |
 | P04 Public site and go-live | **T04** | `t04-public-golive` | 2 (DNS: OD-01 item 18) | reviewer only | **G4** launch | Offer content (real) · Boundary · Data integrity · Bilingual | 30 Oct, afternoon |
 
 "Reviewer only" on a Risk-2 task becomes "Sonnet review before merge" when the human asks.
@@ -25,20 +25,23 @@ ticked.
   Font package, tokens wired through `@theme inline`, the mark in the header. The four guards
   with `--self-check`. CI. `.gitattributes`, `.env.example`. Rendered evidence at both widths in
   both locales.
-- [ ] **T02 — Data, Operator sign-in, storage, headers.** Reviewer-authored migration (tables,
+- [x] **T02 — Data, Operator sign-in, storage, headers.** Reviewer-authored migration (tables,
   constraints, triggers, visibility and drift functions, `is_operator()`, RLS, the import
   apply function), applied by the human. Supabase clients (publishable key only). Operator
   sign-in, TOTP enrolment and verification, `aal2` enforcement. R2 presign and finalise route
   handlers; server-side presigning of view links. Security headers with nonce CSP. Vercel project with environment values set by the
   human; R2 CORS applied by the human. Boundary evidence for schema, routes and bucket.
-- [ ] **T03 — Operator dashboard.** Overview, CampaignOffers list with Remove, template
-  download, export, import with preview and confirm, media-object bulk upload with the media
-  edge controls, Campaign settings, publish switch. Unit specs for the parser and the name
+- [ ] **T03 — Operator dashboard.** The approved theme and font for the whole application
+  (OD-02 item 3). Migration 2 (card price switch, campaign banner). Overview, CampaignOffers list
+  with Remove, template download, export, import with preview and confirm, media-object bulk
+  upload with the media edge controls, Campaign settings with the price switch and the banner,
+  publish switch, skeletons and motion (OD-02 items 4, 10). Unit specs for the parser and the name
   rules; end-to-end specs on synthetic sheets and media; the round-trip property; the offer
   content check on synthetic data; `scan:media-objects`.
-- [ ] **T04 — Public site, the designer's UI, go-live.** Home with search, CampaignOffer page,
-  actions and links, not-found and coming-soon states, built to the designer's files within
-  `DESIGN_SYSTEM.md`. Rendered evidence and end-to-end specs in both locales and widths. Then
+- [ ] **T04 — Public site, the designer's UI, go-live.** Home and CampaignOffer page reproduced
+  from the approved design (`DESIGN_SYSTEM.md` §11) and wired to data: banner hero, search,
+  cards with the price switch, main media, gallery preview, end-date boxes, actions, localized
+  not-found and coming-soon states, skeletons, no overflow from 320 px. Rendered evidence and end-to-end specs in both locales and widths. Then
   §4 with the human.
 
 ## 3. Gate evidence

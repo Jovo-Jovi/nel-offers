@@ -7,10 +7,10 @@ State is taken from this file and the repository, never from conversation.
 
 | | |
 |---|---|
-| Phase | P02 Data, sign-in, storage |
-| Task in flight | T02 — Data, Operator sign-in, storage, headers (`t02-data-auth-storage`) |
-| Next | T03 — Operator dashboard |
-| Last verdict | T01 — PASS, 28 Oct 2026 |
+| Phase | P03 Operator dashboard |
+| Task in flight | T03 — Operator dashboard and the approved theme (`t03-dashboard`) |
+| Next | T04 — Public site from the approved design, go-live |
+| Last verdict | T02 — PASS, 29 Oct 2026, its last evidence human-attested at the T03 handover |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 
@@ -19,13 +19,16 @@ State is taken from this file and the repository, never from conversation.
 - Repository `Jovo-Jovi/nel-offers`, default branch `main`. Public from T01 until go-live, then
   private (OD-01 item 2); every write task checks the visibility first. Public-repository rules
   bind every commit.
-- Accounts held by the human: Vercel Pro (no project yet); Supabase project in Central EU
+- Accounts held by the human: Vercel Hobby, project `nel-offers`, region `fra1` (OD-02 item 2); Supabase project in Central EU
   (Frankfurt, `eu-central-1`); Cloudflare R2 bucket `nel-offers-media`, private, no custom domain, with a
   bucket-scoped read/write token. No key, URL with a key, or connection string is ever written
   into this repository or a chat.
 - Address at go-live: `offers.nileegyptlabs.com`, one CNAME at GoDaddy.
 - NEL artefacts: `src/styles/tokens.css` and `public/mark/nel-mark.png` only, at the hashes in
   `DESIGN_SYSTEM.md` §2.
+- Design: the designer's implementation at `tony-saleeb/nile` `e8f6df73`, approved by Andrew
+  (OD-02 item 3; `DESIGN_SYSTEM.md` §11).
+- Review: no Opus review (OD-02 item 1); the reviewer verifies every branch.
 - Template: `assets/templates/NELO_offers_template.xlsx`, SHA-256
   `23f88b52710d3bc283086a955ae405b018165247afd0595739600cc4bcc18fa1`.
 - Usage: every run is recorded by the next fence (`PHASES.md` §5); totals in
