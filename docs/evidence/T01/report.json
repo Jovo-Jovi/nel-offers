@@ -1,0 +1,61 @@
+{
+  "captures": [
+    {
+      "url": "http://localhost:3000/",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "lang": "ar",
+      "dir": "rtl",
+      "data-locale": "ar",
+      "cookieCount": 0,
+      "origins": [
+        "http://localhost:3000"
+      ]
+    },
+    {
+      "url": "http://localhost:3000/",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "lang": "ar",
+      "dir": "rtl",
+      "data-locale": "ar",
+      "cookieCount": 0,
+      "origins": [
+        "http://localhost:3000"
+      ]
+    },
+    {
+      "url": "http://localhost:3000/en",
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "lang": "en",
+      "dir": "ltr",
+      "data-locale": "en",
+      "cookieCount": 0,
+      "origins": [
+        "http://localhost:3000"
+      ]
+    },
+    {
+      "url": "http://localhost:3000/en",
+      "width": 1440,
+      "height": 900,
+      "status": 200,
+      "lang": "en",
+      "dir": "ltr",
+      "data-locale": "en",
+      "cookieCount": 0,
+      "origins": [
+        "http://localhost:3000"
+      ]
+    }
+  ],
+  "arRedirect": {
+    "url": "http://localhost:3000/ar",
+    "status": 308,
+    "location": "/"
+  }
+}

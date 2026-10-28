@@ -25,3 +25,13 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   rewritten, public-repository rules added as precedents.
 - Usage ledger added (`PHASES.md` §5, OD-01 item 19); T01 builds it and records the
   blueprint runs.
+
+## 2026-10-28 — T01 (builder)
+
+- LANDING: `3671648675a6fbdaf2317b4624586e1eb4fc52d1`.
+- Allocated PRECEDENTS base 0 + 29 rows = PR-01..PR-29, next free PR-30. Allocated CARRY_FORWARDS base 0 + 10 rows = CF-01..CF-10, next free CF-11.
+- `npm run guard:naming` exit 0. `npm run guard:design` exit 0. `npm run guard:literals` exit 0. `npm run guard:boundary` exit 0.
+- Self-checks exit 0. naming: string fail 2/2 pass 3/3, file fail 2/2 pass 3/3. design: string fail 5/5 pass 4/4, file fail 5/5 pass 4/4. literals: string fail 6/6 pass 3/3, file fail 6/6 pass 3/3. boundary: string fail 4/4 pass 4/4, file fail 4/4 pass 4/4.
+- `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run build` exit 0. `npm audit --omit=dev --audit-level=high` exit 0. `npm run evidence` exit 0.
+- Implements SECURITY_MODEL.md §1 and §7, DESIGN_SYSTEM.md §§3–8, DECISIONS.md OD-01 item 4, GLOSSARY.md §4, DATA_MODEL.md §6, BOUNDARY_MODEL.md §4 and §5, PHASES.md §5.
+- Deviation: the scaffold sets `cacheComponents`, which refuses `dynamicParams`. A locale segment outside `src/i18n/config.ts` is not found via `notFound()` in the locale layout. `next build` and `next start` warn that a lockfile outside this repository was ignored, and both exited 0.
