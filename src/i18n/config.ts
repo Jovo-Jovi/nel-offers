@@ -49,3 +49,11 @@ export function homePath(locale: Locale): string {
   }
   return `/${locale}`;
 }
+
+export function operatorPath(
+  locale: Locale,
+  segment: "sign-in" | "totp" | "overview",
+): string {
+  const prefix = locale === defaultLocale ? "" : `/${locale}`;
+  return `${prefix}/operator/${segment}`;
+}

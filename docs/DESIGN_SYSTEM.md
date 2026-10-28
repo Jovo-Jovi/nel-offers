@@ -78,11 +78,14 @@ Over `src/**/*.{ts,tsx,css}` (excluding `src/styles/tokens.css`):
 1. No physical property: CSS `margin-left|right`, `padding-left|right`, `left:`, `right:`,
    `border-left|right`, `text-align: left|right`, `float: left|right`; Tailwind `ml- mr- pl-
    pr- left- right- text-left text-right border-l border-r rounded-l rounded-r` and their
-   responsive or state variants.
+   responsive or state variants. In a JSX `style` object the camelCase forms count the same
+   (`marginLeft`, `paddingRight`, `left`, `right`, `borderLeft`, `textAlign: "left"`,
+   `float: "right"` and the like).
 2. No colour literal: `#rgb`, `#rrggbb`, `rgb(`, `rgba(`, `hsl(`, or a default Tailwind
    palette class (`bg-red-500` and the like).
 3. No `font-family` outside `src/styles/fonts.css`.
-4. No `dir=` attribute except on `<html>` and in `src/components/latin-run.tsx`.
+4. No `dir` JSX attribute except on `<html>` and in `src/components/latin-run.tsx`. A variable
+   or property that happens to be named `dir` is not an attribute.
 
 Certification as in `GLOSSARY.md` §4, with `--self-check`.
 

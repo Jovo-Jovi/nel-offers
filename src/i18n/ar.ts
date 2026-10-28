@@ -41,6 +41,26 @@ export const catalogue = {
   },
   a11y: {
     mark: "شعار معامل النيل مصر"
+  },
+  operator: {
+    signInHeading: "دخول المشغّل",
+    emailLabel: "البريد",
+    passwordLabel: "كلمة المرور",
+    submit: "دخول",
+    signInError: "البريد أو كلمة المرور غير صحيحة.",
+    recovery: "استعادة الدخول يقوم بها صاحب المشروع.",
+    enrolHeading: "تفعيل رمز التحقق",
+    verifyHeading: "رمز التحقق",
+    enrolLead: "امسح الرمز أو أدخل السر، ثم اكتب رمزًا من ستة أرقام.",
+    verifyLead: "اكتب رمزًا من ستة أرقام.",
+    secretLabel: "السر",
+    codeLabel: "الرمز",
+    verify: "تحقق",
+    totpError: "الرمز غير صحيح.",
+    overviewHeading: "نظرة عامة",
+    signedIn: "المشغّل مسجّل الدخول.",
+    signOut: "خروج",
+    qrAlt: "رمز التحقق"
   }
 };
 

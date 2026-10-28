@@ -7,10 +7,10 @@ State is taken from this file and the repository, never from conversation.
 
 | | |
 |---|---|
-| Phase | P01 Foundation |
-| Task in flight | T01 — Foundation and blueprint landing (`t01-foundation`) |
-| Next | T02 — Data, Operator sign-in, storage, headers |
-| Last verdict | none yet |
+| Phase | P02 Data, sign-in, storage |
+| Task in flight | T02 — Data, Operator sign-in, storage, headers (`t02-data-auth-storage`) |
+| Next | T03 — Operator dashboard |
+| Last verdict | T01 — PASS, 28 Oct 2026 |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 

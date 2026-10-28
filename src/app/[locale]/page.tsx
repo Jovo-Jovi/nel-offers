@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { homePath, isLocale, messagesFor, otherLocale } from "@/i18n/config";
 
@@ -15,13 +14,14 @@ export default async function HomePage({
   return (
     <>
       <header className="site-bar">
-        <Image
+        {/* CSP has no style-src, and next/image writes an inline style. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           className="site-mark"
           src="/mark/nel-mark.png"
           alt={messages.a11y.mark}
           width={537}
           height={752}
-          unoptimized
         />
         <div>
           <p className="site-name">{messages.site.name}</p>

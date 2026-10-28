@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-11**
+**Next free id: CF-15**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -19,3 +19,7 @@ cell of any row is ever edited. Closed rows stay.
 | CF-08 | The NEL site address to link to is not confirmed. | Andrew (laboratory) | 2026-10-28 | publish switch | OPEN |
 | CF-09 | Access to the GoDaddy DNS for `nileegyptlabs.com` — who holds it, and when the `offers` CNAME can be added. | the human · Andrew (laboratory) | 2026-10-28 | go-live | OPEN |
 | CF-10 | The one or two Operator account holders are not named. The human creates their accounts after T02 and delivers access outside the repository. | Andrew (laboratory) · the human | 2026-10-28 | go-live | OPEN |
+| CF-11 | `guard:literals` reports only the first match per rule in each file. Certification holds — any violation fails the run — but a report can hide further findings. Fixed by T02. | builder | 2026-10-28 | T02 | OPEN |
+| CF-12 | `guard:design` does not read physical properties in JSX `style` objects (`marginLeft`), and its `dir=` rule also matches a variable named `dir`. `DESIGN_SYSTEM.md` §7 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | OPEN |
+| CF-13 | `guard:naming` reads SQL comments and string literals and flags the platform's `auth.users`, so the reviewer-authored migration fails it. `GLOSSARY.md` §4 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | OPEN |
+| CF-14 | Not-found responses (`/fr`, `/en/fr`, an unknown code) render the framework page: no `lang`, no `dir`, no catalogue copy. `DESIGN_SYSTEM.md` §8 requires a not-found state in the page's locale. | builder | 2026-10-28 | T04 | OPEN |

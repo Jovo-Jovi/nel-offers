@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import {
-  directionFor,
-  isLocale,
-  localeCodes,
-  messagesFor,
-} from "@/i18n/config";
+import { directionFor, isLocale, messagesFor } from "@/i18n/config";
 import "../globals.css";
-
-export function generateStaticParams() {
-  return localeCodes.map((locale) => ({ locale }));
-}
 
 export async function generateMetadata({
   params,
@@ -39,8 +31,15 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) {
     notFound();
   }
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
-    <html lang={locale} dir={directionFor(locale)} data-locale={locale}>
+    <html
+      lang={locale}
+      dir={directionFor(locale)}
+      data-locale={locale}
+      nonce={nonce}
+      suppressHydrationWarning
+    >
       <body>{children}</body>
     </html>
   );
