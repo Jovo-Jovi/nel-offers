@@ -1,1 +1,81 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/fonts.css";
+
+@theme inline {
+  --color-primary: var(--nel-color-primary);
+  --color-primary-strong: var(--nel-color-primary-strong);
+  --color-accent: var(--nel-color-accent);
+  --color-background: var(--nel-color-background);
+  --color-surface: var(--nel-color-surface);
+  --color-border: var(--nel-color-border);
+  --color-text: var(--nel-color-text);
+  --color-muted: var(--nel-color-muted);
+  --color-success: var(--nel-color-success);
+  --color-warning: var(--nel-color-warning);
+  --color-error: var(--nel-color-error);
+
+  --text-xs: var(--nel-size-xs);
+  --text-sm: var(--nel-size-sm);
+  --text-base: var(--nel-size-base);
+  --text-lg: var(--nel-size-lg);
+  --text-xl: var(--nel-size-xl);
+  --text-2xl: var(--nel-size-2xl);
+  --text-3xl: var(--nel-size-3xl);
+  --text-4xl: var(--nel-size-4xl);
+  --text-5xl: var(--nel-size-5xl);
+
+  --spacing-4: var(--nel-space-4);
+  --spacing-8: var(--nel-space-8);
+  --spacing-12: var(--nel-space-12);
+  --spacing-16: var(--nel-space-16);
+  --spacing-24: var(--nel-space-24);
+  --spacing-32: var(--nel-space-32);
+  --spacing-48: var(--nel-space-48);
+  --spacing-64: var(--nel-space-64);
+  --spacing-96: var(--nel-space-96);
+
+  --radius-none: var(--nel-radius-none);
+  --radius-sm: var(--nel-radius-sm);
+  --radius-md: var(--nel-radius-md);
+  --radius-panel: var(--nel-radius-panel);
+  --radius-well: var(--nel-radius-well);
+  --radius-full: var(--nel-radius-full);
+}
+
+body {
+  margin-inline: 0;
+  margin-block: 0;
+  background: var(--nel-color-background);
+  color: var(--nel-color-text);
+  line-height: var(--nel-line-height-body);
+}
+
+.site-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--nel-space-16);
+  padding-inline: var(--nel-space-16);
+  padding-block: var(--nel-space-16);
+}
+
+.site-mark {
+  block-size: var(--nel-space-48);
+  inline-size: calc(var(--nel-space-48) * 537 / 752);
+}
+
+.site-name {
+  font-size: var(--nel-size-lg);
+  font-weight: 600;
+}
+
+.site-main,
+.site-footer {
+  padding-inline: var(--nel-space-16);
+  padding-block: var(--nel-space-16);
+  text-align: start;
+}
+
+.site-main p {
+  font-size: var(--nel-size-xl);
+}
