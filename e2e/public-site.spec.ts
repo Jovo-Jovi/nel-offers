@@ -185,7 +185,7 @@ spec("search and the price switch", async ({ page, browser }) => {
   const english = messagesFor(prefixedLocale);
   await page.goto(homePath(defaultLocale));
   const search = page.getByRole("searchbox", { name: arabic.home.searchPlaceholder });
-  await search.fill("\u062A\u062C\u0631\u0628\u0649 01");
+  await search.fill("\u062A\u062C\u0631\u064A\u0628\u0649 01");
   await expect(page.locator("[data-code='SYN-001']")).toBeVisible();
   await expect(page.locator("[data-code='SYN-002']")).toBeHidden();
   await page.goto(homePath(prefixedLocale));
