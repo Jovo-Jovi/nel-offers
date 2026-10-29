@@ -89,19 +89,24 @@ export async function readCampaignRow(supabase: SupabaseClient): Promise<PublicC
   if (!data) return null;
   const row = data as Record<string, unknown>;
   if (typeof row.is_published !== "boolean" || typeof row.show_card_price !== "boolean") halt();
-  if (typeof row.whatsapp_display !== "string" || typeof row.whatsapp_digits !== "string") halt();
-  if (typeof row.hotline_display !== "string" || typeof row.hotline_dial !== "string") halt();
-  if (typeof row.nel_site_url !== "string") halt();
+  const whatsappDisplay = row.whatsapp_display === null ? "" : row.whatsapp_display;
+  const whatsappDigits = row.whatsapp_digits === null ? "" : row.whatsapp_digits;
+  const hotlineDisplay = row.hotline_display === null ? "" : row.hotline_display;
+  const hotlineDial = row.hotline_dial === null ? "" : row.hotline_dial;
+  const nelSiteUrl = row.nel_site_url === null ? "" : row.nel_site_url;
+  if (typeof whatsappDisplay !== "string" || typeof whatsappDigits !== "string") halt();
+  if (typeof hotlineDisplay !== "string" || typeof hotlineDial !== "string") halt();
+  if (typeof nelSiteUrl !== "string") halt();
   const bannerId = row.banner_media_object_id;
   if (bannerId !== null && typeof bannerId !== "string") halt();
   return {
     isPublished: row.is_published,
     showCardPrice: row.show_card_price,
-    whatsappDisplay: row.whatsapp_display,
-    whatsappDigits: row.whatsapp_digits,
-    hotlineDisplay: row.hotline_display,
-    hotlineDial: row.hotline_dial,
-    nelSiteUrl: row.nel_site_url,
+    whatsappDisplay,
+    whatsappDigits,
+    hotlineDisplay,
+    hotlineDial,
+    nelSiteUrl,
     bannerId,
   };
 }

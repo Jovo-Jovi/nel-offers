@@ -5,7 +5,9 @@ export const catalogue: Catalogue = {
   site: {
     name: "Nile Egypt Labs",
     campaignTitle: "Opening offers",
-    pageNotFound: "Page not found."
+    pageNotFound: "Page not found.",
+    errorMessage: "This page could not be shown right now.",
+    tryAgain: "Try again"
   },
   home: {
     heading: "Analysis offers",
