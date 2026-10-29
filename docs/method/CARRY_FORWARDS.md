@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-37**
+**Next free id: CF-38**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -43,5 +43,6 @@ cell of any row is ever edited. Closed rows stay.
 | CF-32 | `dashboard-campaign-offers-ar-1440.png`, `dashboard-campaign-offers-ar-390.png` and `dashboard-overview-en-1440.png` captured the loading skeleton, not the page. Fixed by T05-F. | builder | 2026-10-29 | T05 | CLOSED (T05-F) |
 | CF-33 | Dashboard v2 falls short of `ADMIN_SPEC.md` §10: the CampaignOffer cards show the words Empty or Assigned with "Add" on every slot — no thumbnail when filled and no "Replace"; the label beside the show switch is the status ("Hidden" beside a switch that is on); the bottom bar's labels are cut off at 390 px in both locales; a missing start date reads "None"; queue sizes have no unit. Fixed by T05-F. | builder | 2026-10-29 | T05 | CLOSED (T05-F) |
 | CF-34 | T05's report gave no output for steps 1–2 ("already done on this branch"). Verified at the T05 verdict: anonymous `ls-remote` and API 200; `24e62f5` an ancestor; LANDING's parent `dcdef88` (main), whose ledgers read `29 9 ['30']` and `30 ['31']`; the bundle 17/17 at LANDING. From T05-F on, a report that omits a step's output is refused. | builder | 2026-10-29 | T05 | CLOSED (T05) |
-| CF-35 | On the Import page, choosing or dropping a workbook changes nothing on screen — no name, no sign that a sheet is held — and the preview waits for a button in the next step, so the human, testing on the Vercel address, found that "nothing is selected". The parser reads sheets written by other tools (reviewer probe: openpyxl and LibreOffice files, 0 errors). Fixed by T05-F2. | builder | 2026-10-29 | T05 | OPEN |
-| CF-36 | The human asked what "مجدول" means and asked for motion on every action: the status words need plain names and a one-line legend, and pending actions and removals need visible motion (`ADMIN_SPEC.md` §§1 and 10). Fixed by T05-F2. | builder | 2026-10-29 | T05 | OPEN |
+| CF-35 | On the Import page, choosing or dropping a workbook changes nothing on screen — no name, no sign that a sheet is held — and the preview waits for a button in the next step, so the human, testing on the Vercel address, found that "nothing is selected". The parser reads sheets written by other tools (reviewer probe: openpyxl and LibreOffice files, 0 errors). Fixed by T05-F2. | builder | 2026-10-29 | T05 | CLOSED (T05-F2) |
+| CF-36 | The human asked what "مجدول" means and asked for motion on every action: the status words need plain names and a one-line legend, and pending actions and removals need visible motion (`ADMIN_SPEC.md` §§1 and 10). Fixed by T05-F2. | builder | 2026-10-29 | T05 | CLOSED (T05-F2) |
+| CF-37 | Three small gaps on the Import page, found at the T05-F2 verdict: when the preview or confirm request fails without a JSON answer (a network error or a platform error page), `src/components/import-panel.tsx` keeps its spinner and says nothing; the English error summary reads "1 errors"; the error table's first column is headed "Column" but shows the row and the column. For a polish task after launch. | builder | 2026-10-29 | — | OPEN |
