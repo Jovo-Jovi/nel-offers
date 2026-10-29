@@ -247,6 +247,8 @@ shimmer; no shimmer under `prefers-reduced-motion`.
 | `a11y.closePreview` | إغلاق | Close | draft |
 | `a11y.banner` | صورة حملة معامل النيل مصر | Nile Egypt Labs campaign banner | draft |
 | `site.pageNotFound` | الصفحة غير موجودة. | Page not found. | draft (OD-03 item 3) |
+| `site.errorMessage` | تعذّر عرض هذه الصفحة الآن. | This page could not be shown right now. | draft (CF-38) |
+| `site.tryAgain` | حاول مرة أخرى | Try again | draft (CF-38) |
 
 ### 11.1 Wiring decisions (T04)
 
@@ -307,4 +309,9 @@ suffix so that nothing compiles it).
   and `home.comingSoon` in the hero's text cell. Nothing visible today: `home.nothingVisible` in the
   grid panel. Not found: status 404, the header and footer, the back link, and
   `campaignOffer.notFound` for an unknown or hidden code or `site.pageNotFound` for any other
-  unknown path, in the URL's locale (§8; CF-14).
+  unknown path, in the URL's locale (§8; CF-14). Contact values not set yet (right after the
+  synthetic reset): the page renders and leaves out the lab-site button, the hotline, WhatsApp and
+  the action buttons that need them. Error: a page that fails to render shows our own error state
+  in the theme, never the framework's built-in page (which carries an inline style the Content
+  Security Policy blocks) — `site.errorMessage`, a `site.tryAgain` button and the link home, in the
+  URL's locale; above the locale layout, both languages, Arabic first (CF-38).

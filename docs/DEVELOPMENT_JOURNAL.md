@@ -362,3 +362,16 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - `report.mjs --check` exited 0. The secret sweep printed nothing. `git diff --name-only` from LANDING to HEAD printed nothing before this entry. CI is not attested.
 - Deviation: earlier gate reads were not all zero (`campaign_offers=7 not_synthetic=1 media_objects=5`, then `campaign_offers=0 media_objects=1 orphans=0`). The reset was not run until this all-zero read.
 - Deviation: one anonymous `ls-remote` during the resume could not resolve github.com (exit 128, `api status=000`). The step 1 check before this reset exited 0 with `api status=200`.
+
+## 2026-10-29 — Reviewer session 12 (go-live 1 verdict, the empty-contacts crash)
+
+- Fetched `go-live-1` at `5fea78c` (PR #9). Compared the ledger changes, the journal entries and the
+  usage record with the fence (exact); only the four ledger files changed. The runner and the scan
+  show the project empty: the gate read all zero before and after the reset, the reset's row all
+  zero, `SCAN objects=0`. CI success on `5fea78c` read from GitHub.
+- Verdict go-live 1: PASS.
+- The human then saw React error 441 and a Content Security Policy message on the Vercel address.
+  Cause, read in the code: `readCampaignRow` refuses the empty contact values the reset leaves, so
+  every public page throws and Next.js shows its built-in error page, whose inline style the policy
+  blocks. T05-F3 issued (CF-38). Before the reset the human removed a leftover MediaObject (the
+  banner); the scan confirms nothing is left in R2.
