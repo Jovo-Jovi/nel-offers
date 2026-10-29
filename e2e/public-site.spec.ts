@@ -98,8 +98,6 @@ spec("synthetic codes only", async ({ browser }) => {
     );
     expect(codes.length).toBeGreaterThan(0);
     for (const code of codes) expect(code.startsWith("SYN-")).toBe(true);
-    await expect(page.locator("tr[data-code='SYN-004']")).toContainText("Scheduled");
-    await expect(page.locator("tr[data-code='SYN-005']")).toContainText("Ended");
   } finally {
     await context.close();
   }

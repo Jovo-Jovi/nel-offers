@@ -7,7 +7,6 @@ import {
   useEffect,
   useRef,
   useState,
-  type KeyboardEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
@@ -85,6 +84,23 @@ export function GalleryPreview({
   };
 
   useEffect(() => {
+    if (!open) return;
+    function onKey(event: globalThis.KeyboardEvent) {
+      const forward = locale === defaultLocale ? event.key === "ArrowLeft" : event.key === "ArrowRight";
+      const backward = locale === defaultLocale ? event.key === "ArrowRight" : event.key === "ArrowLeft";
+      if (!forward && !backward) return;
+      event.preventDefault();
+      setIndex((current) => {
+        const next = current + (forward ? 1 : -1);
+        if (next < 0 || next >= pictures.length) return current;
+        return next;
+      });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, locale, pictures.length]);
+
+  useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog || !open) return;
     document.documentElement.classList.add("public-scroll-lock");
@@ -98,18 +114,6 @@ export function GalleryPreview({
   function onDialogClose() {
     setOpen(false);
     openerRef.current?.focus();
-  }
-
-  function onKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
-    const nextKey = locale === defaultLocale ? "ArrowLeft" : "ArrowRight";
-    const previousKey = locale === defaultLocale ? "ArrowRight" : "ArrowLeft";
-    if (event.key === nextKey) {
-      event.preventDefault();
-      move(1);
-    } else if (event.key === previousKey) {
-      event.preventDefault();
-      move(-1);
-    }
   }
 
   function onPointerDown(event: PointerEvent<HTMLDialogElement>) {
@@ -148,7 +152,6 @@ export function GalleryPreview({
         ref={dialogRef}
         className="public-preview bg-transparent p-0"
         onClose={onDialogClose}
-        onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
