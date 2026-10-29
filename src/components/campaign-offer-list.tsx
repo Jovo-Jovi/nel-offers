@@ -241,7 +241,7 @@ export function CampaignOfferList({
                       <ImageIcon className="size-6 text-muted" aria-hidden="true" />
                     )}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div data-names className="min-w-40 flex-1">
                     <p className="flex flex-wrap items-center gap-2 text-sm">
                       <LatinRun>{row.code}</LatinRun>
                       <span className={`rounded-button px-2 py-1 text-xs ${statusChip(row.status)}`}>
@@ -273,19 +273,21 @@ export function CampaignOfferList({
                       </span>
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span data-shown-label className="text-sm">
-                      {messages.operator.shownLabel}
-                    </span>
-                    {pending === row.id ? (
-                      <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-                    ) : null}
-                    <SlideSwitch
-                      checked={row.status !== "off"}
-                      disabled={pending === row.id}
-                      label={messages.operator.shownLabel}
-                      onToggle={() => void toggleShown(row)}
-                    />
+                  <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
+                    <div className="flex items-center gap-2">
+                      <span data-shown-label className="text-sm">
+                        {messages.operator.shownLabel}
+                      </span>
+                      {pending === row.id ? (
+                        <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                      ) : null}
+                      <SlideSwitch
+                        checked={row.status !== "off"}
+                        disabled={pending === row.id}
+                        label={messages.operator.shownLabel}
+                        onToggle={() => void toggleShown(row)}
+                      />
+                    </div>
                     <div className="relative">
                       <button
                         type="button"

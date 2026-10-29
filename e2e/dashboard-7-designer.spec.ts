@@ -75,6 +75,31 @@ spec("card v3, red removals, centred dialogs and the library", async ({ page, br
         expect(Math.abs(box.width - boxes[0].width)).toBeLessThanOrEqual(1);
       }
       if (locale === "ar" && width === 1440) await shot(page, "dashboard-campaign-offers-ar-1440.png");
+      const cards = page.locator("[data-code]");
+      const cardCount = await cards.count();
+      expect(cardCount).toBeGreaterThan(0);
+      const nameWidths: number[] = [];
+      for (let index = 0; index < cardCount; index += 1) {
+        const entry = cards.nth(index);
+        const names = entry.locator("[data-names]");
+        const namesBox = await names.boundingBox();
+        expect(namesBox).toBeTruthy();
+        if (!namesBox) continue;
+        nameWidths.push(namesBox.width);
+        expect(namesBox.width).toBeGreaterThanOrEqual(160);
+        const lines = await names.locator("p").nth(1).evaluate((node) => {
+          const lineHeight = Number.parseFloat(getComputedStyle(node).lineHeight);
+          return node.getBoundingClientRect().height / lineHeight;
+        });
+        expect(lines).toBeLessThanOrEqual(2.05);
+        if (width < 640) {
+          const toggle = await entry.locator(".nel-switch").boundingBox();
+          expect(toggle).toBeTruthy();
+          if (toggle) expect(toggle.y).toBeGreaterThanOrEqual(namesBox.y + namesBox.height - 1);
+        }
+      }
+      console.log(`names-width ${locale} ${width} ${Math.min(...nameWidths)}`);
+      if (locale === "en" && width === 390) await shot(page, "dashboard-campaign-offers-en-390.png");
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits).toBe(true);
       for (const name of tileNames[locale]) await expect(card.getByText(name, { exact: true })).toBeVisible();

@@ -628,11 +628,16 @@ async function assertFloatingHeader(page: Page, width: number, locale: Locale) {
   expect(radius).toBeGreaterThanOrEqual(box.height / 2 - 0.5);
   const inset = width >= 768 ? 24 : 12;
   expect(box.y).toBeGreaterThanOrEqual(inset - 1);
+  const panel = page.locator("section").first().locator("div").first();
+  const panelBox = await panel.boundingBox();
+  expect(panelBox).toBeTruthy();
+  if (panelBox) {
+    expect(Math.abs(box.x - panelBox.x)).toBeLessThanOrEqual(2);
+    expect(Math.abs(box.x + box.width - (panelBox.x + panelBox.width))).toBeLessThanOrEqual(2);
+  }
   const section = await page.locator("section").first().boundingBox();
   expect(section).toBeTruthy();
   if (section) {
-    expect(Math.abs(box.x - section.x)).toBeLessThanOrEqual(2);
-    expect(Math.abs(box.x + box.width - (section.x + section.width))).toBeLessThanOrEqual(2);
     const gap = section.y - (box.y + box.height);
     expect(gap).toBeGreaterThanOrEqual(width >= 1440 ? 24 : 16);
   }
