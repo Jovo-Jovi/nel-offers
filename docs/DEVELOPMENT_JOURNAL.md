@@ -178,3 +178,19 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 ## 2026-10-29 — T04 (gate row)
 
 - Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0. `media_objects` equals `SCAN objects=5`. The builder did not run SQL.
+
+## 2026-10-29 — Reviewer session 6 (T04 verdict)
+
+- Fetched `t04-public-golive` at `b5413672`. Re-ran the bundle verification (23/23 at LANDING
+  and HEAD), compared the landed row and journal entry with the fence (exact), and re-ran a clean
+  install, the four guards with their self-checks, lint, typecheck, the unit specs (36) and the
+  audit. Served the build: public pages set no cookie and carry no `style` attribute; `/fr` and
+  `/en/nope` answer 404; `/ar` and `/ar/x` answer 404 where T01 answered 308. Viewed all 16
+  screenshots beside the approved ones.
+- The pages follow the approved design: header with the mark, hero, card grid, CampaignOffer
+  layout, price card, date boxes, the mobile dock, mirrored arrows. Accepted deviation: the proxy
+  reads one CampaignOffer through RLS so that hidden codes and unknown paths keep a 404 status.
+- Findings: the `/ar` redirect lost; the gallery preview shows no image; an empty band under the
+  main media; the banner and coming-soon evidence not showing their states.
+- Verdict T04: FAIL. T04-F issued. CF-14 (localized not-found) and CF-17 (Vercel can see the
+  repository; the PR shows a Vercel deployment) close.

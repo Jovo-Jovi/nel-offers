@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-26**
+**Next free id: CF-30**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -22,10 +22,10 @@ cell of any row is ever edited. Closed rows stay.
 | CF-11 | `guard:literals` reports only the first match per rule in each file. Certification holds — any violation fails the run — but a report can hide further findings. Fixed by T02. | builder | 2026-10-28 | T02 | CLOSED (T02) |
 | CF-12 | `guard:design` does not read physical properties in JSX `style` objects (`marginLeft`), and its `dir=` rule also matches a variable named `dir`. `DESIGN_SYSTEM.md` §7 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | CLOSED (T02) |
 | CF-13 | `guard:naming` reads SQL comments and string literals and flags the platform's `auth.users`, so the reviewer-authored migration fails it. `GLOSSARY.md` §4 amended by T02; guard fixed by T02. | reviewer · builder | 2026-10-28 | T02 | CLOSED (T02) |
-| CF-14 | Not-found responses (`/fr`, `/en/fr`, an unknown code) render the framework page: no `lang`, no `dir`, no catalogue copy. `DESIGN_SYSTEM.md` §8 requires a not-found state in the page's locale. | builder | 2026-10-28 | T04 | OPEN |
+| CF-14 | Not-found responses (`/fr`, `/en/fr`, an unknown code) render the framework page: no `lang`, no `dir`, no catalogue copy. `DESIGN_SYSTEM.md` §8 requires a not-found state in the page's locale. | builder | 2026-10-28 | T04 | CLOSED (T04) |
 | CF-15 | `finalise` deletes the uploaded object on every failure, and `attach_media_object` fails on a key that is already recorded, so a repeated finalise for one key deletes an object that a `MediaObject` row still references. No upload UI exists before T03. Fixed by T03. | builder | 2026-10-29 | T03 | CLOSED (T03) |
 | CF-16 | `guard:naming` skips the filenames `media-name.ts` and `media-limits.ts` (UNRATIFIED residual repair in T02) because the T02 fence itself mandated names holding the bare noun `media` — a fence defect. T03 renames both files and removes the exemption. | reviewer · builder | 2026-10-29 | T03 | CLOSED (T03) |
-| CF-17 | Vercel's GitHub app cannot see `Jovo-Jovi/nel-offers`: no preview per branch and no production deployment from `main`, so T02's "Vercel preview Ready" criterion could not be met. The human grants the app access to the repository and connects it in the Vercel project. | the human | 2026-10-29 | go-live | OPEN |
+| CF-17 | Vercel's GitHub app cannot see `Jovo-Jovi/nel-offers`: no preview per branch and no production deployment from `main`, so T02's "Vercel preview Ready" criterion could not be met. The human grants the app access to the repository and connects it in the Vercel project. | the human | 2026-10-29 | go-live | CLOSED (T04) |
 | CF-18 | Vercel Hobby is for personal, non-commercial use under Vercel's terms, and NELO is client work (OD-02 item 2). The human decides before go-live whether the project moves to Pro. | the human | 2026-10-29 | go-live | OPEN |
 | CF-19 | T02 was run and reported before two of its preconditions held (an "Operator" row; the RLS proof 47/47). The proof and a sign-in through TOTP are attested by the human at the T03 handover and quoted in the T03 report. | the human · builder | 2026-10-29 | T03 | CLOSED (T03) |
 | CF-20 | Migration 1's `apply_campaign_import` refused a stale preview with SQLSTATE `40001`, which PostgREST retries without end. T03's stale-confirm spec left retrying transactions on the live project, and the confirm route hid them behind an 8-second abort. A reviewer SQL defect. Fixed by `20261029020000_nelo_import_conflict.sql` (`PT409`) and T03-F; the human terminated the retrying backends. | reviewer · builder · the human | 2026-10-29 | T03 | CLOSED (T03-F) |
@@ -34,3 +34,7 @@ cell of any row is ever edited. Closed rows stay.
 | CF-23 | The four T03 sign-in screenshots were taken with the spec session and show the overview, so the restyled sign-in page has no rendered evidence. Fixed by T03-F. | builder | 2026-10-29 | T03 | CLOSED (T03-F) |
 | CF-24 | `f79ceae` (the TOTP QR size bound in `src/lib/totp-pane.ts`, 100 kB → 500 kB) reached `main` through PR #3 outside any fence. Reviewed at the T03 verdict: it changes that bound only. | the human | 2026-10-29 | — | CLOSED (T03) |
 | CF-25 | T03-F's report gave guard results from before its last edit: `ba78f39` failed `guard:naming` in CI (a spec helper named with the bare noun "offer"). Fixed at `cae7457`; CI green. From T04 on, the checks are re-run after the last commit, on the tree that is pushed. | builder | 2026-10-29 | — | CLOSED (T03-F) |
+| CF-26 | T04's proxy step rewrites `/ar` and `/ar/...` to the not-found page before the locale redirect runs, so they answer 404 instead of T01's 308 to the unprefixed address. Fixed by T04-F. | builder | 2026-10-29 | T04 | OPEN |
+| CF-27 | T04's gallery-preview screenshot shows the dimmed page, the buttons and the position line but no enlarged image, and the preview spec never checks that the image loaded or fills the viewport. Fixed by T04-F. | builder | 2026-10-29 | T04 | OPEN |
+| CF-28 | On the CampaignOffer page the main-media frame shows an empty band below the media (about 45 px at 1440) and a gap under the image — the approved design's caption space, kept after the caption was removed. Fixed by T04-F. | builder | 2026-10-29 | T04 | OPEN |
+| CF-29 | T04's evidence does not show two states: the synthetic banner is a tiny white image, so the hero's image cell looks empty, and `coming-soon-ar-390.png` captured the loading skeleton. Fixed by T04-F. | builder | 2026-10-29 | T04 | OPEN |

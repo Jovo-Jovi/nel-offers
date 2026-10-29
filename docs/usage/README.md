@@ -11,23 +11,23 @@ Reviewer runs are measured from the reviewer's own session records once each ans
 complete.
 Not in these totals: any run not recorded in runs.jsonl.
 
-Runs: 6 · Not reported: 0 · Last run: 2026-10-29T01:08:59Z
+Runs: 7 · Not reported: 0 · Last run: 2026-10-29T02:25:07Z
 
 ## Total
 | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- |
-| 6 | 626 | 883,538 | 120,948,015 | 2,652,319 | — |
+| 7 | 686 | 938,035 | 137,421,558 | 3,261,340 | — |
 
 ## By model
 | Tool | Model | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| claude-app | claude-opus-5-5 | 6 | 626 | 883,538 | 120,948,015 | 2,652,319 | — |
+| claude-app | claude-opus-5-5 | 7 | 686 | 938,035 | 137,421,558 | 3,261,340 | — |
 
 ## By stage
 | Stage | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- | --- |
 | blueprint | 3 | 228 | 529,991 | 35,188,256 | 937,208 | — |
-| reviewer | 3 | 398 | 353,547 | 85,759,759 | 1,715,111 | — |
+| reviewer | 4 | 458 | 408,044 | 102,233,302 | 2,324,132 | — |
 
 ## By task
 | Task | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
@@ -36,3 +36,4 @@ Runs: 6 · Not reported: 0 · Last run: 2026-10-29T01:08:59Z
 | T01 | 1 | 68 | 103,997 | 19,968,375 | 126,880 | — |
 | T02 | 1 | 220 | 185,265 | 40,662,863 | 1,063,122 | — |
 | T03 | 1 | 110 | 64,285 | 25,128,521 | 525,109 | — |
+| T03-F | 1 | 60 | 54,497 | 16,473,543 | 609,021 | — |
