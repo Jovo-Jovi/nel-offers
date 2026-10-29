@@ -291,9 +291,10 @@ suffix so that nothing compiles it).
 - **Header and footer.** Header: mark, `site.name`, the page subtitle (`header.homeSubtitle` or
   `header.campaignOfferSubtitle`), and `header.labSite` opening `nel_site_url` in a new tab (omitted
   while `nel_site_url` is not set). The header is a floating pill (OD-05 item 1): fully rounded,
-  inset from the page's top and inline edges (12 px, 24 px from `md`), sticky at that inset while the
-  page scrolls, on `surface` with the theme's card shadow and border; the content scrolls beneath it
-  with a matching top offset. No horizontal overflow from 320 px; below `sm` the subtitle may be
+  12 px from the top (24 px from `md`), sticky at that inset while the page scrolls, on `surface` with
+  the theme's card shadow and border, and exactly as wide as the page content below it (the same
+  container and inline padding as the sections); 16 px (24 px from `md`) separate it from the first
+  section (T06-F). No horizontal overflow from 320 px; below `sm` the subtitle may be
   hidden, never the mark, the site name or the lab-site button. Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
   where the designer has its page line, and the language switch.
 - **Gallery preview keys.** Arrow keys follow the screen: in Arabic the left arrow goes to the next

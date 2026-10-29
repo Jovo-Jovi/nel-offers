@@ -415,3 +415,19 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
 - Deviation: the suite rewrote `docs/evidence/T05` and `docs/evidence/T05-F2`. Those bytes were restored before the implementation commit, so those folders are unchanged.
 - Deviation: the campaign was already published when the specs started (CF-40). The campaign spec confirms the coming-soon dialog first in that case, then reads the publish dialog, and still leaves the campaign unpublished.
+
+## 2026-10-29 — Reviewer session 14 (T06 verdict)
+
+- Fetched `t06-designer-changes` at `2400ecf` (PR #11). Verified the bundle (5/5 at LANDING and
+  HEAD), compared the carry-forward changes, the journal entries and the usage records with the
+  fence (exact); `record.mjs` differs from `main` only in `T0[1-6]`; nothing under `supabase/`,
+  `scripts/sql/`, the dependencies or earlier evidence changed. Re-ran the four guards, lint,
+  typecheck and the unit specs (39). Read the dialog centring, the red remove classes, the import
+  catch and the error page's isolation. Viewed the eight screenshots. CI success on `2400ecf` read
+  from GitHub.
+- Findings: the slot tiles are circles and reach about 210 px at 1440 (the spec named no size); on
+  touch screens their Replace and Remove are invisible yet tappable; the floating header is wider
+  than the content and touches it; one screenshot caught the library's fade-in.
+- Verdict T06: FAIL. T06-F issued with `ADMIN_SPEC.md` §10 and `DESIGN_SYSTEM.md` §11.1 amended.
+  CF-37 and CF-39 close: the import panel recovers from a non-JSON answer and the error page isolates
+  its English runs.

@@ -172,11 +172,14 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
     dates (`Until <end>` or `<start> – <end>`). At the inline end: the show switch with its own label,
     and a "more" button (a ⋮ icon with an accessible name) whose menu holds **Remove** for the
     `CampaignOffer`, in red.
-  - **Media strip.** Below the head, the five slots as five equal square tiles in one row at every
-    width from 320 px, each with its slot name under it: main video, main image, image 1, image 2,
-    image 3. A filled tile shows its thumbnail; on hover or focus — and on tap on touch screens — it
-    offers **Replace** and **Remove** (red). An empty tile has a dashed border and a "+" mark and
-    opens the media page with this code and slot chosen.
+  - **Media strip.** Below the head, the five slots as five equal squares with a 12 px corner
+    radius (`rounded-xl`; never round), in one row at every width from 320 px: the tiles share the
+    row equally up to 88 px each and the row sits at the inline start; each has its slot name under
+    it: main video, main image, image 1, image 2, image 3 (T06-F). A filled tile shows its
+    thumbnail; with a pointer that hovers, hover or focus reveals **Replace** and **Remove** (red);
+    on a screen without hover both are always shown under the thumbnail — a control is never
+    invisible while it can be tapped. An empty tile has a dashed border and a "+" mark and opens the
+    media page with this code and slot chosen.
   - **Look.** Rounded card with the theme's shadow and border, comfortable padding, a slight lift on
     hover; no full-width button rows. The slot names are "الفيديو الرئيسي · الصورة الرئيسية · صورة 1 ·
     صورة 2 · صورة 3" / "Main video · Main image · Image 1 · Image 2 · Image 3" everywhere in the
