@@ -33,8 +33,10 @@ reviewer rehearsal, Opus review before merge (T02).
   `auth.uid()` is in `"Operator"` **and** the JWT's `aal` claim is `aal2`. Every Operator policy
   uses it.
 - **Public reads** — `anon` may select a `CampaignOffer` only when it is visible
-  (`DATA_MODEL.md` §3), the published `Campaign` contact values, and the `CampaignOfferMedia`
-  and `MediaObject` rows linked to a visible `CampaignOffer`. Nothing else.
+  (`DATA_MODEL.md` §3), the `Campaign` row's granted columns (contact values, publish flag,
+  card-price switch, banner id) at any time (OD-03 item 2), the banner `MediaObject` while the
+  campaign is published, and the `CampaignOfferMedia` and `MediaObject` rows linked to a visible
+  `CampaignOffer`. Nothing else.
 - **Writes** — only through `is_operator()`. `"CampaignImport"` is insert-only (no update or
   delete policy). `"Operator"` has no write policy at all; the human inserts rows in the SQL
   Editor.
@@ -46,7 +48,7 @@ reviewer rehearsal, Opus review before merge (T02).
 - Supabase Auth, email and password; **sign-ups disabled** in the project settings.
 - **TOTP mandatory.** A session at `aal1` reaches only the enrol and verify screens. The
   dashboard's server code checks the assurance level on every request, and RLS checks it again.
-- Sessions via `@supabase/ssr` cookies. Only responses on dashboard paths (`/operator/...`,
+- Sessions via `@supabase/ssr` cookies. Only responses on dashboard paths (`/ar/operator/...`,
   `/en/operator/...`) and Operator route handlers set them, and the request proxy refreshes the
   session only on those paths. The cookies keep the library's default path `/`, because the
   dashboard spans two locale prefixes; public pages never read them. A Visitor who never signs

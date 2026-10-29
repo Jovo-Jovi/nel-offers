@@ -178,3 +178,30 @@ and ratified when the human merges T03.
     (`DESIGN_SYSTEM.md` §11).
 14. **Any number of CampaignOffers.** Confirmed as built: imports add without limit; one sheet
     holds up to 500 rows (the template's own range).
+
+## OD-03 — Locale prefixes, the coming-soon page, the not-found message and the dashboard address
+
+**Status:** SIGNED. The signature is the human's message of 29 Oct 2026 in the reviewer session,
+after testing T04 on the Vercel address ("no /ar in Arabic pages, only /en in English pages", "lab
+website header link … in coming soon page is missing", "footer in coming soon page is missing",
+"when i enter any url … هذا العرض غير متاح", "i tried /dashboard but nothing"). It is recorded by
+the commit that lands this text on the T05 branch and ratified when the human merges T05.
+
+**Amends:** OD-01 item 4; `DESIGN_SYSTEM.md` §§5, 11 and 11.1; `SECURITY_MODEL.md` §§2–3;
+`ADMIN_SPEC.md` §1.
+
+1. **Locale prefixes.** Arabic lives under `/ar` and English under `/en`: `/ar`,
+   `/ar/campaign-offers/[code]`, `/en`, `/en/campaign-offers/[code]`; the dashboard under
+   `/ar/operator/...` and `/en/operator/...`. `/` and every page path without a locale prefix
+   redirect temporarily (307) to the same path under `/ar`. Arabic stays the default.
+2. **Coming soon.** While the campaign is unpublished, the page shows the full header (with the
+   lab-site link when `nel_site_url` is set) and the full footer (hotline and WhatsApp when set, and
+   the language switch). Visitors may read the `Campaign` row's granted columns at any time
+   (`20261029030000_nelo_campaign_row_public.sql`); `CampaignOffer`s, their media objects and the
+   banner stay hidden until the campaign is published.
+3. **Not found.** A CampaignOffer code that is unknown or not visible today shows
+   `campaignOffer.notFound`; any other unknown path shows `site.pageNotFound`. Both answer 404 with
+   the header, the footer and the link home.
+4. **Dashboard address.** `/dashboard` redirects (307) to `/ar/operator/overview`, and
+   `/ar/dashboard` and `/en/dashboard` to their locale's overview; the overview sends a Visitor
+   without a session to sign-in.

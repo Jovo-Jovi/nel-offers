@@ -208,3 +208,19 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the dashboard layout spec rewrote two T03 overview screenshots. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
 - Deviation: `npm run evidence` rewrote `docs/evidence/T04/headers.json` (new nonces and dates). The retake list did not name that file; step 5 requires the command.
+
+## 2026-10-29 — Reviewer session 7 (T04-F verdict, OD-03)
+
+- Fetched `t04-public-golive` at `6aea7dbd`. Compared the landed rows and journal entry with the
+  fence (exact), re-ran the four guards with their self-checks, lint, typecheck, the unit specs
+  (36) and a build; dependencies and `supabase/` unchanged. Served the build: `/ar`, `/ar/x` and
+  `/ar/campaign-offers/SYN-001` answer 308 again. Viewed the retaken screenshots: the two-band
+  banner in the hero, no band under the main media, the enlarged preview image, the coming-soon
+  text in both locales. The human attested the gate row at zero drift.
+- Verdict T04-F: PASS; with it T04 passes. CF-26 to CF-29 close.
+- The human tested the Vercel address and asked for `/ar` prefixes, the lab-site link and the
+  footer on the coming-soon page, a different message for unknown paths, and `/dashboard`.
+  Recorded as OD-03 (signed by that message). T04-F2 issued with
+  `20261029030000_nelo_campaign_row_public.sql` and the amended RLS proof, rehearsed on
+  PostgreSQL 16: proof 47/47 and presentation proof 17/17 after it; the old proof after it and
+  the new proof without it each fail check 45 alone.

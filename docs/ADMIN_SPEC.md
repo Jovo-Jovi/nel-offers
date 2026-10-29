@@ -1,8 +1,8 @@
 # NELO — Operator Dashboard Spec
 
-Precedence rank 7. The dashboard is for one or two Operators. It lives under `/operator`
-(Arabic) and `/en/operator` (English), sends `noindex` and `no-store`, and reads or writes
-nothing until the Operator has passed TOTP (`SECURITY_MODEL.md` §3).
+Precedence rank 7. The dashboard is for one or two Operators. It lives under `/ar/operator`
+(Arabic) and `/en/operator` (English), with `/dashboard` redirecting there (OD-03 items 1 and 4).
+It sends `noindex` and `no-store`, and reads or writes nothing until the Operator has passed TOTP (`SECURITY_MODEL.md` §3).
 
 ## 1. Navigation
 

@@ -45,8 +45,8 @@ is computed and recorded here: ≥ 4.5:1 for text, ≥ 3:1 for UI boundaries and
 
 ## 5. Bilingual and RTL
 
-- Locales live in `src/i18n/config.ts` only: `ar` (default, RTL, served without prefix) and
-  `en` (LTR, under `/en`). `<html lang dir data-locale>` is set once, from the active locale.
+- Locales live in `src/i18n/config.ts` only: `ar` (default, RTL, under `/ar`) and `en` (LTR,
+  under `/en`); a page path without a locale prefix redirects to `/ar` (OD-03 item 1). `<html lang dir data-locale>` is set once, from the active locale.
   Never on individual elements.
 - Catalogues `src/i18n/ar.ts` and `src/i18n/en.ts`. The English catalogue is typed as the
   Arabic one's shape, so a missing key fails `typecheck`. No fallback from one locale to the
@@ -233,6 +233,7 @@ shimmer; no shimmer under `prefers-reduced-motion`.
 | `a11y.nextImage` | الصورة التالية | Next image | draft |
 | `a11y.closePreview` | إغلاق | Close | draft |
 | `a11y.banner` | صورة حملة معامل النيل مصر | Nile Egypt Labs campaign banner | draft |
+| `site.pageNotFound` | الصفحة غير موجودة. | Page not found. | draft (OD-03 item 3) |
 
 ### 11.1 Wiring decisions (T04)
 
@@ -272,11 +273,12 @@ suffix so that nothing compiles it).
   (`DATA_MODEL.md` §2.1). Below `lg` they sit in the designer's fixed bottom dock.
 - **Header and footer.** Header: mark, `site.name`, the page subtitle (`header.homeSubtitle` or
   `header.campaignOfferSubtitle`), and `header.labSite` opening `nel_site_url` in a new tab (omitted
-  while the campaign is unpublished). Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
+  while `nel_site_url` is not set). Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
   where the designer has its page line, and the language switch.
 - **Gallery preview keys.** Arrow keys follow the screen: in Arabic the left arrow goes to the next
   image, in English the right arrow does. The position line (`2 / 4`) is in `LatinRun`.
-- **States.** Coming soon (unpublished): header without the lab-site button, `home.comingSoon` in
-  the hero's text cell, footer without contacts. Nothing visible today: `home.nothingVisible` in
-  the grid panel. Not found (unknown code, a code not visible today, or an unknown path): status
-  404, header, `campaignOffer.notFound` and the back link, in the URL's locale (§8; CF-14).
+- **States** (OD-03 items 2–3). Coming soon (unpublished): the full header and footer as above,
+  and `home.comingSoon` in the hero's text cell. Nothing visible today: `home.nothingVisible` in the
+  grid panel. Not found: status 404, the header and footer, the back link, and
+  `campaignOffer.notFound` for an unknown or hidden code or `site.pageNotFound` for any other
+  unknown path, in the URL's locale (§8; CF-14).
