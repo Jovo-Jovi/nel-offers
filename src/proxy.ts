@@ -80,7 +80,8 @@ function campaignCode(rest: string): string | null {
 // loading.tsx streams a 200 before notFound() can set the status. The read uses RLS only.
 async function routeResponse(request: NextRequest, requestHeaders: Headers): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
-  if (!isApiPath(pathname)) {
+  // A default-locale prefix is T01's redirect. It must not be rewritten to not-found.
+  if (!isApiPath(pathname) && firstSegment(pathname) !== defaultLocale) {
     const rest = restPath(pathname);
     const operator = rest === "/operator" || rest.startsWith("/operator/");
     const known = rest === "/" || rest === "/missing" || operator;

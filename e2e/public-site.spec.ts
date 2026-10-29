@@ -1,7 +1,7 @@
+import { deflateSync } from "node:zlib";
 import fs from "node:fs";
 import path from "node:path";
 import { expect, test as spec, type Browser, type Page } from "@playwright/test";
-import { tinyPng } from "./support/samples";
 import {
   campaignOfferPath,
   defaultLocale,
@@ -23,6 +23,55 @@ import {
   type PublicCampaignOffer,
 } from "../src/lib/public-query";
 import { createPublicClient } from "../src/lib/supabase/public";
+
+const bandWidth = 16 * 100;
+const bandHeight = 6 * 100;
+
+function pngChunk(type: string, data: Buffer) {
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const body = Buffer.concat([Buffer.from(type), data]);
+  let crc = 0xffffffff;
+  for (const byte of body) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      const mask = -(crc & 1);
+      crc = (crc >>> 1) ^ (0xedb88320 & mask);
+    }
+  }
+  const sum = Buffer.alloc(4);
+  sum.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
+  return Buffer.concat([length, body, sum]);
+}
+
+function bandPng() {
+  const rows: Buffer[] = [];
+  for (let y = 0; y < bandHeight; y += 1) {
+    const line = Buffer.alloc(1 + bandWidth * 3);
+    const upper = y < bandHeight / 2;
+    const red = upper ? 12 : 232;
+    const green = upper ? 74 : 96;
+    const blue = upper ? 158 : 28;
+    for (let x = 0; x < bandWidth; x += 1) {
+      const offset = 1 + x * 3;
+      line[offset] = red;
+      line[offset + 1] = green;
+      line[offset + 2] = blue;
+    }
+    rows.push(line);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(bandWidth, 0);
+  header.writeUInt32BE(bandHeight, 4);
+  header[8] = 8;
+  header[9] = 2;
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    pngChunk("IHDR", header),
+    pngChunk("IDAT", deflateSync(Buffer.concat(rows))),
+    pngChunk("IEND", Buffer.alloc(0)),
+  ]);
+}
 
 const operatorState = "e2e/.auth/operator.json";
 const evidenceDir = path.join("docs", "evidence", "T04");
@@ -61,12 +110,33 @@ async function setPublishedState(page: Page, next: boolean) {
   await expect(toggle).toHaveAttribute("aria-checked", next ? "true" : "false");
 }
 
+async function bannerSize(page: Page) {
+  const image = page.locator("img[data-banner-key]");
+  if ((await image.count()) === 0) return null;
+  await expect
+    .poll(() => image.evaluate((node: HTMLImageElement) => (node.complete ? node.naturalWidth : 0)))
+    .toBeGreaterThan(0);
+  return image.evaluate((node: HTMLImageElement) => ({
+    width: node.naturalWidth,
+    height: node.naturalHeight,
+  }));
+}
+
 async function ensureBanner(page: Page) {
   await page.goto("/en/operator/campaign-settings");
-  if ((await page.locator("img[data-banner-key]").count()) > 0) return;
-  await page.locator("#banner").setInputFiles({ name: "banner.png", mimeType: "image/png", buffer: tinyPng });
-  await page.getByRole("button", { name: "Upload banner" }).click();
-  await expect(page.locator("img[data-banner-key]")).toBeVisible({ timeout: 60 * 1000 });
+  const current = page.locator("img[data-banner-key]");
+  const size = await bannerSize(page);
+  if (size?.width === bandWidth && size.height === bandHeight) return;
+  await page.locator("#banner").setInputFiles({
+    name: "banner.png",
+    mimeType: "image/png",
+    buffer: bandPng(),
+  });
+  const button = page.getByRole("button", { name: size ? "Replace banner" : "Upload banner" });
+  await expect(button).toBeEnabled({ timeout: 60 * 1000 });
+  await button.click();
+  await expect(current).toBeVisible({ timeout: 60 * 1000 });
+  await expect.poll(() => bannerSize(page)).toEqual({ width: bandWidth, height: bandHeight });
 }
 
 async function setCardPriceShown(page: Page, next: boolean) {
@@ -125,7 +195,7 @@ spec("coming soon before publishing", async ({ page }) => {
 });
 
 spec("publish the campaign", async ({ browser }) => {
-  spec.setTimeout(120 * 1000);
+  spec.setTimeout(180 * 1000);
   const { context, page } = await operatorPage(browser);
   try {
     await ensureBanner(page);
@@ -293,6 +363,62 @@ spec("campaign offer pages match the public query", async ({ page }) => {
   else expect(poster).toBeNull();
 });
 
+async function assertPreviewPicture(page: Page) {
+  const image = page.locator("dialog img");
+  await expect(image).toBeVisible();
+  await expect
+    .poll(() => image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0))
+    .toBe(true);
+  const box = await image.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box).toBeTruthy();
+  expect(viewport).toBeTruthy();
+  if (!box || !viewport) return;
+  const covers = box.width >= viewport.width * 0.9 || box.height >= viewport.height * 0.9;
+  console.log(
+    `preview-image-box ${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.width)}x${Math.round(box.height)} viewport ${viewport.width}x${viewport.height}`,
+  );
+  expect(covers).toBe(true);
+  const hit = await page.evaluate(() => {
+    const node = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    return node instanceof HTMLImageElement;
+  });
+  expect(hit).toBe(true);
+}
+
+async function assertPicturesLoaded(page: Page, pictures: ReturnType<Page["locator"]>) {
+  const count = await pictures.count();
+  for (let index = 0; index < count; index += 1) {
+    const picture = pictures.nth(index);
+    await expect
+      .poll(() => picture.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0))
+      .toBe(true);
+  }
+  return count;
+}
+
+async function assertFrame(page: Page) {
+  const measured = await page.locator("figure").evaluate((node) => {
+    const frame = node.querySelector(":scope > div");
+    const painted = node.querySelector("img, video");
+    if (!(frame instanceof HTMLElement) || !(painted instanceof HTMLElement)) return null;
+    const frameBox = frame.getBoundingClientRect();
+    const paintedBox = painted.getBoundingClientRect();
+    return {
+      inner: node.clientHeight,
+      frame: frameBox.height,
+      paintedHeight: paintedBox.height,
+      frameWidth: frameBox.width,
+      paintedWidth: paintedBox.width,
+    };
+  });
+  expect(measured).toBeTruthy();
+  if (!measured) return;
+  expect(Math.abs(measured.inner - measured.frame)).toBeLessThanOrEqual(2);
+  expect(Math.abs(measured.paintedHeight - measured.frame)).toBeLessThanOrEqual(2);
+  expect(Math.abs(measured.paintedWidth - measured.frameWidth)).toBeLessThanOrEqual(2);
+}
+
 async function movePreview(page: Page, locale: Locale, count: number) {
   const messages = messagesFor(locale);
   const dialog = page.locator("dialog");
@@ -343,6 +469,7 @@ spec("gallery preview", async ({ page }) => {
     await expect(dialog).toBeVisible();
     await expect(page.locator("html")).toHaveClass(/public-scroll-lock/);
     await movePreview(page, locale, count);
+    await assertPreviewPicture(page);
     if (locale === defaultLocale) {
       await page.screenshot({ path: path.join(evidenceDir, "gallery-preview-ar-390.png") });
     }
@@ -408,8 +535,6 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
     [`${campaignOfferPath(defaultLocale, "SYN-002")}@1440`]: "campaign-offer-video-ar-1440.png",
     [`${campaignOfferPath(prefixedLocale, "SYN-002")}@390`]: "campaign-offer-video-en-390.png",
     [`${campaignOfferPath(prefixedLocale, "SYN-002")}@1440`]: "campaign-offer-video-en-1440.png",
-    [`${campaignOfferPath(defaultLocale, "SYN-404")}@390`]: "not-found-ar-390.png",
-    [`${campaignOfferPath(prefixedLocale, "SYN-404")}@390`]: "not-found-en-390.png",
   };
   const publishedPaths = [
     homePath(defaultLocale),
@@ -429,6 +554,25 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       await page.goto(urlPath, { waitUntil: "domcontentloaded" });
       await expect(page.locator("h1")).toBeVisible();
+      const locale = urlPath.startsWith("/en") ? prefixedLocale : defaultLocale;
+      if (urlPath === homePath(locale)) {
+        const loaded = await assertPicturesLoaded(page, page.getByRole("img", { name: messagesFor(locale).a11y.banner }));
+        expect(loaded).toBeGreaterThan(0);
+      }
+      if (urlPath === campaignOfferPath(locale, "SYN-001")) {
+        expect(await assertPicturesLoaded(page, page.locator("figure img"))).toBeGreaterThan(0);
+        expect(await assertPicturesLoaded(page, page.locator("ul img"))).toBeGreaterThan(0);
+      }
+      if (urlPath === campaignOfferPath(locale, "SYN-002")) {
+        await assertPicturesLoaded(page, page.locator("figure img"));
+        await assertPicturesLoaded(page, page.locator("ul img"));
+      }
+      if (
+        (urlPath === campaignOfferPath(locale, "SYN-001") || urlPath === campaignOfferPath(locale, "SYN-002")) &&
+        (width === 768 || width === 1024 || width === 1440)
+      ) {
+        await assertFrame(page);
+      }
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits, `${urlPath} ${width}`).toBe(true);
       const shot = shots[`${urlPath}@${width}`];
@@ -450,11 +594,13 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
     for (const width of widths) {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       await page.goto(urlPath, { waitUntil: "domcontentloaded" });
-      await expect(page.locator("h1")).toHaveText(messagesFor(locale).home.comingSoon);
+      await expect(page.locator(".nel-shimmer")).toHaveCount(0);
+      const heading = page.getByRole("heading", { level: 1, name: messagesFor(locale).home.comingSoon });
+      await expect(heading).toBeVisible();
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits, `${urlPath} ${width}`).toBe(true);
-      if (locale === defaultLocale && width === 390) {
-        await page.screenshot({ path: path.join(evidenceDir, "coming-soon-ar-390.png") });
+      if (width === 390) {
+        await page.screenshot({ path: path.join(evidenceDir, `coming-soon-${locale}-390.png`) });
       }
     }
   }

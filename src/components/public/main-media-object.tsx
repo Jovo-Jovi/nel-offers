@@ -21,13 +21,13 @@ export function MainMediaObject({ clipUrl, pictureUrl, pictureAlt, playLabel, pr
   const [playing, setPlaying] = useState(false);
 
   return (
-    <figure className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
+    <figure className="w-full self-start overflow-hidden rounded-card border border-border bg-surface shadow-card">
       <div className="relative aspect-[16/10] bg-primary-soft">
         {clipUrl ? (
           <>
             <video
               ref={videoRef}
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
               controls
               preload="metadata"
               playsInline
@@ -55,7 +55,7 @@ export function MainMediaObject({ clipUrl, pictureUrl, pictureAlt, playLabel, pr
         ) : pictureUrl ? (
           <button
             type="button"
-            className={`h-full w-full ${focusRing}`}
+            className={`absolute inset-0 ${focusRing}`}
             onClick={(event) => {
               if (previewIndex === null) return;
               openAt(previewIndex, event.currentTarget);
@@ -63,7 +63,7 @@ export function MainMediaObject({ clipUrl, pictureUrl, pictureAlt, playLabel, pr
           >
             {/* CSP has no style-src, and next/image writes an inline style. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={pictureUrl} alt={pictureAlt} className="h-full w-full object-cover" />
+            <img src={pictureUrl} alt={pictureAlt} className="absolute inset-0 h-full w-full object-cover" />
           </button>
         ) : null}
       </div>

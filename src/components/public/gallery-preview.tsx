@@ -155,11 +155,15 @@ export function GalleryPreview({
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
       >
-        <div data-backdrop="true" className="flex h-full w-full items-center justify-center">
+        <div data-backdrop="true" className="absolute inset-0 grid place-items-center">
           {picture && open ? (
             // CSP has no style-src, and next/image writes an inline style.
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={picture.url} alt={picture.label} className="max-h-full max-w-full object-contain" />
+            <img
+              src={picture.url}
+              alt={picture.label}
+              className="block h-auto max-h-full w-full object-contain"
+            />
           ) : null}
         </div>
         <button
