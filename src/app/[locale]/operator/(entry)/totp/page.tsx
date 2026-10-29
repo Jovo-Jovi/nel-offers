@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { LatinRun } from "@/components/latin-run";
+import { cardClass, fieldClass } from "@/components/operator-classes";
+import { SubmitButton } from "@/components/submit-button";
 import { isLocale, messagesFor, operatorPath } from "@/i18n/config";
 import { readOperatorGate } from "@/lib/operator-session";
 import { readTotpPane } from "@/lib/totp-pane";
@@ -26,30 +28,30 @@ export default async function TotpPage({
   const heading = pane.kind === "verify" ? messages.operator.verifyHeading : messages.operator.enrolHeading;
   const lead = pane.kind === "verify" ? messages.operator.verifyLead : messages.operator.enrolLead;
   return (
-    <>
-      <h1>{heading}</h1>
-      <p>{lead}</p>
-      {failed ? <p>{messages.operator.totpError}</p> : null}
+    <div className={cardClass}>
+      <h1 className="text-2xl">{heading}</h1>
+      <p className="mt-3 text-sm">{lead}</p>
+      {failed ? <p className="mt-3 text-sm text-error">{messages.operator.totpError}</p> : null}
       {pane.kind === "enrol" ? (
         <>
           {/* The QR is a data URL. Raw SVG is not inserted into the document. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="operator-qr" src={pane.qr} alt={messages.operator.qrAlt} />
-          <p className="operator-secret">
+          <img className="mt-4 h-40 w-40" src={pane.qr} alt={messages.operator.qrAlt} />
+          <p className="mt-3 text-sm">
             {messages.operator.secretLabel} <LatinRun>{pane.secret}</LatinRun>
           </p>
         </>
       ) : null}
       {pane.kind === "failed" ? null : (
-        <form className="operator-form" action={verifyTotp.bind(null, locale)}>
+        <form className="mt-4 flex flex-col gap-4" action={verifyTotp.bind(null, locale)}>
           <input type="hidden" name="factorId" value={pane.factorId} />
-          <label>
+          <label className="flex flex-col gap-1 text-sm">
             {messages.operator.codeLabel}
-            <input name="code" inputMode="numeric" autoComplete="one-time-code" required maxLength={6} />
+            <input className={fieldClass} name="code" inputMode="numeric" autoComplete="one-time-code" required maxLength={6} />
           </label>
-          <button type="submit">{messages.operator.verify}</button>
+          <SubmitButton label={messages.operator.verify} pendingLabel={messages.operator.pending} />
         </form>
       )}
-    </>
+    </div>
   );
 }

@@ -50,10 +50,26 @@ export function homePath(locale: Locale): string {
   return `/${locale}`;
 }
 
-export function operatorPath(
-  locale: Locale,
-  segment: "sign-in" | "totp" | "overview",
-): string {
+export const operatorSegments = [
+  "sign-in",
+  "totp",
+  "overview",
+  "campaign-offers",
+  "import",
+  "media-objects",
+  "campaign-settings",
+] as const;
+
+export type OperatorSegment = (typeof operatorSegments)[number];
+
+export function operatorSegment(pathname: string): OperatorSegment {
+  for (const segment of operatorSegments) {
+    if (pathname === `/operator/${segment}` || pathname.endsWith(`/operator/${segment}`)) return segment;
+  }
+  return "sign-in";
+}
+
+export function operatorPath(locale: Locale, segment: OperatorSegment): string {
   const prefix = locale === defaultLocale ? "" : `/${locale}`;
   return `${prefix}/operator/${segment}`;
 }

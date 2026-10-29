@@ -6,7 +6,7 @@ import {
   videoByteLimit,
   withinLimit,
   withinLongestEdge,
-} from "./media-limits";
+} from "./media-object-limits";
 
 describe("withinLimit", () => {
   it("accepts a video at the limit and rejects one byte past it", () => {

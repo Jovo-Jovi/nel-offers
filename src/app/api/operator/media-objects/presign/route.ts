@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { jsonCode } from "@/lib/json-code";
 import { readJsonObject } from "@/lib/json-body";
-import { encodedImageByteLimit, videoByteLimit, withinLimit } from "@/lib/media-limits";
-import { resolveUploadName } from "@/lib/media-name";
+import { encodedImageByteLimit, videoByteLimit, withinLimit } from "@/lib/media-object-limits";
+import { resolveUploadName } from "@/lib/media-object-name";
 import { mimeType } from "@/lib/object-key";
 import { denyUnlessOperator, readOperatorGate, type OperatorGate } from "@/lib/operator-session";
 import { presignUpload } from "@/lib/r2";

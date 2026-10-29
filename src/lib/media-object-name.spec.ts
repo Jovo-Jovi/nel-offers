@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveUploadName } from "./media-name";
+import { resolveUploadName } from "./media-object-name";
 
 const codes = new Set(["AB", "CD"]);
 const overlapping = new Set(["AB", "AB-1"]);
