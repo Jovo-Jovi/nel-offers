@@ -460,3 +460,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Findings: at 390 px the card's names and chips are squeezed into a column a few characters wide;
   the public header is still wider than the hero card. Verdict T06-F: FAIL. T06-F2 issued with
   `ADMIN_SPEC.md` §10 and `DESIGN_SYSTEM.md` §11.1 amended; CF-42 stays open for the header.
+
+## 2026-10-29 — T06-F2 (builder)
+
+- LANDING `c5a25433dfb020975466862d8f6c556e0bc679dc`. Bundle `T06F2 BUNDLE PASS 2 / 2 []` at LANDING and at HEAD. Carry-forwards `43 12 ['44']`: 42 + 1 = 43 rows, next free 44, open 12 − 1 + 1 = 12. CF-41 is `CLOSED (T06-F)`. CF-43 holds the landed row and stays `OPEN`. CF-42 stays `OPEN`.
+- Ids: `c5a25433dfb020975466862d8f6c556e0bc679dc` amendments, carry-forward changes, T06-F verdict entry and usage record; `5f473ccfc01f3c9f78b3c6f188f06f40086c4b63` readable card head, header edges and evidence.
+- On `5f473ccfc01f3c9f78b3c6f188f06f40086c4b63`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 39 passed. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for T01–T05-F2 evidence, `docs/ADMIN_SPEC.md`, `docs/DESIGN_SYSTEM.md`, `supabase/`, `scripts/`, `package.json` and `package-lock.json` is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 28 passed. Names' column width 186 at 320 and 256 at 390, in both locales. Tile width 47.59375 at 320, 61.59375 at 390, 88 at 1440. `stale-confirm 361ms`. `preview-picture 24,251 342x342 viewport 390x844`. `preview-picture 294,24 852x852 viewport 1440x900`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
+- Deviation: the suite rewrote `docs/evidence/T05`, `docs/evidence/T05-F2`, `docs/evidence/T06/campaign-offer-ar-390.png` and `docs/evidence/T06/confirm-remove-ar-390.png`. Those bytes were restored before the implementation commit, so those files are unchanged.
+- Deviation: one `npx playwright test` waited out on the import preview and was not given a timeout of its own. The following run is the 28 passed line above.
