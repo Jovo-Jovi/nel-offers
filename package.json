@@ -16,14 +16,17 @@
     "usage:record": "node scripts/usage/record.mjs",
     "usage:report": "node scripts/usage/report.mjs",
     "test:unit": "vitest run",
-    "check:r2": "node --env-file=.env.local scripts/checks/r2-roundtrip.mjs"
+    "check:r2": "node --env-file=.env.local scripts/checks/r2-roundtrip.mjs",
+    "scan:media-objects": "node --env-file=.env.local scripts/checks/scan-media-objects.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1159.0",
     "@aws-sdk/s3-request-presigner": "^3.1159.0",
-    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@fontsource/cairo": "^5.3.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
+    "exceljs": "^4.4.0",
+    "lucide-react": "^1.63.0",
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
