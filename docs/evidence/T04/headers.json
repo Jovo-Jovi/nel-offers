@@ -1,0 +1,113 @@
+{
+  "captures": [
+    {
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=63072000",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'nonce-MDlhM2Q2MTctNDUwNy00ODQ5LWJkNjItYmI2MzhiM2Y5YzFm'; img-src 'self' data: blob: https://[redacted-project].r2.cloudflarestorage.com; media-src 'self' https://[redacted-project].r2.cloudflarestorage.com; connect-src 'self' https://[redacted-project] https://[redacted-project].r2.cloudflarestorage.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'",
+        "x-middleware-rewrite": "/ar",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+        "link": "</>; rel=preconnect; crossorigin=\"\"",
+        "x-powered-by": "Next.js",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip",
+        "date": "Thu, 29 Oct 2026 07:52:12 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "url": "http://localhost:3000/en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=63072000",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'nonce-M2FiY2FlMTQtNjEyYi00NGQ3LWIzNDAtZDViNDI3NzJkYjI1'; img-src 'self' data: blob: https://[redacted-project].r2.cloudflarestorage.com; media-src 'self' https://[redacted-project].r2.cloudflarestorage.com; connect-src 'self' https://[redacted-project] https://[redacted-project].r2.cloudflarestorage.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+        "link": "</>; rel=preconnect; crossorigin=\"\"",
+        "x-powered-by": "Next.js",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip",
+        "date": "Thu, 29 Oct 2026 07:52:12 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "url": "http://localhost:3000/campaign-offers/SYN-001",
+      "status": 404,
+      "headers": {
+        "strict-transport-security": "max-age=63072000",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'nonce-ZWY5NzljMDYtOGU4Yy00YmVhLWJlMjYtY2QxMDRjZTU4Mzdm'; img-src 'self' data: blob: https://[redacted-project].r2.cloudflarestorage.com; media-src 'self' https://[redacted-project].r2.cloudflarestorage.com; connect-src 'self' https://[redacted-project] https://[redacted-project].r2.cloudflarestorage.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'",
+        "x-middleware-rewrite": "/ar/missing",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+        "link": "</>; rel=preconnect; crossorigin=\"\", </_next/static/chunks/2m0d0581v1z9u.css>; rel=preload; as=\"style\"; nonce=\"ZWY5NzljMDYtOGU4Yy00YmVhLWJlMjYtY2QxMDRjZTU4Mzdm\"",
+        "x-powered-by": "Next.js",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip",
+        "date": "Thu, 29 Oct 2026 07:52:13 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "url": "http://localhost:3000/en/campaign-offers/SYN-001",
+      "status": 404,
+      "headers": {
+        "strict-transport-security": "max-age=63072000",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'nonce-MzVhYTlmMTItNmZkYS00MGUzLTgwYzktMzkwODM2YTE2NDE5'; img-src 'self' data: blob: https://[redacted-project].r2.cloudflarestorage.com; media-src 'self' https://[redacted-project].r2.cloudflarestorage.com; connect-src 'self' https://[redacted-project] https://[redacted-project].r2.cloudflarestorage.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'",
+        "x-middleware-rewrite": "/en/missing",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+        "link": "</>; rel=preconnect; crossorigin=\"\", </_next/static/chunks/2m0d0581v1z9u.css>; rel=preload; as=\"style\"; nonce=\"MzVhYTlmMTItNmZkYS00MGUzLTgwYzktMzkwODM2YTE2NDE5\"",
+        "x-powered-by": "Next.js",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip",
+        "date": "Thu, 29 Oct 2026 07:52:13 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    },
+    {
+      "url": "http://localhost:3000/campaign-offers/SYN-404",
+      "status": 404,
+      "headers": {
+        "strict-transport-security": "max-age=63072000",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'nonce-ODRkYzQ3MWItMjM1Zi00Y2QzLTg1YjgtNjljZDk4Mzg1N2Q4'; img-src 'self' data: blob: https://[redacted-project].r2.cloudflarestorage.com; media-src 'self' https://[redacted-project].r2.cloudflarestorage.com; connect-src 'self' https://[redacted-project] https://[redacted-project].r2.cloudflarestorage.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'",
+        "x-middleware-rewrite": "/ar/missing",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+        "link": "</>; rel=preconnect; crossorigin=\"\", </_next/static/chunks/2m0d0581v1z9u.css>; rel=preload; as=\"style\"; nonce=\"ODRkYzQ3MWItMjM1Zi00Y2QzLTg1YjgtNjljZDk4Mzg1N2Q4\"",
+        "x-powered-by": "Next.js",
+        "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip",
+        "date": "Thu, 29 Oct 2026 07:52:13 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      }
+    }
+  ]
+}
