@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { saveShot } from "./support/shot";
 import { expect, test as spec, type Browser, type Page } from "@playwright/test";
 import { messagesFor } from "../src/i18n/config";
 
@@ -90,7 +91,7 @@ spec("link preview, icons, video frame and gallery margin", async ({ page, brows
         }),
     );
     expect(await video.evaluate((node: HTMLVideoElement) => node.readyState)).toBeGreaterThanOrEqual(2);
-    await page.screenshot({ path: path.join(evidenceDir, "campaign-offer-video-first-frame-ar-390.png") });
+    await saveShot(page, path.join(evidenceDir, "campaign-offer-video-first-frame-ar-390.png"));
 
     const arabic = messagesFor("ar");
     await page.goto("/ar/campaign-offers/SYN-001");
@@ -98,7 +99,7 @@ spec("link preview, icons, video frame and gallery margin", async ({ page, brows
     const dialog = page.locator("dialog");
     await expect(dialog.locator("img")).toBeVisible();
     await expect.poll(async () => (await dialog.locator("img").boundingBox())?.width ?? 0).toBeGreaterThan(200);
-    await page.screenshot({ path: path.join(evidenceDir, "gallery-preview-ar-390.png") });
+    await saveShot(page, path.join(evidenceDir, "gallery-preview-ar-390.png"));
     await page.mouse.click(8, 8);
     await expect(dialog).toBeHidden();
 
@@ -115,7 +116,7 @@ spec("link preview, icons, video frame and gallery margin", async ({ page, brows
       expect(box.x + box.width).toBeLessThanOrEqual(1440 - 63);
       expect(box.y + box.height).toBeLessThanOrEqual(900 - 23);
     }
-    await page.screenshot({ path: path.join(evidenceDir, "gallery-preview-en-1440.png") });
+    await saveShot(page, path.join(evidenceDir, "gallery-preview-en-1440.png"));
     await page.mouse.click(8, 8);
     await expect(page.locator("dialog")).toBeHidden();
     expect(arabic.a11y.closePreview.length).toBeGreaterThan(0);

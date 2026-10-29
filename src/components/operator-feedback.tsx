@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { messagesFor, type Locale } from "@/i18n/config";
-import { primaryButton, quietButton } from "@/components/operator-classes";
+import { dangerButton, quietButton } from "@/components/operator-classes";
 
 type Toast = { id: number; message: string; tone: "status" | "alert" };
 type Ask = { title: string; body: string; resolve: (accepted: boolean) => void };
@@ -75,7 +75,7 @@ export function OperatorFeedback({ locale, children }: { locale: Locale; childre
       </div>
       <dialog
         ref={dialogRef}
-        className="nel-dialog w-full p-6"
+        className="nel-dialog p-6"
         onClose={() => {
           if (closing.current) {
             closing.current = false;
@@ -87,11 +87,11 @@ export function OperatorFeedback({ locale, children }: { locale: Locale; childre
         <h2 className="text-lg font-medium">{ask?.title}</h2>
         <p className="mt-3 text-sm">{ask?.body}</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <button type="button" className={primaryButton} onClick={() => finish(true)}>
-            {messages.operator.confirm}
-          </button>
           <button type="button" className={quietButton} onClick={() => finish(false)}>
             {messages.operator.cancel}
+          </button>
+          <button type="button" className={dangerButton} onClick={() => finish(true)}>
+            {messages.operator.confirm}
           </button>
         </div>
       </dialog>

@@ -11,30 +11,32 @@ Reviewer runs are measured from the reviewer's own session records once each ans
 complete.
 Not in these totals: any run not recorded in runs.jsonl.
 
-Runs: 18 · Not reported: 0 · Last run: 2026-10-29T16:20:00Z
+Runs: 26 · Not reported: 0 · Last run: 2026-10-29T18:45:24Z
 
 ## Total
 | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- |
-| 18 | 12,006 | 1,281,387 | 236,356,646 | 5,751,360 | — |
+| 26 | 12,100 | 1,369,905 | 266,400,998 | 5,876,015 | — |
 
 ## By model
 | Tool | Model | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| claude-app | claude-opus-5-5 | 18 | 12,006 | 1,281,387 | 236,356,646 | 5,751,360 | — |
+| claude-app | claude-opus-5-5 | 26 | 12,100 | 1,369,905 | 266,400,998 | 5,876,015 | — |
 
 ## By stage
 | Stage | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- | --- |
 | blueprint | 3 | 228 | 529,991 | 35,188,256 | 937,208 | — |
-| reviewer | 15 | 11,778 | 751,396 | 201,168,390 | 4,814,152 | — |
+| reviewer | 23 | 11,872 | 839,914 | 231,212,742 | 4,938,807 | — |
 
 ## By task
 | Task | Runs | Input | Output | Cache read | Cache write | Cost (USD) |
 | --- | --- | --- | --- | --- | --- | --- |
 | T05 | 1 | 2,200 | 48,825 | 15,557,709 | 448,382 | — |
+| T06 | 2 | 48 | 52,777 | 16,224,774 | 75,753 | — |
 | T05-F | 1 | 2,144 | 12,258 | 5,563,958 | 31,776 | — |
 | T05-F2 | 2 | 2,180 | 49,311 | 14,915,934 | 498,731 | — |
+| T05-F3 | 4 | 20 | 16,194 | 6,179,064 | 20,690 | — |
 | blueprint | 3 | 228 | 529,991 | 35,188,256 | 937,208 | — |
 | T01 | 1 | 68 | 103,997 | 19,968,375 | 126,880 | — |
 | T02 | 1 | 220 | 185,265 | 40,662,863 | 1,063,122 | — |
@@ -43,4 +45,4 @@ Runs: 18 · Not reported: 0 · Last run: 2026-10-29T16:20:00Z
 | T04 | 1 | 42 | 28,079 | 12,848,449 | 672,510 | — |
 | T04-F | 1 | 12 | 8,197 | 4,079,263 | 11,799 | — |
 | T04-F2 | 2 | 4,730 | 189,635 | 43,048,675 | 337,910 | — |
-| go-live | 3 | 12 | 7,047 | 2,921,100 | 488,912 | — |
+| go-live | 5 | 38 | 26,594 | 10,561,614 | 517,124 | — |

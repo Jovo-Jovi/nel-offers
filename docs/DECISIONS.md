@@ -263,3 +263,30 @@ and 11.1; PR-29 (superseded by the precedent T05 lands).
    Every name, price, date and condition comes from the laboratory's sheet — the offer content
    gate, which no OD can waive (`SCOPE.md` §3; `DATA_MODEL.md` §5; PR-28). One more card is added by
    Export current → a new row in Excel → Import → Confirm; item 2 switches one off.
+
+## OD-05 — The designer's changes after the go-live test
+
+**Status:** SIGNED. The signature is the human's message of 29 Oct 2026 in the reviewer session,
+relaying the designer after the human's test on the live project ("make the header bar hovering
+oval shaped", "remove the word (صورة …) from previewed images", "exchange the word (معرض) in
+dashboard with صورة", "make toggle of نشر الحملة a normal size", "make the حذف button in red and the
+confirm message of deletion to be centered", "a redesign for it in a well modern designed way" for
+the CampaignOffer card, "make the items … previewed in المكتبة based on the type selected", "make
+any حذف in red"). It is recorded by the commit that lands this text on the T06 branch and ratified
+when the human merges T06.
+
+**Amends:** OD-02 item 3 (the approved design, for the header and the thumbnails only);
+`DESIGN_SYSTEM.md` §11.1; `ADMIN_SPEC.md` §§5, 7 and 10.
+
+1. **Floating header.** The public header becomes a floating, pill-shaped bar inset from the page
+   edges (`DESIGN_SYSTEM.md` §11.1 "Header and footer").
+2. **No caption under thumbnails.** The CampaignOffer page's thumbnails show no visible
+   "صورة n" caption; the words stay as their accessible name.
+3. **Slot names.** In the dashboard the gallery slots are named "صورة 1–3" / "Image 1–3", not
+   "معرض" / "Gallery".
+4. **Publish switch** at the same normal size as the show switch.
+5. **Every removal in red,** and every confirmation dialog centred on the screen.
+6. **CampaignOffer card v3** (`ADMIN_SPEC.md` §10).
+7. **Library by type.** The media page's library shows the kind of the selected tab only.
+8. **Unchanged:** the offer content gate (no hand-made CampaignOffer field), the boundary rules
+   (no file name sent or stored), the theme's colours and font.

@@ -57,7 +57,6 @@ export function PublishSwitch({
     <div className="flex flex-wrap items-center gap-3">
       {busy ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
       <SlideSwitch
-        large
         checked={on}
         disabled={blocked || busy}
         label={messages.operator.publishLabel}

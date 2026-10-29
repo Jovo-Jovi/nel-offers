@@ -187,12 +187,42 @@ progress.nel-progress::-moz-progress-bar {
 }
 
 dialog.nel-dialog {
+  position: fixed;
+  inset-block: 0;
+  inset-inline: 0;
+  margin: auto;
   border: 0;
   border-radius: var(--radius-card);
   background: var(--color-surface);
   color: var(--color-dark);
   box-shadow: var(--shadow-card);
+  inline-size: min(32rem, calc(100% - 2rem));
   max-inline-size: min(32rem, calc(100% - 2rem));
+  block-size: fit-content;
+  max-block-size: calc(100% - 2rem);
+  overflow: auto;
+}
+
+.nel-tile-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .nel-tile:hover .nel-tile-actions,
+  .nel-tile:focus-within .nel-tile-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: none) {
+  .nel-tile-actions {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    background: transparent;
+  }
 }
 
 dialog.nel-dialog::backdrop {

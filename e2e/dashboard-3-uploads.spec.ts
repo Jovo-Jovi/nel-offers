@@ -31,7 +31,7 @@ spec("media queue, refusals, replacement and a repeated finalise", async ({ page
     { name: "SYN-002-1.mp4", mimeType: "video/mp4", buffer: cleanMp4() },
     { name: "SYN-003.mp4", mimeType: "video/mp4", buffer: locatedMp4() },
   ]);
-  await expect(page.getByText("A video cannot use a gallery suffix.")).toBeVisible();
+  await expect(page.getByText("A video cannot use an image suffix (-1 to -3).")).toBeVisible();
   await expect(page.getByText("Export the video without location")).toBeVisible();
   await upload(page);
   await expect(page.locator("[data-upload='done']")).toHaveCount(3, { timeout: 180 * 1000 });

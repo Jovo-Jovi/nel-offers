@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { saveShot } from "./support/shot";
 import { expect, test as spec, type Page } from "@playwright/test";
 import { messagesFor } from "../src/i18n/config";
 import { tinyPng } from "./support/samples";
@@ -43,8 +44,7 @@ async function shot(page: Page, name: string, dir = evidenceDir) {
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator(".nel-shimmer")).toHaveCount(0);
   const width = page.viewportSize()?.width ?? 0;
-  fs.mkdirSync(dir, { recursive: true });
-  await page.screenshot({ path: path.join(dir, name), fullPage: width >= 1024 });
+  await saveShot(page, path.join(dir, name), width >= 1024);
 }
 
 spec("operator controls, media choice and dashboard screenshots", async ({ page }) => {
@@ -92,6 +92,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     for (let index = 0; index < (await filledTiles.count()); index += 1) {
       const tile = filledTiles.nth(index);
       await expect(tile.locator("img, video")).toHaveCount(1);
+      await tile.locator(".nel-tile").hover();
       await expect(tile.getByRole("link", { name: "Replace", exact: true })).toBeVisible();
       await expect(tile.getByRole("button", { name: /^Remove / })).toBeVisible();
     }
@@ -208,7 +209,9 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     }
     await page.goto("/ar/operator/campaign-offers");
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator("[data-code='SYN-002']").getByRole("button", { name: "حذف معرض 2" }).click();
+    const arabicSlot = page.locator("[data-code='SYN-002']").locator("[data-filled='yes']", { hasText: "صورة 2" });
+    await arabicSlot.locator(".nel-tile").hover();
+    await arabicSlot.getByRole("button", { name: "حذف صورة 2" }).click();
     await expect(page.getByRole("dialog")).toContainText("SYN-002");
     await shot(page, "confirm-remove-slot-ar-390.png");
     await page.evaluate(() => {
@@ -220,7 +223,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
       Object.assign(window, { slotLeave: marker });
     });
     await page.getByRole("dialog").getByRole("button", { name: "تأكيد" }).click();
-    await expect(page.locator("[data-code='SYN-002']").locator("[data-filled='yes']", { hasText: "معرض 2" })).toHaveCount(0);
+    await expect(page.locator("[data-code='SYN-002']").locator("[data-filled='yes']", { hasText: "صورة 2" })).toHaveCount(0);
     expect(await page.evaluate(() => (window as Window & { slotLeave?: { saw: boolean } }).slotLeave?.saw === true)).toBe(true);
 
     await page.goto("/en/operator/media-objects");
@@ -244,6 +247,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     const clip = page.locator("[data-code='SYN-003']");
     const mainImage = clip.getByRole("button", { name: "Remove Main image" });
     if ((await mainImage.count()) > 0) {
+      await mainImage.locator("xpath=ancestor::div[contains(@class,'nel-tile ')][1]").hover();
       await mainImage.click();
       await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
     }
@@ -334,7 +338,8 @@ spec("a running action shows its spinner, and reduced motion skips the leaving m
   await expect(page.locator("[data-library='SYN-004:gallery_3']")).toBeVisible({ timeout: 120 * 1000 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/en/operator/campaign-offers");
-  const removal = page.locator("[data-code='SYN-004']").getByRole("button", { name: "Remove Gallery 3", exact: true });
+  const removal = page.locator("[data-code='SYN-004']").getByRole("button", { name: "Remove Image 3", exact: true });
+  await removal.locator("xpath=ancestor::div[contains(@class,'nel-tile ')][1]").hover();
   await expect(removal).toBeVisible();
   await removal.click();
   await page.evaluate(() => {

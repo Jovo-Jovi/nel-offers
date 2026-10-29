@@ -8,9 +8,9 @@ State is taken from this file and the repository, never from conversation.
 | | |
 |---|---|
 | Phase | P04 Public site and go-live |
-| Task in flight | T05 — Operator controls, media choice, dashboard v2, link previews (`t05-operator-controls`, OD-04) |
+| Task in flight | T06 — The designer's changes (`t06-designer-changes`, OD-05) |
 | Next | Go-live with the human (`PHASES.md` §4), staging on the Vercel address first |
-| Last verdict | T04 — PASS with its fix tasks T04-F and T04-F2, 29 Oct 2026 |
+| Last verdict | T05-F3 — PASS; T05 passed with T05-F, T05-F2 and T05-F3; go-live 1 PASS, 29 Oct 2026 |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 
