@@ -258,3 +258,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   proofs after it (47/47, 17/17); the gate read; and `scripts/sql/run.mjs`, which refused an edited,
   untracked or unlisted file, a migration without `--apply`, and a certificate that does not sign
   the server.
+
+## 2026-10-29 — T05 (builder)
+
+- LANDING `0885ba5d54c2b7fae31482fb6a0e529f60f24c28`. `T05 BUNDLE PASS 17 / 17 []` at LANDING and at `a36b90bd9b74412ebe62acccc11d67eaca5a9568`. Carry-forwards `30 10 ['31']`: 29 + 1 = 30 rows, next free 31, open 9 + 1 = 10. Precedents `32 ['33']`: 30 + 2 = 32, next free 33.
+- Ids: `91a7ec69100ee65fcad4ad101588daaca4c3e671` SQL runner wiring; `a36b90bd9b74412ebe62acccc11d67eaca5a9568` operator controls, specs and evidence.
+- On `a36b90bd9b74412ebe62acccc11d67eaca5a9568`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The T01–T04-F2 and `supabase/` diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). The only new dependency is `pg@8.23.1`.
+- SQL `supabase/migrations/20261029040000_nelo_operator_controls.sql` sha256=33524fe27193 / APPLIED. SQL `supabase/checks/nelo_rls_proof.sql` sha256=d68a48c8064b / RAISED RLS PROOF (rolled back): PASS 47/47. SQL `supabase/checks/nelo_rls_proof_presentation.sql` sha256=0dfacc5b5b90 / RAISED PRESENTATION PROOF (rolled back): PASS 17/17. SQL `supabase/checks/nelo_rls_proof_operator_controls.sql` sha256=8b8242317769 / RAISED OPERATOR CONTROLS PROOF (rolled back): PASS 16/16.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 24 passed. Evidence is `docs/evidence/T05/` (sixteen screenshots and `meta.json`). Link-preview image URLs are stored as `<site>/share/nelo-share.png`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row after the specs: `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: the campaign was already published when an earlier dashboard run reached the publish switch, so that dialog was the coming-soon text. It was unpublished through the operator switch before the recorded run. The recorded run starts unpublished and leaves it unpublished.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`. The share evidence rewrites that origin to `<site>`.
