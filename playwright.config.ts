@@ -32,5 +32,11 @@ export default defineConfig({
       dependencies: ["setup"],
       use: { storageState: "e2e/.auth/operator.json" },
     },
+    {
+      name: "public",
+      testMatch: /public-.*\.spec\.ts/,
+      dependencies: ["dashboard"],
+      use: { storageState: { cookies: [], origins: [] } },
+    },
   ],
 });

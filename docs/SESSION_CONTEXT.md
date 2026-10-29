@@ -7,10 +7,10 @@ State is taken from this file and the repository, never from conversation.
 
 | | |
 |---|---|
-| Phase | P03 Operator dashboard |
-| Task in flight | T03 — Operator dashboard and the approved theme (`t03-dashboard`) |
-| Next | T04 — Public site from the approved design, go-live |
-| Last verdict | T02 — PASS, 29 Oct 2026, its last evidence human-attested at the T03 handover |
+| Phase | P04 Public site and go-live |
+| Task in flight | T04 — Public site from the approved design (`t04-public-golive`) |
+| Next | Go-live with the human (`PHASES.md` §4), staging on the Vercel address first |
+| Last verdict | T03 — PASS with its fix task T03-F, 29 Oct 2026 |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 

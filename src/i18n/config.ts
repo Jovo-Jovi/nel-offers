@@ -50,6 +50,26 @@ export function homePath(locale: Locale): string {
   return `/${locale}`;
 }
 
+export function campaignOfferPath(locale: Locale, code: string): string {
+  if (locale === defaultLocale) return `/campaign-offers/${code}`;
+  return `/${locale}/campaign-offers/${code}`;
+}
+
+export function localeFromPathname(pathname: string): Locale {
+  const segment = pathname.split("/").filter((part) => part.length > 0)[0];
+  if (segment === prefixedLocale) return prefixedLocale;
+  return defaultLocale;
+}
+
+export function switchedPath(pathname: string, locale: Locale): string {
+  const target = otherLocale(locale);
+  const parts = pathname.split("/").filter((part) => part.length > 0);
+  if (parts[0] === prefixedLocale) parts.shift();
+  const rest = parts.join("/");
+  if (target === defaultLocale) return rest.length > 0 ? `/${rest}` : "/";
+  return rest.length > 0 ? `/${target}/${rest}` : `/${target}`;
+}
+
 export const operatorSegments = [
   "sign-in",
   "totp",

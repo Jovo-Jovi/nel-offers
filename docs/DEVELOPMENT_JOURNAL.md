@@ -139,3 +139,72 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 ## 2026-10-29 — T03-F (builder, CI)
 
 - `ci / verify` failed on `ba78f39` because `guard:naming` rejects the bare noun in `removeSyntheticOffers`. The helper is now `removeSyntheticCampaignOffers`. The other CI steps had not run.
+
+## 2026-10-29 — Reviewer session 5 (T03-F verdict)
+
+- Fetched `t03-dashboard` at `cae7457b`. Re-ran the bundle verification (3/3 at LANDING and
+  HEAD; the T03 manifest's design-system line superseded), compared the landed rows, the new
+  precedent and the journal entry with the fence (exact), and re-ran a clean install, the four
+  guards with their self-checks, lint, typecheck, the unit specs (28) and the audit. Read the
+  confirm route (`PT409` mapped, no abort), the formatters and the workbook loader. Viewed the
+  changed screenshots: Arabic dates read `18/11/2026`; the sign-in pages show the sign-in form.
+- The human attested the retrying backends terminated, migration 3 applied, both proofs passing,
+  the gate row at zero drift and a flat rollback counter.
+- `ba78f39` failed `guard:naming` in CI after the report's local run; fixed at `cae7457`. Logged
+  and closed.
+- Verdict T03-F: PASS; with it T03 passes. CF-20 to CF-23 close. T04 issued with the designer's
+  source as reference, the wiring decisions (`DESIGN_SYSTEM.md` §11.1), the go-live list with
+  staging on the Vercel address, and the synthetic reset, rehearsed on PostgreSQL 16: it refuses
+  while rows remain and resets to zero after.
+
+## 2026-10-29 — T04 (builder)
+
+- LANDING `bb57484c51d6cadb47acc22a40d1c8d5c6445acb`. `T04 BUNDLE PASS 23 / 23 []` and manifest `7edd8e6f56450022bad60c5e2fa223e0e52fbb4c9413b210250f3c4f42a77bd2`, at LANDING and at the checks commit. Carry-forwards `25 11 ['26']`: 24 + 1 rows, next free 26, open 15 − 4 = 11. CF-20 to CF-23 are `CLOSED (T03-F)`. CF-25 was born closed.
+- Ids: `72e7805` public data, search, links and catalogue copy; `f674b7b` public pages; `876e8b2` specs and evidence capture; `a7d9cb8` synthetic-code guard and preview keys; `880edb5` Arabic search query; `8b32db7` checks and evidence.
+- On `8b32db7`, `git status --porcelain` was empty. `guard:naming`, `guard:design`, `guard:literals` and `guard:boundary` exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. `npm run lint` exited 0. `npm run typecheck` exited 0. `npm run test:unit` 36 passed. The secret sweep printed nothing. Tracked count of `.env.local` and `e2e/.auth` is 0. The T01–T03 evidence diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). `package.json` dependencies are unchanged.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 20 passed. `auth.setup.ts` 1, `operator-access.spec.ts` 5, `dashboard-1-guard.spec.ts` 1, `dashboard-2-import.spec.ts` 1, `dashboard-3-uploads.spec.ts` 1, `dashboard-4-campaign.spec.ts` 1, `dashboard-5-layout.spec.ts` 1, `public-site.spec.ts` 9.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: awaiting the human (PR-24). The builder did not run SQL. The campaign is unpublished.
+- `npm run evidence` exited 0. `docs/evidence/T04/` has the 16 screenshots and `headers.json`. `/` and `/en` are 200; the three CampaignOffer URLs are 404. Each response has a nonce CSP and the static headers.
+- Deviation: `loading.tsx` starts the response at 200 before `notFound()` can set the status. The proxy reads visibility through RLS only and rewrites a hidden code, an unknown path, and an unknown first segment to `[locale]/missing`, which calls `notFound()` before a loading boundary. `/fr` is Arabic; `/en/nope` is English.
+- Deviation: SYN-002 has a video and no main image, so the poster attribute is absent. The spec compares that with the attachment rows.
+- Deviation: while the campaign is unpublished the dashboard marks every row Hidden, so the opening public spec checks the `SYN-` prefix only. Scheduled and ended codes are the 404 cases after publish.
+- Deviation: the dashboard layout spec rewrote three T03 screenshots during the run. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
+- Deviation: `npm run start` was already running so Playwright could reuse it and `npm run evidence` could use the same server.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-29 — T04 (gate row)
+
+- Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0. `media_objects` equals `SCAN objects=5`. The builder did not run SQL.
+
+## 2026-10-29 — Reviewer session 6 (T04 verdict)
+
+- Fetched `t04-public-golive` at `b5413672`. Re-ran the bundle verification (23/23 at LANDING
+  and HEAD), compared the landed row and journal entry with the fence (exact), and re-ran a clean
+  install, the four guards with their self-checks, lint, typecheck, the unit specs (36) and the
+  audit. Served the build: public pages set no cookie and carry no `style` attribute; `/fr` and
+  `/en/nope` answer 404; `/ar` and `/ar/x` answer 404 where T01 answered 308. Viewed all 16
+  screenshots beside the approved ones.
+- The pages follow the approved design: header with the mark, hero, card grid, CampaignOffer
+  layout, price card, date boxes, the mobile dock, mirrored arrows. Accepted deviation: the proxy
+  reads one CampaignOffer through RLS so that hidden codes and unknown paths keep a 404 status.
+- Findings: the `/ar` redirect lost; the gallery preview shows no image; an empty band under the
+  main media; the banner and coming-soon evidence not showing their states.
+- Verdict T04: FAIL. T04-F issued. CF-14 (localized not-found) and CF-17 (Vercel can see the
+  repository; the PR shows a Vercel deployment) close.
+
+## 2026-10-29 — T04-F (builder)
+
+- LANDING `7fa19592f7cc8ed4d50a4b73543f31286dfe068c`. Carry-forwards `29 13 ['30']`: 25 + 4 rows, next free 30, open 11 − 2 + 4 = 13. CF-14 and CF-17 are `CLOSED (T04)`. CF-26 to CF-29 are open.
+- Fixes at `41754436e8d27e26a27d3959ea6b686b1a1e7a69`. A path whose first segment is the default locale skips the visibility read and uses the existing 308. The preview image is sized to the viewport width with `object-contain`. The main-media figure no longer stretches, and the image or video fills the frame. The synthetic banner is a 1600×600 PNG of two solid bands, replaced when the stored banner is not that size. Coming-soon shots wait until `home.comingSoon` is visible.
+- On that commit, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The T01–T03 evidence diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). `package.json` dependencies are unchanged. Nothing under `supabase/` changed.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 21 passed. The three redirects answer 308 with Location pathnames `/`, `/x` and `/campaign-offers/SYN-001`. The preview image box is `0,227 390x390` in a `390x844` viewport, in both locales.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: awaiting the human (PR-24). The builder did not run SQL. The campaign is unpublished.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: the dashboard layout spec rewrote two T03 overview screenshots. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
+- Deviation: `npm run evidence` rewrote `docs/evidence/T04/headers.json` (new nonces and dates). The retake list did not name that file; step 5 requires the command.

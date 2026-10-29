@@ -61,6 +61,20 @@ spec("public pages set no cookies and report no policy violation", async ({ page
   expect(violations).toEqual([]);
 });
 
+spec("a default-locale prefix redirects without being followed", async ({ request }) => {
+  const cases = [
+    ["/ar", "/"],
+    ["/ar/x", "/x"],
+    ["/ar/campaign-offers/SYN-001", "/campaign-offers/SYN-001"],
+  ];
+  for (const [urlPath, pathname] of cases) {
+    const response = await request.get(urlPath, { maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    const location = response.headers().location ?? "";
+    expect(new URL(location, "http://localhost:3000").pathname).toBe(pathname);
+  }
+});
+
 spec("each visit receives a different nonce", async ({ request }) => {
   const first = await request.get("/");
   const second = await request.get("/");

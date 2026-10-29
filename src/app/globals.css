@@ -24,33 +24,32 @@ body {
   overflow-x: clip;
 }
 
-.site-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--nel-space-16);
-  padding-inline: var(--nel-space-16);
-  padding-block: var(--nel-space-16);
+html.public-scroll-lock {
+  overflow: hidden;
 }
 
-.site-mark {
-  block-size: var(--nel-space-48);
-  inline-size: calc(var(--nel-space-48) * 537 / 752);
+.public-preview {
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
 }
 
-.site-name {
-  font-size: var(--nel-size-lg);
-  font-weight: 600;
+.public-preview::backdrop {
+  background: var(--color-dark);
+  opacity: 0.72;
 }
 
-.site-main,
-.site-footer {
-  padding-inline: var(--nel-space-16);
-  padding-block: var(--nel-space-16);
-  text-align: start;
+:dir(ltr) .public-mirror-ltr {
+  transform: scaleX(-1);
 }
 
-.site-main p {
-  font-size: var(--nel-size-xl);
+:dir(rtl) .public-mirror-rtl {
+  transform: scaleX(-1);
 }
 
 @keyframes nel-shimmer {

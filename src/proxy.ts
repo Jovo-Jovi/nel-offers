@@ -1,7 +1,10 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { defaultLocale, prefixedLocale } from "./i18n/config";
+import { defaultLocale, localeFromPathname, prefixedLocale } from "./i18n/config";
+import { readVisibleCampaignOffer } from "./lib/public-query";
+import { codePattern } from "./lib/sheet-format";
+import { createPublicClient } from "./lib/supabase/public";
 
 type StoredCookie = {
   name: string;
@@ -59,6 +62,42 @@ function securityPolicy(nonce: string): string {
     .replace(/ {2,}/g, " ");
 }
 
+function restPath(pathname: string): string {
+  const segment = firstSegment(pathname);
+  if (segment !== prefixedLocale) return pathname;
+  const rest = pathname.slice(`/${prefixedLocale}`.length);
+  return rest.length > 0 ? rest : "/";
+}
+
+function campaignCode(rest: string): string | null {
+  const parts = rest.split("/").filter((part) => part.length > 0);
+  if (parts.length !== 2 || parts[0] !== "campaign-offers") return null;
+  const code = parts[1];
+  if (!code || !codePattern.test(code)) return null;
+  return code;
+}
+
+// loading.tsx streams a 200 before notFound() can set the status. The read uses RLS only.
+async function routeResponse(request: NextRequest, requestHeaders: Headers): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+  // A default-locale prefix is T01's redirect. It must not be rewritten to not-found.
+  if (!isApiPath(pathname) && firstSegment(pathname) !== defaultLocale) {
+    const rest = restPath(pathname);
+    const operator = rest === "/operator" || rest.startsWith("/operator/");
+    const known = rest === "/" || rest === "/missing" || operator;
+    if (!known) {
+      const code = campaignCode(rest);
+      const visible = code ? await readVisibleCampaignOffer(createPublicClient(), code) : null;
+      if (!code || !visible) {
+        const url = request.nextUrl.clone();
+        url.pathname = `/${localeFromPathname(pathname)}/missing`;
+        return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+      }
+    }
+  }
+  return localeResponse(request, requestHeaders);
+}
+
 function localeResponse(request: NextRequest, requestHeaders: Headers): NextResponse {
   const { pathname } = request.nextUrl;
   if (isApiPath(pathname)) {
@@ -114,7 +153,7 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
   requestHeaders.set("Content-Security-Policy", policy);
   const stored = await operatorCookies(request, requestHeaders);
-  const response = localeResponse(request, requestHeaders);
+  const response = await routeResponse(request, requestHeaders);
   for (const cookie of stored) {
     response.cookies.set(cookie.name, cookie.value, cookie.options);
   }
