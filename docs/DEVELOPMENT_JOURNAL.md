@@ -156,3 +156,21 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   source as reference, the wiring decisions (`DESIGN_SYSTEM.md` §11.1), the go-live list with
   staging on the Vercel address, and the synthetic reset, rehearsed on PostgreSQL 16: it refuses
   while rows remain and resets to zero after.
+
+## 2026-10-29 — T04 (builder)
+
+- LANDING `bb57484c51d6cadb47acc22a40d1c8d5c6445acb`. `T04 BUNDLE PASS 23 / 23 []` and manifest `7edd8e6f56450022bad60c5e2fa223e0e52fbb4c9413b210250f3c4f42a77bd2`, at LANDING and at the checks commit. Carry-forwards `25 11 ['26']`: 24 + 1 rows, next free 26, open 15 − 4 = 11. CF-20 to CF-23 are `CLOSED (T03-F)`. CF-25 was born closed.
+- Ids: `72e7805` public data, search, links and catalogue copy; `f674b7b` public pages; `876e8b2` specs and evidence capture; `a7d9cb8` synthetic-code guard and preview keys; `880edb5` Arabic search query; `8b32db7` checks and evidence.
+- On `8b32db7`, `git status --porcelain` was empty. `guard:naming`, `guard:design`, `guard:literals` and `guard:boundary` exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. `npm run lint` exited 0. `npm run typecheck` exited 0. `npm run test:unit` 36 passed. The secret sweep printed nothing. Tracked count of `.env.local` and `e2e/.auth` is 0. The T01–T03 evidence diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). `package.json` dependencies are unchanged.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 20 passed. `auth.setup.ts` 1, `operator-access.spec.ts` 5, `dashboard-1-guard.spec.ts` 1, `dashboard-2-import.spec.ts` 1, `dashboard-3-uploads.spec.ts` 1, `dashboard-4-campaign.spec.ts` 1, `dashboard-5-layout.spec.ts` 1, `public-site.spec.ts` 9.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: awaiting the human (PR-24). The builder did not run SQL. The campaign is unpublished.
+- `npm run evidence` exited 0. `docs/evidence/T04/` has the 16 screenshots and `headers.json`. `/` and `/en` are 200; the three CampaignOffer URLs are 404. Each response has a nonce CSP and the static headers.
+- Deviation: `loading.tsx` starts the response at 200 before `notFound()` can set the status. The proxy reads visibility through RLS only and rewrites a hidden code, an unknown path, and an unknown first segment to `[locale]/missing`, which calls `notFound()` before a loading boundary. `/fr` is Arabic; `/en/nope` is English.
+- Deviation: SYN-002 has a video and no main image, so the poster attribute is absent. The spec compares that with the attachment rows.
+- Deviation: while the campaign is unpublished the dashboard marks every row Hidden, so the opening public spec checks the `SYN-` prefix only. Scheduled and ended codes are the 404 cases after publish.
+- Deviation: the dashboard layout spec rewrote three T03 screenshots during the run. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
+- Deviation: `npm run start` was already running so Playwright could reuse it and `npm run evidence` could use the same server.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
