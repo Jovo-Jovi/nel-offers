@@ -61,6 +61,20 @@ export function megabytes(bytes: number) {
   return String(Math.round(bytes / (1024 * 1024)));
 }
 
+export function formatByteSize(locale: Locale, bytes: number) {
+  const absolute = Math.max(0, bytes);
+  const unit = absolute >= 1024 * 1024 ? "megabyte" : absolute >= 1024 ? "kilobyte" : "byte";
+  const value = unit === "megabyte" ? absolute / (1024 * 1024) : unit === "kilobyte" ? absolute / 1024 : absolute;
+  return withoutBidiMarks(
+    new Intl.NumberFormat(intlLocale(locale), {
+      style: "unit",
+      unit,
+      unitDisplay: "short",
+      maximumFractionDigits: unit === "byte" ? 0 : 1,
+    }).format(value),
+  );
+}
+
 export function cairoDay(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Africa/Cairo",

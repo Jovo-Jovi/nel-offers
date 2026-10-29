@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-30**
+**Next free id: CF-35**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -38,3 +38,8 @@ cell of any row is ever edited. Closed rows stay.
 | CF-27 | T04's gallery-preview screenshot shows the dimmed page, the buttons and the position line but no enlarged image, and the preview spec never checks that the image loaded or fills the viewport. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
 | CF-28 | On the CampaignOffer page the main-media frame shows an empty band below the media (about 45 px at 1440) and a gap under the image — the approved design's caption space, kept after the caption was removed. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
 | CF-29 | T04's evidence does not show two states: the synthetic banner is a tiny white image, so the hero's image cell looks empty, and `coming-soon-ar-390.png` captured the loading skeleton. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
+| CF-30 | The media page's "clear" emptied only the upload list, and the dashboard listed no stored MediaObject, so a video the human took as removed stayed linked and shown on the public page; in R2 the human found it and one more object. Fixed by T05: the library with removal of one slot (OD-04 items 3 and 5), and `scan:media-objects -- --remove-unrecorded` for any object with no record. | builder | 2026-10-29 | T05 | CLOSED (T05) |
+| CF-31 | T05 sized the gallery-preview picture to its own size inside the margins, so a picture smaller than the screen is not enlarged — the synthetic one shows as a dot and both preview screenshots show no picture — and the preview spec dropped T04-F's check that the picture fills the screen (CF-27). Fixed by T05-F. | builder | 2026-10-29 | T05 | OPEN |
+| CF-32 | `dashboard-campaign-offers-ar-1440.png`, `dashboard-campaign-offers-ar-390.png` and `dashboard-overview-en-1440.png` captured the loading skeleton, not the page. Fixed by T05-F. | builder | 2026-10-29 | T05 | OPEN |
+| CF-33 | Dashboard v2 falls short of `ADMIN_SPEC.md` §10: the CampaignOffer cards show the words Empty or Assigned with "Add" on every slot — no thumbnail when filled and no "Replace"; the label beside the show switch is the status ("Hidden" beside a switch that is on); the bottom bar's labels are cut off at 390 px in both locales; a missing start date reads "None"; queue sizes have no unit. Fixed by T05-F. | builder | 2026-10-29 | T05 | OPEN |
+| CF-34 | T05's report gave no output for steps 1–2 ("already done on this branch"). Verified at the T05 verdict: anonymous `ls-remote` and API 200; `24e62f5` an ancestor; LANDING's parent `dcdef88` (main), whose ledgers read `29 9 ['30']` and `30 ['31']`; the bundle 17/17 at LANDING. From T05-F on, a report that omits a step's output is refused. | builder | 2026-10-29 | T05 | CLOSED (T05) |

@@ -31,14 +31,21 @@ per upload, a switch that slides, a toast for each outcome — and none under
 ## 3. Overview and CampaignOffers
 
 **Overview** shows: the publish switch (§7); counts of `CampaignOffer`s by status — visible,
-scheduled, ended, hidden — computed by the visibility function (`DATA_MODEL.md` §3); whether
+scheduled, ended, off, hidden — computed by the status function (`DATA_MODEL.md` §3); whether
 the contact values are complete; the last `CampaignImport` (time, added, updated, unchanged).
 
 **CampaignOffers** lists every `CampaignOffer` in list order: code, both names, price, start,
-end, status, and five slot indicators (main video, main image, gallery 1–3). Fields are read
-only. One action per row: **Remove**, behind a confirmation naming the code, which deletes the
-`CampaignOffer`, its links, its `MediaObject`s and their objects in R2. The next import may add
-the code back.
+end, status, and five slots (main video, main image, gallery 1–3). The nine sheet fields are read
+only; a line under the list says how to change them (export, edit in Excel, import). Actions
+(OD-04 items 2–3):
+
+- **Show switch** — on by default. Off hides this `CampaignOffer` from Visitors whatever its dates
+  (status `off`); on again restores it. Takes effect at once; a toast confirms.
+- **Remove a slot** — on a filled slot, behind a confirmation naming the code and the slot ("Remove
+  the main video of SYN-001?"). Deletes the `MediaObject`, its link and its object in R2.
+- **Add or replace a slot** — opens the media page with this `CampaignOffer` and slot chosen.
+- **Remove** — behind a confirmation naming the code, which deletes the `CampaignOffer`, its
+  links, its `MediaObject`s and their objects in R2. The next import may add the code back.
 
 ## 4. Template, export and import
 
@@ -58,24 +65,40 @@ the code back.
 
 ## 5. Media objects
 
+Two tabs, **Videos** (`.mp4`) and **Images** (`.jpg` `.jpeg` `.png` `.webp`); each tab's picker and
+drop zone accept only its kind (OD-04 item 4). Below the tabs, the **library** (OD-04 item 5): every
+stored `MediaObject`, grouped by `CampaignOffer` in list order, each with its slot, a preview
+(video first frame or image) and **Remove a slot** (§3). A search field filters the library by code
+or name.
+
 1. **Select** many files at once (picker or drop). Each becomes a queue row.
 2. **Parse** each name, ignoring case:
    - stem equals a code → `.mp4` goes to `main_video`; `.jpg` `.jpeg` `.png` `.webp` go to
      `main_image`;
    - stem is `<code>-1`, `-2` or `-3` with an image extension → `gallery_1` … `gallery_3`;
-   - both readings match a code → refused as ambiguous; neither → refused, "no CampaignOffer
-     with this code"; `.mp4` with a gallery suffix, or any other extension → refused.
+   - both readings match a code → refused as ambiguous; `.mp4` with a gallery suffix, or any
+     other extension → refused;
+   - neither reading matches a code → the row waits for the Operator's choice (step 4).
 3. **Check** — size (`DECISIONS.md` OD-01 item 10); videos are scanned for location keys and
    refused on a hit (`BOUNDARY_MODEL.md` §3.1); images are re-encoded to WebP, longest edge
    ≤ 1600 px.
-4. **Show** each row's target code and slot, and "replaces" when the slot is occupied. Nothing
-   uploads until the Operator presses **Upload**.
-5. **Upload** with at most three at a time: request a presigned URL, `PUT` with progress, then
-   ask the server to finalise (head check, record, link, delete what it replaced). Each row
-   ends as done, refused or failed with a reason. A failure leaves no record and no link.
+4. **Choose** — each row shows its target `CampaignOffer` (a list searchable by code or name) and
+   slot (a list of the slots that fit its kind: main video for a video; main image or gallery 1–3
+   for an image), filled from the name when the name matched. The Operator may change either. A
+   slot that already holds a `MediaObject` is marked "assigned" in the list. Two rows may not target
+   the same slot: the second is marked and cannot upload until changed. Nothing uploads until the
+   Operator presses **Upload**, and a row targeting an assigned slot asks to confirm the
+   replacement first.
+5. **Upload** with at most three at a time: request a presigned URL with the code and the slot,
+   `PUT` with progress, then ask the server to finalise (head check, record, link, delete what it
+   replaced). Each row ends as done, refused or failed with a reason. A failure leaves no record
+   and no link. The library refreshes when the queue finishes.
+6. **Clear list** empties the queue only, and says so ("Clears this list. Uploaded videos and
+   images stay — remove them from the library.").
 
-The selected file's name is used for parsing in the browser and sent once to the presign
-route for the same parsing on the server. It is never stored or logged.
+The selected file's name is read only in the browser, to fill the choice in step 4. The presign
+route receives the code and the slot, never the name; the server checks that the code exists and
+that the slot fits the type. The name is never sent, stored or logged.
 
 ## 6. Campaign settings
 
@@ -118,3 +141,33 @@ reviewer. No dashboard string carries a business value.
 - **Spec account** — one extra account, used only by end-to-end specs, created the same way; its
   email, password and TOTP secret live only in `.env.local` as `E2E_OPERATOR_EMAIL`,
   `E2E_OPERATOR_PASSWORD` and `E2E_OPERATOR_TOTP_SECRET`. It is removed at go-live.
+
+## 10. Layout v2 (OD-04 item 6)
+
+Plain, phone-first, one main action per screen. Every rule of §§1–9 still holds.
+
+- **Shell.** Top bar: the mark, the site name, the campaign state as a chip (published / not
+  published), the language switch and sign out. Navigation: a side rail from `lg`; below `lg`, a
+  bottom bar of five icon-and-label buttons (overview, CampaignOffers, import, media objects,
+  settings). The current page is marked. Content is at most 72rem wide.
+- **Overview.** First card: the publish switch, the state in words, and — while it cannot be
+  switched on — what is missing (contact values, at least one `CampaignOffer`), each a link to the
+  page that fixes it. Then the count tiles by status, each a link to the list filtered by it. Then
+  "to do": `CampaignOffer`s with neither main video nor main image (count, linked to the filtered
+  list), and no import yet. Then the last import.
+- **CampaignOffers.** A search field (code or name) and filter chips by status (all, visible,
+  scheduled, ended, off, hidden) at the top. One card per `CampaignOffer`: code, name in the
+  dashboard's locale, price, end date, status chip, the show switch, and the five slots as small
+  tiles — a thumbnail when filled, with remove; an empty mark when not, with add. **Remove** the
+  `CampaignOffer` sits in the card's "more" menu.
+- **Import.** A stepper of four steps: get the template or export the current list; choose the
+  sheet; preview (§4 order); confirm and summary.
+- **Media objects.** §5: the two tabs, each with its drop zone, queue and **Upload**; the library
+  below.
+- **Campaign settings.** Three cards: contact values (with the three links to try), the home page
+  (price switch and banner), publishing (the switch, as on the overview).
+- **Feedback.** A toast for every outcome; a confirmation dialog for every removal, replacement and
+  publish change, naming the code and the slot; disabled buttons say why; skeletons on every page;
+  no horizontal overflow from 320 px; motion only as in §1, none under `prefers-reduced-motion`.
+- **Dropped files.** On every dashboard page, a file dropped outside a drop zone is ignored: the
+  browser never navigates to it.

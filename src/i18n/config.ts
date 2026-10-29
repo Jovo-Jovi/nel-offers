@@ -16,6 +16,11 @@ const directionByLocale = {
   en: "ltr",
 } as const;
 
+const shareLocaleByLocale = {
+  ar: "ar_EG",
+  en: "en_US",
+} as const;
+
 const catalogueByLocale: Record<Locale, Catalogue> = {
   ar: arabicCatalogue,
   en: englishCatalogue,
@@ -27,6 +32,10 @@ export function isLocale(value: string): value is Locale {
 
 export function directionFor(locale: Locale) {
   return directionByLocale[locale];
+}
+
+export function openGraphLocale(locale: Locale) {
+  return shareLocaleByLocale[locale];
 }
 
 export function intlLocale(locale: Locale): string {

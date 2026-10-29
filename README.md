@@ -1,34 +1,7 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+هذا موقع عام بلغتين لعروض حملة المعمل. الزائر لا يسجّل دخوله ولا يترك بيانات شخصية. لوحة المشغّلين لمن يملك رمز التحقق: قالب الورقة وتصديرها واستيرادها، والوسائط بالاسم أو بالاختيار، ومفتاح الإظهار، والنشر. محتوى العرض لا يأتي إلا من ورقة المعمل. الواجهة Next.js، والبيانات Postgres عبر Supabase، والوسائط في التخزين، والتشغيل على Vercel.
 
-## Getting Started
+A public bilingual site for a laboratory campaign. Visitors do not sign in and do not leave personal data. The dashboard is for Operators with a verification code: the sheet template, export and import; media by name or by choice; the show switch; and publishing. Offer content comes only from the laboratory sheet. The app is Next.js, the database is Postgres through Supabase, media is object storage, and the host is Vercel.
 
-First, run the development server:
+Local run: `npm ci`, copy `.env.local` from `.env.example`, then `npm run dev`. Checks: `npm run lint`, `npm run typecheck`, `npm run test:unit`, `npm run build`. `npm run sql` runs a listed SQL file through the runner and refuses anything else: a path that is not listed, a file that is not committed, a working copy that differs from the committed bytes, or a migration without `--apply`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Documents, in precedence order: `docs/PRODUCT_BRIEF.md` and `docs/GLOSSARY.md`, `docs/SCOPE.md` and `docs/DECISIONS.md`, `docs/BOUNDARY_MODEL.md`, `docs/SECURITY_MODEL.md`, `docs/DATA_MODEL.md`, `docs/DESIGN_SYSTEM.md`, `docs/ADMIN_SPEC.md`, then `docs/PHASES.md`.

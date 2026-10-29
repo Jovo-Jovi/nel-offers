@@ -27,6 +27,19 @@ bytes:
 
 Neither file is edited in this repository. A change to either is a new OD.
 
+### 2.1 Images derived from the mark (OD-04 item 7)
+
+Made by the reviewer from `public/mark/nel-mark.png` alone (scaled onto white; the share image adds
+a 36 px band in `--nel-color-primary` at its foot), landed byte-exact in T05. No other source, no
+text added. They are NEL artefacts like the two above: never edited here, and a change is a new OD.
+
+| Path in this repository | SHA-256 | Use |
+|---|---|---|
+| `public/share/nelo-share.png` | `cf1a274817f24ce81d46982091004b5ff700ca5e57038b4e1a0b022519383ae2` | 1200 × 630 px; `og:image` and `twitter:image` |
+| `public/share/icon-512.png` | `9a271c753fd5bf5c854f3277718b9288f6876d9d24a97bca8edbc3cf5ef2f977` | 512 × 512 px; `icon` |
+| `public/share/apple-icon-180.png` | `2c202ff8251aed723f5cf88eb42e4164205c0ddaf27f3948dd63201babe8c931` | 180 × 180 px; `apple-touch-icon` |
+| `public/favicon.ico` | `180c4bed3dff2d1d41dd775f174f57246454c90178f13ee2b847abe0f4ef58f8` | 16, 32 and 48 px; the favicon |
+
 ## 3. Colour
 
 The eleven `--nel-color-*` tokens in `tokens.css` and its `color-mix` recipes are the whole
@@ -260,8 +273,10 @@ suffix so that nothing compiles it).
   in `LatinRun`, Arabic in a `<bdi>` with no `dir`). `CodeBadge` with `campaignOffer.codeLabel`.
 - **Main media.** A main video is a `<video>` with `controls`, `preload="metadata"`, `playsinline`
   and the main image as poster; the designer's play button sits over it until it plays
-  (`a11y.playVideo`). Otherwise the main image, which opens the gallery preview. With neither, the
-  designer's `primary-soft` frame stays empty. The designer's caption is not used.
+  (`a11y.playVideo`). With no main image, the video's source URL ends with `#t=0.1` so the browser
+  draws its first frame instead of a blank frame (OD-04 item 7c). Otherwise the main image, which
+  opens the gallery preview. With neither, the designer's `primary-soft` frame stays empty. The
+  designer's caption is not used.
 - **Thumbnails.** The gallery images (`gallery_1`–`gallery_3`) in slot order, labelled
   `campaignOffer.imageLabel`. With none, the row is omitted and the main media takes the full width.
   The preview set is the main image (when present) followed by the gallery images.
@@ -277,6 +292,17 @@ suffix so that nothing compiles it).
   where the designer has its page line, and the language switch.
 - **Gallery preview keys.** Arrow keys follow the screen: in Arabic the left arrow goes to the next
   image, in English the right arrow does. The position line (`2 / 4`) is in `LatinRun`.
+- **Gallery preview fit** (OD-04 item 7d). The image fits inside the viewport less a margin on every
+  side — at least 1.5rem (`4rem` at the inline edges, where the arrows sit, from `md`) — so the
+  dimmed backdrop always shows around it; a tap on the backdrop closes the preview. The image never
+  covers the close button or the arrows.
+- **Link preview and icons** (OD-04 item 7a–b). Every public page's head carries `og:title`,
+  `og:description`, `og:type` `website`, `og:locale` (`ar_EG` or `en_US`, from `src/i18n/config.ts`),
+  `og:image` `/share/nelo-share.png` with its width and height, `twitter:card`
+  `summary_large_image`, and the icons of §2.1, with `metadataBase` from `NEXT_PUBLIC_SITE_URL`.
+  Title: the page's existing title. Description: `home.intro` on the home page and the coming-soon
+  page; `header.campaignOfferSubtitle` with the code on a CampaignOffer page. The image is the same
+  on every page — never a presigned link, which expires. The dashboard sets no Open Graph tags.
 - **States** (OD-03 items 2–3). Coming soon (unpublished): the full header and footer as above,
   and `home.comingSoon` in the hero's text cell. Nothing visible today: `home.nothingVisible` in the
   grid panel. Not found: status 404, the header and footer, the back link, and

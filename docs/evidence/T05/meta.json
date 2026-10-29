@@ -1,0 +1,58 @@
+{
+  "/ar": {
+    "og:title": "عروض الافتتاح — معامل النيل مصر",
+    "og:description": "اختَر التحليل لعرض التفاصيل والسعر ومدة العرض ووسائل الطلب.",
+    "og:locale": "ar_EG",
+    "og:image": "<site>/share/nelo-share.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "معامل النيل مصر",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "عروض الافتتاح — معامل النيل مصر",
+    "twitter:description": "اختَر التحليل لعرض التفاصيل والسعر ومدة العرض ووسائل الطلب.",
+    "twitter:image": "<site>/share/nelo-share.png"
+  },
+  "/en": {
+    "og:title": "Opening offers — Nile Egypt Labs",
+    "og:description": "Choose an analysis to see its details, price, offer period and how to order.",
+    "og:locale": "en_US",
+    "og:image": "<site>/share/nelo-share.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "Nile Egypt Labs",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Opening offers — Nile Egypt Labs",
+    "twitter:description": "Choose an analysis to see its details, price, offer period and how to order.",
+    "twitter:image": "<site>/share/nelo-share.png"
+  },
+  "/ar/campaign-offers/SYN-001": {
+    "og:title": "تحليل تجريبي 01 — معامل النيل مصر",
+    "og:description": "كود SYN-001 ـــ تفاصيل العرض",
+    "og:locale": "ar_EG",
+    "og:image": "<site>/share/nelo-share.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "معامل النيل مصر",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "تحليل تجريبي 01 — معامل النيل مصر",
+    "twitter:description": "كود SYN-001 ـــ تفاصيل العرض",
+    "twitter:image": "<site>/share/nelo-share.png"
+  },
+  "/en/campaign-offers/SYN-001": {
+    "og:title": "Synthetic analysis 01 — Nile Egypt Labs",
+    "og:description": "Code SYN-001 — Offer details",
+    "og:locale": "en_US",
+    "og:image": "<site>/share/nelo-share.png",
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": "Nile Egypt Labs",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Synthetic analysis 01 — Nile Egypt Labs",
+    "twitter:description": "Code SYN-001 — Offer details",
+    "twitter:image": "<site>/share/nelo-share.png"
+  }
+}

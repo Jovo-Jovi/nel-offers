@@ -122,18 +122,24 @@ export function ImportPanel({ locale }: { locale: Locale }) {
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <div className="flex flex-wrap gap-3">
-        {/* Attachment responses, not navigations. */}
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a className={primaryButton} href="/api/operator/campaign-template">
-          {messages.operator.downloadTemplate}
-        </a>
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a className={quietButton} href="/api/operator/campaign-export">
-          {messages.operator.exportCurrent}
-        </a>
-      </div>
+      <section className="flex min-w-0 flex-col gap-3">
+        <h2 className="text-lg">1. {messages.operator.stepGet}</h2>
+        <div className="flex flex-wrap gap-3">
+          {/* Attachment responses, not navigations. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a className={primaryButton} href="/api/operator/campaign-template">
+            {messages.operator.downloadTemplate}
+          </a>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a className={quietButton} href="/api/operator/campaign-export">
+            {messages.operator.exportCurrent}
+          </a>
+        </div>
+      </section>
+      <section className="flex min-w-0 flex-col gap-3">
+        <h2 className="text-lg">2. {messages.operator.stepChoose}</h2>
       <div
+        data-drop-zone="true"
         className={`${cardClass} border border-dashed border-border`}
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
@@ -154,8 +160,15 @@ export function ImportPanel({ locale }: { locale: Locale }) {
           />
         </label>
       </div>
+      </section>
+      <section className="flex min-w-0 flex-col gap-3">
+        <h2 className="text-lg">3. {messages.operator.stepPreview}</h2>
       <div className="flex flex-wrap gap-3">
         <BusyButton busy={busy} label={messages.operator.previewAction} pendingLabel={messages.operator.pending} onClick={() => void runPreview()} />
+      </div>
+      </section>
+      <section className="flex min-w-0 flex-col gap-3">
+        <h2 className="text-lg">4. {messages.operator.stepConfirm}</h2>
         <BusyButton
           busy={busy}
           disabled={!preview || preview.errors.length > 0}
@@ -163,7 +176,7 @@ export function ImportPanel({ locale }: { locale: Locale }) {
           pendingLabel={messages.operator.pending}
           onClick={() => void runConfirm()}
         />
-      </div>
+      </section>
       {notice ? <p role="alert">{notice}</p> : null}
       {confirmed ? <p role="status">{confirmed}</p> : null}
       {preview ? (

@@ -1,6 +1,4 @@
 import { deflateSync } from "node:zlib";
-import fs from "node:fs";
-import path from "node:path";
 import { expect, test as spec, type Browser, type Page } from "@playwright/test";
 import {
   campaignOfferPath,
@@ -76,7 +74,6 @@ function bandPng() {
 }
 
 const operatorState = "e2e/.auth/operator.json";
-const evidenceDir = path.join("docs", "evidence", "T04-F2");
 const locales = [defaultLocale, prefixedLocale] as const;
 const widths = [320, 390, 768, 1024, 1440];
 
@@ -369,7 +366,7 @@ spec("campaign offer pages match the public query", async ({ page }) => {
   else expect(poster).toBeNull();
 });
 
-async function assertPreviewPicture(page: Page) {
+async function assertPreviewPicture(page: Page, report: boolean) {
   const image = page.locator("dialog img");
   await expect(image).toBeVisible();
   await expect
@@ -380,16 +377,61 @@ async function assertPreviewPicture(page: Page) {
   expect(box).toBeTruthy();
   expect(viewport).toBeTruthy();
   if (!box || !viewport) return;
-  const covers = box.width >= viewport.width * 0.9 || box.height >= viewport.height * 0.9;
-  console.log(
-    `preview-image-box ${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.width)}x${Math.round(box.height)} viewport ${viewport.width}x${viewport.height}`,
-  );
-  expect(covers).toBe(true);
+  const inline = viewport.width >= 768 ? 64 : 24;
+  expect(box.x).toBeGreaterThanOrEqual(inline - 1);
+  expect(box.y).toBeGreaterThanOrEqual(23);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width - inline + 1);
+  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height - 23);
+  const innerWidth = viewport.width - inline * 2;
+  const innerHeight = viewport.height - 48;
+  expect(box.width >= innerWidth * 0.9 || box.height >= innerHeight * 0.9).toBe(true);
   const hit = await page.evaluate(() => {
     const node = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
     return node instanceof HTMLImageElement;
   });
   expect(hit).toBe(true);
+  if (report) {
+    console.log(
+      `preview-picture ${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.width)}x${Math.round(box.height)} viewport ${viewport.width}x${viewport.height}`,
+    );
+  }
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator("dialog")).toBeVisible();
+}
+
+async function clickLargestGap(page: Page) {
+  const point = await page.evaluate(() => {
+    const image = document.querySelector("dialog img");
+    if (!(image instanceof HTMLImageElement)) return null;
+    const box = image.getBoundingClientRect();
+    const gaps = [
+      { x: box.left / 2, y: box.top + box.height / 2, size: box.left },
+      {
+        x: box.right + (window.innerWidth - box.right) / 2,
+        y: box.top + box.height / 2,
+        size: window.innerWidth - box.right,
+      },
+      { x: box.left + box.width / 2, y: box.top / 2, size: box.top },
+      {
+        x: box.left + box.width / 2,
+        y: box.bottom + (window.innerHeight - box.bottom) / 2,
+        size: window.innerHeight - box.bottom,
+      },
+    ].sort((left, right) => right.size - left.size);
+    const controls = [...document.querySelectorAll("dialog button")].map((node) => node.getBoundingClientRect());
+    for (const gap of gaps) {
+      const clear = controls.every((control) => {
+        const dx = Math.max(control.left - gap.x, 0, gap.x - control.right);
+        const dy = Math.max(control.top - gap.y, 0, gap.y - control.bottom);
+        return Math.hypot(dx, dy) >= 8;
+      });
+      if (clear) return { x: gap.x, y: gap.y };
+    }
+    return null;
+  });
+  expect(point).toBeTruthy();
+  if (!point) return;
+  await page.mouse.click(point.x, point.y);
 }
 
 async function assertPicturesLoaded(page: Page, pictures: ReturnType<Page["locator"]>) {
@@ -461,7 +503,6 @@ spec("gallery preview", async ({ page }) => {
   const pictures = await readCampaignOfferAttachments(createPublicClient(), imageRow.id);
   const count = pictures.filter((entry) => entry.slot === "main_image" || entry.slot.startsWith("gallery")).length;
   expect(count).toBeGreaterThan(1);
-  fs.mkdirSync(evidenceDir, { recursive: true });
   for (const locale of locales) {
     const messages = messagesFor(locale);
     const name = locale === defaultLocale ? imageRow.nameAr : imageRow.nameEn;
@@ -475,10 +516,16 @@ spec("gallery preview", async ({ page }) => {
     await expect(dialog).toBeVisible();
     await expect(page.locator("html")).toHaveClass(/public-scroll-lock/);
     await movePreview(page, locale, count);
-    await assertPreviewPicture(page);
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-    await expect(opener).toBeFocused();
+    await assertPreviewPicture(page, locale === defaultLocale);
+    if (locale === defaultLocale) {
+      await clickLargestGap(page);
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    } else {
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    }
     await expect(page.locator("html")).not.toHaveClass(/public-scroll-lock/);
     const thumb = page.locator("ul button").filter({ hasText: thumbLabel }).first();
     await thumb.click();
@@ -487,14 +534,25 @@ spec("gallery preview", async ({ page }) => {
     const box = await dialog.boundingBox();
     expect(box).toBeTruthy();
     if (!box) return;
-    await page.mouse.click(box.x + box.width * 0.15, box.y + box.height * 0.8);
+    await page.mouse.click(8, 8);
     await expect(dialog).toBeHidden();
     await expect(thumb).toBeFocused();
   }
+  const english = messagesFor(prefixedLocale);
+  const englishName = imageRow.nameEn;
+  const englishAlt = fillMessage(english.campaignOffer.galleryAlt, { position: "1", name: englishName });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(campaignOfferPath(prefixedLocale, imageRow.code));
+  const wideOpener = page.getByRole("button", { name: englishAlt, exact: true });
+  await wideOpener.click();
+  await expect(page.locator("dialog")).toBeVisible();
+  await assertPreviewPicture(page, true);
+  await clickLargestGap(page);
+  await expect(page.locator("dialog")).toBeHidden();
+  await expect(wideOpener).toBeFocused();
 });
 
 spec("not found", async ({ page }) => {
-  fs.mkdirSync(evidenceDir, { recursive: true });
   await page.setViewportSize({ width: 390, height: 844 });
   const hidden = [
     { urlPath: campaignOfferPath(defaultLocale, "SYN-404"), locale: defaultLocale, shot: "not-found-campaign-offer-ar-390.png" },
@@ -511,7 +569,6 @@ spec("not found", async ({ page }) => {
     await expect(page.locator("html")).toHaveAttribute("lang", entry.locale);
     await expect(page.locator("html")).toHaveAttribute("dir", directionFor(entry.locale));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.campaignOffer.notFound);
-    if (entry.shot) await page.screenshot({ path: path.join(evidenceDir, entry.shot) });
   }
   const pages = [
     { urlPath: "/ar/nope", locale: defaultLocale, shot: "not-found-page-ar-390.png" },
@@ -524,7 +581,6 @@ spec("not found", async ({ page }) => {
     await expect(page.locator("html")).toHaveAttribute("lang", entry.locale);
     await expect(page.locator("html")).toHaveAttribute("dir", directionFor(entry.locale));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.site.pageNotFound);
-    await page.screenshot({ path: path.join(evidenceDir, entry.shot) });
   }
 });
 
@@ -562,7 +618,6 @@ spec("language switch maps the same page", async ({ page, browser }) => {
 
 spec("layout, screenshots and unpublish", async ({ page, browser }) => {
   spec.setTimeout(360 * 1000);
-  fs.mkdirSync(evidenceDir, { recursive: true });
   const hosts = new Set<string>();
   const violations: string[] = [];
   page.on("request", (request) => {
@@ -571,9 +626,6 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
   page.on("console", (message) => {
     if (/content security policy/i.test(message.text())) violations.push("csp");
   });
-  const shots: Record<string, string> = {
-    [`${homePath(defaultLocale)}@390`]: "home-ar-390.png",
-  };
   const publishedPaths = [
     homePath(defaultLocale),
     homePath(prefixedLocale),
@@ -613,8 +665,6 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       }
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits, `${urlPath} ${width}`).toBe(true);
-      const shot = shots[`${urlPath}@${width}`];
-      if (shot) await page.screenshot({ path: path.join(evidenceDir, shot) });
     }
   }
   const { context, page: operator } = await operatorPage(browser);
@@ -648,9 +698,6 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       }
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits, `${urlPath} ${width}`).toBe(true);
-      if (width === 390 || width === 1440) {
-        await page.screenshot({ path: path.join(evidenceDir, `coming-soon-${locale}-${width}.png`) });
-      }
     }
   }
   expect(violations).toEqual([]);

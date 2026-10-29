@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Phone } from "lucide-react";
 import { CampaignOfferGrid } from "@/components/public/campaign-offer-grid";
@@ -12,6 +13,7 @@ import { formatPrice } from "@/lib/format-values";
 import { normaliseSearch } from "@/lib/search-normalise";
 import { loadPublishedCampaign, loadVisibleCampaignOffers, type PublishedCampaign } from "@/lib/public-data";
 import { shellProps } from "@/lib/public-shell";
+import { publicShareMetadata } from "@/lib/share-metadata";
 import { pad2 } from "@/lib/sheet-format";
 
 const focusRing =
@@ -69,6 +71,18 @@ function HomeHero({ messages, campaign }: { messages: Catalogue; campaign: Publi
       </div>
     </section>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const messages = messagesFor(locale);
+  const title = `${messages.site.campaignTitle} — ${messages.site.name}`;
+  return publicShareMetadata(locale, title, messages.home.intro);
 }
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {

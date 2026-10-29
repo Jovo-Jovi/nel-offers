@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { expect, test as spec, type BrowserContext, type Page } from "@playwright/test";
 
 const pages = [
@@ -17,7 +15,7 @@ function pathFor(locale: "ar" | "en", segment: string) {
   return `/${locale}/operator/${segment}`;
 }
 
-async function measure(page: Page, urlPath: string, width: number, shot: string | null) {
+async function measure(page: Page, urlPath: string, width: number) {
   const served = await page.request.get(urlPath);
   const html = await served.text();
   expect(html.includes("style=")).toBe(false);
@@ -30,10 +28,6 @@ async function measure(page: Page, urlPath: string, width: number, shot: string 
   }
   const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   expect(fits).toBe(true);
-  if (shot) {
-    fs.mkdirSync(path.join("docs", "evidence", "T04-F2"), { recursive: true });
-    await page.screenshot({ path: shot });
-  }
 }
 
 spec("dashboard layout in both locales", async ({ browser }) => {
@@ -50,11 +44,7 @@ spec("dashboard layout in both locales", async ({ browser }) => {
           if (message.type() === "error" && /content security policy/i.test(message.text())) violations.push("csp");
         });
         for (const width of widths) {
-          const shot =
-            locale === "ar" && entry.name === "overview" && width === 390
-              ? path.join("docs", "evidence", "T04-F2", "overview-ar-390.png")
-              : null;
-          await measure(page, pathFor(locale, entry.segment), width, shot);
+          await measure(page, pathFor(locale, entry.segment), width);
         }
         expect(violations).toEqual([]);
         await page.close();

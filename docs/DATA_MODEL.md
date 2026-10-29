@@ -60,6 +60,7 @@ locale); call `tel:<hotline_dial>`; NEL site `nel_site_url`.
 | `display_order` | integer | optional, ≥ 0 |
 | `sheet_row` | integer | row number in the sheet of `last_import_id` |
 | `last_import_id` | uuid | `"CampaignImport".id`, the most recent confirmed import that contained this code |
+| `is_shown` | boolean | not null, default true; Operator state (OD-04 item 2), set only by `set_campaign_offer_shown()`; never set by the import, never compared by the offer content check |
 | `created_at` · `updated_at` | timestamptz | |
 
 No dashboard path writes any of the nine offer columns. Only the confirmed import does.
@@ -115,13 +116,16 @@ A `CampaignOffer` is **visible** when all hold:
 1. `"Campaign".is_published` is true;
 2. `starts_on` is null, or `starts_on ≤ today`;
 3. `today ≤ ends_on`;
+4. `is_shown` is true (OD-04 item 2);
 
 where `today = (now() at time zone 'Africa/Cairo')::date` (OD-01 item 8). One SQL function
-computes it; RLS for `anon`, the public pages and the dashboard's status column all use that
-function and nothing else.
+computes conditions 1–3; RLS for `anon` adds condition 4 in the policy
+(`20261029040000_nelo_operator_controls.sql`), and the public pages read through that RLS and
+nothing else.
 
-Dashboard status for each `CampaignOffer`: **scheduled** (before its window), **visible**,
-**ended** (after its window), and — when the campaign is unpublished — **hidden**.
+Dashboard status for each `CampaignOffer` (`campaign_offer_statuses()`): **off** when an Operator
+switched it off; otherwise **hidden** while the campaign is unpublished, **scheduled** before its
+window, **ended** after it, and **visible** within it.
 
 Order on every list: `display_order` ascending with nulls last, then `sheet_row`, then
 `code_key` (OD-01 item 9).
@@ -239,7 +243,10 @@ rows (`PHASES.md` §4).
 
 ## 9. Gate queries and the media scan
 
-- **Orphan count**, run by the human in the SQL Editor, must return 0:
+- **The gate read** is `supabase/checks/nelo_gate_read.sql`: one row of drift, `CampaignOffer`
+  count, codes not starting `SYN-`, switched-off count, `MediaObject` count and orphan count. The
+  builder runs it with `npm run sql` (OD-04 item 1), or the human in the SQL Editor.
+- **Orphan count**, part of the gate read, must return 0:
   `select count(*) from public."MediaObject" m where not exists (select 1 from
   public."CampaignOfferMedia" l where l.media_object_id = m.id) and not exists (select 1 from
   public."Campaign" c where c.banner_media_object_id = m.id);`
@@ -247,4 +254,6 @@ rows (`PHASES.md` §4).
   server-only R2 values from `.env.local`, reads each one, and prints counts only: objects
   scanned, objects with EXIF, XMP or IPTC, MP4 objects with a location key, objects with no
   `MediaObject` row, and `MediaObject` rows with no object. Zero hits on every count but the
-  first is PASS. It prints no key, value or object name.
+  first is PASS. It prints no key, value or object name. With `--remove-unrecorded` it also
+  deletes every object with no `MediaObject` row that is older than 15 minutes, and prints
+  `REMOVED <n>`.

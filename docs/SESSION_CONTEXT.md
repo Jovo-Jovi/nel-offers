@@ -8,9 +8,9 @@ State is taken from this file and the repository, never from conversation.
 | | |
 |---|---|
 | Phase | P04 Public site and go-live |
-| Task in flight | T04 — Public site from the approved design (`t04-public-golive`) |
+| Task in flight | T05 — Operator controls, media choice, dashboard v2, link previews (`t05-operator-controls`, OD-04) |
 | Next | Go-live with the human (`PHASES.md` §4), staging on the Vercel address first |
-| Last verdict | T03 — PASS with its fix task T03-F, 29 Oct 2026 |
+| Last verdict | T04 — PASS with its fix tasks T04-F and T04-F2, 29 Oct 2026 |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 
@@ -29,6 +29,9 @@ State is taken from this file and the repository, never from conversation.
 - Design: the designer's implementation at `tony-saleeb/nile` `e8f6df73`, approved by Andrew
   (OD-02 item 3; `DESIGN_SYSTEM.md` §11).
 - Review: no Opus review (OD-02 item 1); the reviewer verifies every branch.
+- SQL: reviewer-authored files run through `npm run sql` (OD-04 item 1; `SECURITY_MODEL.md` §2.1)
+  or by the human in the SQL Editor. The connection string lives only in the builder machine's
+  `.env.local`.
 - Template: `assets/templates/NELO_offers_template.xlsx`, SHA-256
   `23f88b52710d3bc283086a955ae405b018165247afd0595739600cc4bcc18fa1`.
 - Usage: every run is recorded by the next fence (`PHASES.md` §5); totals in

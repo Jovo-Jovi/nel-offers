@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { BannerPanel } from "@/components/banner-panel";
 import { LatinRun } from "@/components/latin-run";
 import { CardPriceSwitch, SettingsForm } from "@/components/settings-form";
-import { isLocale, messagesFor } from "@/i18n/config";
+import { isLocale, messagesFor, operatorPath } from "@/i18n/config";
+import { cardClass } from "@/components/operator-classes";
 import { contactsComplete, type ContactDraft } from "@/lib/campaign-contacts";
 import { contactDraft, readBannerKey, readCampaign } from "@/lib/operator-data";
 import { requireOperator } from "@/lib/require-operator";
@@ -38,24 +39,36 @@ export default async function CampaignSettingsPage({ params }: { params: Promise
   return (
     <div className="flex min-w-0 flex-col gap-6">
       <h1 className="text-2xl">{messages.operator.settingsHeading}</h1>
-      <SettingsForm locale={locale} saved={draft} />
-      {ready ? (
-        <ul className="flex min-w-0 flex-col gap-2 text-sm">
-          <li>
-            <a href={`https://wa.me/${draft.whatsapp_digits}`}>{messages.operator.linkWhatsapp}</a>
-          </li>
-          <li>
-            <a href={`tel:${draft.hotline_dial}`}>{messages.operator.linkCall}</a>
-          </li>
-          <li>
-            <a href={draft.nel_site_url}>
-              {messages.operator.linkNel} <LatinRun>{draft.nel_site_url}</LatinRun>
-            </a>
-          </li>
-        </ul>
-      ) : null}
-      <CardPriceSwitch locale={locale} showCardPrice={campaign?.show_card_price === true} />
-      <BannerPanel locale={locale} bannerKey={bannerKey ?? ""} bannerUrl={bannerUrl} />
+      <section className={cardClass}>
+        <h2 className="text-lg">{messages.operator.contactsCard}</h2>
+        <SettingsForm locale={locale} saved={draft} />
+        {ready ? (
+          <ul className="mt-3 flex min-w-0 flex-col gap-2 text-sm">
+            <li>
+              <a href={`https://wa.me/${draft.whatsapp_digits}`}>{messages.operator.linkWhatsapp}</a>
+            </li>
+            <li>
+              <a href={`tel:${draft.hotline_dial}`}>{messages.operator.linkCall}</a>
+            </li>
+            <li>
+              <a href={draft.nel_site_url}>
+                {messages.operator.linkNel} <LatinRun>{draft.nel_site_url}</LatinRun>
+              </a>
+            </li>
+          </ul>
+        ) : null}
+      </section>
+      <section className={cardClass}>
+        <h2 className="text-lg">{messages.operator.homeCard}</h2>
+        <CardPriceSwitch locale={locale} showCardPrice={campaign?.show_card_price === true} />
+        <BannerPanel locale={locale} bannerKey={bannerKey ?? ""} bannerUrl={bannerUrl} />
+      </section>
+      <section className={cardClass}>
+        <h2 className="text-lg">{messages.operator.publishingCard}</h2>
+        <a className="text-sm text-primary" href={operatorPath(locale, "overview")}>
+          {messages.operator.publishLabel}
+        </a>
+      </section>
     </div>
   );
 }

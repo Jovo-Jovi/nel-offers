@@ -239,3 +239,71 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: `npm run start` was already running, so the passing Playwright run reused it and `npm run evidence` used the same server.
+
+## 2026-10-29 — Reviewer session 8 (T04-F2 verdict, OD-04)
+
+- Fetched `t04-f2-routes` at `24e62f5`. Verified the bundle (6/6 at LANDING and HEAD), compared the
+  ledger changes, the journal entries and the usage records with the fence (exact), and re-ran a
+  clean install, the four guards with their self-checks, lint, typecheck, the unit specs (36) and the
+  build. Served the build: `/` and unprefixed page paths answer 307 to `/ar`; `/ar` and `/en` 200;
+  `/dashboard` 307 to `/ar/operator/overview` and `/en/dashboard` to `/en/operator/overview`; the
+  overview sends a Visitor without a session to sign-in. Viewed the coming-soon and not-found
+  screenshots in both locales. The human attested the gate row (drift 0) and CI success on PR #6.
+- Verdict T04-F2: PASS; with T04-F, T04 passes. PR #6 may be merged.
+- The human's requests after testing on the Vercel address are signed as OD-04. Not adopted: adding
+  or editing a CampaignOffer by hand, which the offer content gate forbids (OD-04 item 9).
+- Reviewer-authored for T05 and rehearsed on PostgreSQL 16 over verified TLS: migration
+  `20261029040000_nelo_operator_controls.sql` (show switch, removal of one slot); its proof (16/16;
+  15/16 with the policies planted without `is_shown`; fails before the migration); the existing
+  proofs after it (47/47, 17/17); the gate read; and `scripts/sql/run.mjs`, which refused an edited,
+  untracked or unlisted file, a migration without `--apply`, and a certificate that does not sign
+  the server.
+
+## 2026-10-29 — T05 (builder)
+
+- LANDING `0885ba5d54c2b7fae31482fb6a0e529f60f24c28`. `T05 BUNDLE PASS 17 / 17 []` at LANDING and at `a36b90bd9b74412ebe62acccc11d67eaca5a9568`. Carry-forwards `30 10 ['31']`: 29 + 1 = 30 rows, next free 31, open 9 + 1 = 10. Precedents `32 ['33']`: 30 + 2 = 32, next free 33.
+- Ids: `91a7ec69100ee65fcad4ad101588daaca4c3e671` SQL runner wiring; `a36b90bd9b74412ebe62acccc11d67eaca5a9568` operator controls, specs and evidence.
+- On `a36b90bd9b74412ebe62acccc11d67eaca5a9568`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The T01–T04-F2 and `supabase/` diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). The only new dependency is `pg@8.23.1`.
+- SQL `supabase/migrations/20261029040000_nelo_operator_controls.sql` sha256=33524fe27193 / APPLIED. SQL `supabase/checks/nelo_rls_proof.sql` sha256=d68a48c8064b / RAISED RLS PROOF (rolled back): PASS 47/47. SQL `supabase/checks/nelo_rls_proof_presentation.sql` sha256=0dfacc5b5b90 / RAISED PRESENTATION PROOF (rolled back): PASS 17/17. SQL `supabase/checks/nelo_rls_proof_operator_controls.sql` sha256=8b8242317769 / RAISED OPERATOR CONTROLS PROOF (rolled back): PASS 16/16.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 24 passed. Evidence is `docs/evidence/T05/` (sixteen screenshots and `meta.json`). Link-preview image URLs are stored as `<site>/share/nelo-share.png`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row after the specs: `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: the campaign was already published when an earlier dashboard run reached the publish switch, so that dialog was the coming-soon text. It was unpublished through the operator switch before the recorded run. The recorded run starts unpublished and leaves it unpublished.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`. The share evidence rewrites that origin to `<site>`.
+
+## 2026-10-29 — Reviewer session 9 (T05 verdict)
+
+- Fetched `t05-operator-controls` at `e0101f7` (PR #7). Verified the bundle (17/17 at LANDING and
+  HEAD), compared the ledger rows, the journal entries and the usage record with the fence (exact),
+  checked the wiring diff (`pg` 8.23.1 only) and that nothing under `supabase/` or earlier evidence
+  changed, and re-ran a clean install, the four guards with their self-checks, lint, typecheck, the
+  unit specs (36), the audit and the build. Served the build: the favicon, icons and share image
+  answer 200; `/ar` and `/en` carry the Open Graph and Twitter tags in the head, also for a WhatsApp
+  user agent; the sign-in page carries none; `/ar` sets no cookie. Read the presign route (code and
+  slot only; a body with `name` is 422) and the two new server actions. Read CI success on `e0101f7`
+  from GitHub.
+- Through the SQL runner: migration 5 applied; proofs 47/47, 17/17 and 16/16; gate row drift 0,
+  orphans 0; the scan clean.
+- Findings: the gallery preview shows a picture smaller than the screen at its own size and the
+  spec's fill check was dropped; three dashboard screenshots show the loading skeleton; the
+  CampaignOffer cards lack thumbnails and "Replace", the status sits where the switch's label
+  belongs, the bottom bar's labels are cut off, a missing start date reads "None", queue sizes have
+  no unit. The report gave no output for steps 1–2; verified here instead.
+- Verdict T05: FAIL. T05-F issued. CF-30 closes: the library, slot removal and a clean scan.
+
+## 2026-10-29 — T05-F (builder)
+
+- LANDING `98ee37d1d0085267cebac5db15d19066ce652be6`. Carry-forwards `34 12 ['35']`: 30 + 4 = 34 rows, next free 35, open 10 − 1 + 3 = 12. CF-30 is `CLOSED (T05)`. CF-31 to CF-33 are open. CF-34 is `CLOSED (T05)`.
+- Ids: `98ee37d1d0085267cebac5db15d19066ce652be6` ledger, T05 verdict entry and usage record; `c8af45a47e3ff1a8a8fa86df0b9402d50aec4d55` preview fill, slot tiles, labels and evidence.
+- On `c8af45a47e3ff1a8a8fa86df0b9402d50aec4d55`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for T01–T04-F2 evidence, `supabase/`, `scripts/sql/`, `package.json` and `package-lock.json` is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 24 passed. `preview-picture 24,251 342x342 viewport 390x844`. `preview-picture 294,24 852x852 viewport 1440x900`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
+- Deviation: dashboard screenshots below 1024 px are the viewport, so the fixed bottom bar is fully in the frame. Wider shots stay full-page.
