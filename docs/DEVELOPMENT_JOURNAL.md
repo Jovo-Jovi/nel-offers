@@ -174,3 +174,7 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run start` was already running so Playwright could reuse it and `npm run evidence` could use the same server.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-29 — T04 (gate row)
+
+- Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0. `media_objects` equals `SCAN objects=5`. The builder did not run SQL.
