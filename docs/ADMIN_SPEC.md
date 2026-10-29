@@ -71,9 +71,10 @@ only; a line under the list says how to change them (export, edit in Excel, impo
 
 Two tabs, **Videos** (`.mp4`) and **Images** (`.jpg` `.jpeg` `.png` `.webp`); each tab's picker and
 drop zone accept only its kind (OD-04 item 4). Below the tabs, the **library** (OD-04 item 5): every
-stored `MediaObject`, grouped by `CampaignOffer` in list order, each with its slot, a preview
-(video first frame or image) and **Remove a slot** (§3). A search field filters the library by code
-or name.
+stored `MediaObject` of the selected tab's kind (videos under **Videos**, images under **Images**;
+OD-05 item 7), grouped by `CampaignOffer` in list order, each with its slot, a preview (video first
+frame or image) and **Remove a slot** (§3). The library's heading carries the tab's count. A search
+field filters the library by code or name.
 
 1. **Select** many files at once (picker or drop). Each becomes a queue row.
 2. **Parse** each name, ignoring case:
@@ -123,6 +124,7 @@ Operator can try them.
   `published_at` and `published_by`. Once on, the overview's counts — from the visibility
   function — show how many are visible today.
 - **Off** is immediate after a confirmation. The public site shows the coming-soon state.
+- The switch has the same normal size as the show switch on a CampaignOffer card (OD-05 item 4).
 
 ## 8. Copy
 
@@ -162,10 +164,23 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
 - **CampaignOffers.** A search field (code or name) and filter chips by status (all, visible,
   scheduled, ended, off, hidden) at the top, with one line under the chips saying in plain words
   what each status means. The status words are plain: visible now, starts later, ended, switched
-  off, not published. One card per `CampaignOffer`: code, name in the
-  dashboard's locale, price, end date, status chip, the show switch, and the five slots as small
-  tiles — a thumbnail when filled, with remove; an empty mark when not, with add. **Remove** the
-  `CampaignOffer` sits in the card's "more" menu.
+  off, not published. One card per `CampaignOffer` (card v3, OD-05 item 6):
+  - **Head.** At the inline start, a square cover — the main image, else the main video's first
+    frame, else an empty media mark — 72 px, 96 px from `md`, rounded. Beside it: the code (Latin
+    run) with the status chip; the name in the dashboard's locale, bold and larger; the other
+    locale's name, muted; one meta line of small soft chips — the price with its currency, and the
+    dates (`Until <end>` or `<start> – <end>`). At the inline end: the show switch with its own label,
+    and a "more" button (a ⋮ icon with an accessible name) whose menu holds **Remove** for the
+    `CampaignOffer`, in red.
+  - **Media strip.** Below the head, the five slots as five equal square tiles in one row at every
+    width from 320 px, each with its slot name under it: main video, main image, image 1, image 2,
+    image 3. A filled tile shows its thumbnail; on hover or focus — and on tap on touch screens — it
+    offers **Replace** and **Remove** (red). An empty tile has a dashed border and a "+" mark and
+    opens the media page with this code and slot chosen.
+  - **Look.** Rounded card with the theme's shadow and border, comfortable padding, a slight lift on
+    hover; no full-width button rows. The slot names are "الفيديو الرئيسي · الصورة الرئيسية · صورة 1 ·
+    صورة 2 · صورة 3" / "Main video · Main image · Image 1 · Image 2 · Image 3" everywhere in the
+    dashboard (OD-05 item 3).
 - **Import.** A stepper of four steps: get the template or export the current list; choose the
   sheet; preview (§4 order); confirm and summary.
 - **Media objects.** §5: the two tabs, each with its drop zone, queue and **Upload**; the library
@@ -181,3 +196,9 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
   300 ms.
 - **Dropped files.** On every dashboard page, a file dropped outside a drop zone is ignored: the
   browser never navigates to it.
+- **Removal in red** (OD-05 item 5). Every remove or delete control — a CampaignOffer, a slot, a
+  library row, the banner — is drawn in the theme's error colour, and the confirming button of its
+  dialog is filled in that colour.
+- **Dialogs centred** (OD-05 item 5). Every confirmation is a modal dialog centred on the screen,
+  horizontally and vertically, at every width, over a dimmed page; it names what it acts on (code
+  and slot) and offers Cancel and the action.

@@ -388,3 +388,15 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: the first Campaign read, before this resume, printed `CONNECT FAILED ETIMEDOUT` and was not retried. This resume's single read is the line above.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-29 — Reviewer session 13 (T05-F3 verdict, OD-05)
+
+- Fetched `t05-f3-contacts` at `344cf9f` (PR #10). Verified the bundle (2/2 at LANDING and HEAD),
+  compared the carry-forward row, the journal entries and the usage records with the fence (exact),
+  and re-ran the four guards, lint, typecheck and the unit specs (39). Read `readCampaignRow` (only
+  the five contact columns changed) and the two error states (theme classes, no inline style). The
+  Campaign read through the runner: one row, published, contact values set. CI success on `344cf9f`
+  read from GitHub.
+- Verdict T05-F3: PASS. CF-38 closes. CF-39 records the error page's missing left-to-right isolation.
+- The human relayed the designer's changes, signed as OD-05. The human's screenshot shows a synthetic
+  CampaignOffer visible on the live project (CF-40). T06 issued.

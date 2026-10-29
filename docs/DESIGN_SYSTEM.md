@@ -279,8 +279,8 @@ suffix so that nothing compiles it).
   draws its first frame instead of a blank frame (OD-04 item 7c). Otherwise the main image, which
   opens the gallery preview. With neither, the designer's `primary-soft` frame stays empty. The
   designer's caption is not used.
-- **Thumbnails.** The gallery images (`gallery_1`–`gallery_3`) in slot order, labelled
-  `campaignOffer.imageLabel`. With none, the row is omitted and the main media takes the full width.
+- **Thumbnails.** The gallery images (`gallery_1`–`gallery_3`) in slot order. `campaignOffer.imageLabel`
+  is their accessible name only; no caption is drawn under them (OD-05 item 2). With none, the row is omitted and the main media takes the full width.
   The preview set is the main image (when present) followed by the gallery images.
 - **Price, date, conditions.** `PriceCard` always shows the price. `ExpiryBox` puts the end date's
   day, month and year (Western digits, each in `LatinRun`) above the designer's labels. `TermsBox`
@@ -290,7 +290,11 @@ suffix so that nothing compiles it).
   (`DATA_MODEL.md` §2.1). Below `lg` they sit in the designer's fixed bottom dock.
 - **Header and footer.** Header: mark, `site.name`, the page subtitle (`header.homeSubtitle` or
   `header.campaignOfferSubtitle`), and `header.labSite` opening `nel_site_url` in a new tab (omitted
-  while `nel_site_url` is not set). Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
+  while `nel_site_url` is not set). The header is a floating pill (OD-05 item 1): fully rounded,
+  inset from the page's top and inline edges (12 px, 24 px from `md`), sticky at that inset while the
+  page scrolls, on `surface` with the theme's card shadow and border; the content scrolls beneath it
+  with a matching top offset. No horizontal overflow from 320 px; below `sm` the subtitle may be
+  hidden, never the mark, the site name or the lab-site button. Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
   where the designer has its page line, and the language switch.
 - **Gallery preview keys.** Arrow keys follow the screen: in Arabic the left arrow goes to the next
   image, in English the right arrow does. The position line (`2 / 4`) is in `LatinRun`.
