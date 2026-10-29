@@ -17,7 +17,8 @@
     "usage:report": "node scripts/usage/report.mjs",
     "test:unit": "vitest run",
     "check:r2": "node --env-file=.env.local scripts/checks/r2-roundtrip.mjs",
-    "scan:media-objects": "node --env-file=.env.local scripts/checks/scan-media-objects.mjs"
+    "scan:media-objects": "node --env-file=.env.local scripts/checks/scan-media-objects.mjs",
+    "sql": "node --env-file=.env.local scripts/sql/run.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1159.0",
@@ -41,6 +42,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "pg": "8.23.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.12"
