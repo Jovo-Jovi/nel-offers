@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-25**
+**Next free id: CF-26**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -28,8 +28,9 @@ cell of any row is ever edited. Closed rows stay.
 | CF-17 | Vercel's GitHub app cannot see `Jovo-Jovi/nel-offers`: no preview per branch and no production deployment from `main`, so T02's "Vercel preview Ready" criterion could not be met. The human grants the app access to the repository and connects it in the Vercel project. | the human | 2026-10-29 | go-live | OPEN |
 | CF-18 | Vercel Hobby is for personal, non-commercial use under Vercel's terms, and NELO is client work (OD-02 item 2). The human decides before go-live whether the project moves to Pro. | the human | 2026-10-29 | go-live | OPEN |
 | CF-19 | T02 was run and reported before two of its preconditions held (an "Operator" row; the RLS proof 47/47). The proof and a sign-in through TOTP are attested by the human at the T03 handover and quoted in the T03 report. | the human · builder | 2026-10-29 | T03 | CLOSED (T03) |
-| CF-20 | Migration 1's `apply_campaign_import` refused a stale preview with SQLSTATE `40001`, which PostgREST retries without end. T03's stale-confirm spec left retrying transactions on the live project, and the confirm route hid them behind an 8-second abort. A reviewer SQL defect. Fixed by `20261029020000_nelo_import_conflict.sql` (`PT409`) and T03-F; the human terminated the retrying backends. | reviewer · builder · the human | 2026-10-29 | T03 | OPEN |
-| CF-21 | `src/lib/workbook-bytes.ts` imports `jszip`, a transitive dependency of `exceljs` not declared in `package.json`, with a hand-written type shim — a dependency outside T03 step 4, reported as a deviation instead of a halt. Fixed by T03-F. | builder | 2026-10-29 | T03 | OPEN |
-| CF-22 | Arabic dates on the CampaignOffers page render as `182026/11/`: `Intl`'s Arabic output carries U+200F marks, and `LatinRun` isolates it left to right. `DESIGN_SYSTEM.md` §5 amended by T03-F; fixed by T03-F. | reviewer · builder | 2026-10-29 | T03 | OPEN |
-| CF-23 | The four T03 sign-in screenshots were taken with the spec session and show the overview, so the restyled sign-in page has no rendered evidence. Fixed by T03-F. | builder | 2026-10-29 | T03 | OPEN |
+| CF-20 | Migration 1's `apply_campaign_import` refused a stale preview with SQLSTATE `40001`, which PostgREST retries without end. T03's stale-confirm spec left retrying transactions on the live project, and the confirm route hid them behind an 8-second abort. A reviewer SQL defect. Fixed by `20261029020000_nelo_import_conflict.sql` (`PT409`) and T03-F; the human terminated the retrying backends. | reviewer · builder · the human | 2026-10-29 | T03 | CLOSED (T03-F) |
+| CF-21 | `src/lib/workbook-bytes.ts` imports `jszip`, a transitive dependency of `exceljs` not declared in `package.json`, with a hand-written type shim — a dependency outside T03 step 4, reported as a deviation instead of a halt. Fixed by T03-F. | builder | 2026-10-29 | T03 | CLOSED (T03-F) |
+| CF-22 | Arabic dates on the CampaignOffers page render as `182026/11/`: `Intl`'s Arabic output carries U+200F marks, and `LatinRun` isolates it left to right. `DESIGN_SYSTEM.md` §5 amended by T03-F; fixed by T03-F. | reviewer · builder | 2026-10-29 | T03 | CLOSED (T03-F) |
+| CF-23 | The four T03 sign-in screenshots were taken with the spec session and show the overview, so the restyled sign-in page has no rendered evidence. Fixed by T03-F. | builder | 2026-10-29 | T03 | CLOSED (T03-F) |
 | CF-24 | `f79ceae` (the TOTP QR size bound in `src/lib/totp-pane.ts`, 100 kB → 500 kB) reached `main` through PR #3 outside any fence. Reviewed at the T03 verdict: it changes that bound only. | the human | 2026-10-29 | — | CLOSED (T03) |
+| CF-25 | T03-F's report gave guard results from before its last edit: `ba78f39` failed `guard:naming` in CI (a spec helper named with the bare noun "offer"). Fixed at `cae7457`; CI green. From T04 on, the checks are re-run after the last commit, on the tree that is pushed. | builder | 2026-10-29 | — | CLOSED (T03-F) |

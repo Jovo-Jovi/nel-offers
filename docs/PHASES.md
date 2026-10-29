@@ -31,17 +31,18 @@ ticked.
   sign-in, TOTP enrolment and verification, `aal2` enforcement. R2 presign and finalise route
   handlers; server-side presigning of view links. Security headers with nonce CSP. Vercel project with environment values set by the
   human; R2 CORS applied by the human. Boundary evidence for schema, routes and bucket.
-- [ ] **T03 — Operator dashboard.** The approved theme and font for the whole application
+- [x] **T03 — Operator dashboard** (with its fix task T03-F). The approved theme and font for the whole application
   (OD-02 item 3). Migration 2 (card price switch, campaign banner). Overview, CampaignOffers list
   with Remove, template download, export, import with preview and confirm, media-object bulk
   upload with the media edge controls, Campaign settings with the price switch and the banner,
   publish switch, skeletons and motion (OD-02 items 4, 10). Unit specs for the parser and the name
   rules; end-to-end specs on synthetic sheets and media; the round-trip property; the offer
   content check on synthetic data; `scan:media-objects`.
-- [ ] **T04 — Public site, the designer's UI, go-live.** Home and CampaignOffer page reproduced
-  from the approved design (`DESIGN_SYSTEM.md` §11) and wired to data: banner hero, search,
+- [ ] **T04 — Public site from the approved design.** Home and CampaignOffer page reproduced
+  from the approved design (`DESIGN_SYSTEM.md` §§11–11.1) and wired to data: banner hero, search,
   cards with the price switch, main media, gallery preview, end-date boxes, actions, localized
-  not-found and coming-soon states, skeletons, no overflow from 320 px. Rendered evidence and end-to-end specs in both locales and widths. Then
+  not-found and coming-soon states, skeletons, no overflow from 320 px. Rendered evidence and
+  end-to-end specs in both locales and widths; the offer content check on the rendered pages. Then
   §4 with the human.
 
 ## 3. Gate evidence
@@ -55,23 +56,36 @@ ticked.
 
 ## 4. Go-live list (with the human)
 
-1. Every synthetic `CampaignOffer` removed through the dashboard; then the reviewer-authored
-   synthetic reset run in the SQL Editor; the count of codes starting `SYN-` and the orphan
-   count are zero, human-attested; `scan:media-objects` reports zero objects without a
-   `MediaObject` row. Any account created only for specs is removed from Supabase Auth.
-2. An Operator imports the laboratory's real sheet and uploads its media.
-3. `campaign_offer_drift()` returns zero rows; `scan:media-objects` returns zero hits; orphan
-   `MediaObject` count is zero.
-4. Contact values entered and tried from the settings page.
-5. Copy confirmed by Andrew, or the open drafts listed in the verdict.
-6. Vercel: `offers.nileegyptlabs.com` added to the project; GoDaddy: one CNAME record `offers`
-   to the target Vercel names; Vercel verifies; the certificate is served.
-7. `NEXT_PUBLIC_SITE_URL`, the R2 CORS origins and the Supabase Auth site URL point at the
+Each step is done and attested before the next. The reviewer checks the evidence of steps 2, 3, 5
+and 8.
+
+1. **Vercel connection.** Vercel's GitHub app can see the repository and the project deploys
+   `main` (CF-17). The human records the Hobby or Pro decision (CF-18).
+2. **Staging on the Vercel address.** `NEXT_PUBLIC_SITE_URL` is the project's `https://….vercel.app`
+   address; the Supabase Auth site URL and redirect list and the R2 CORS origins include it. On that
+   address, with the synthetic data: sign-in with TOTP, an import, an upload, the publish switch,
+   and the public home and CampaignOffer pages on a phone. Screenshots and a header dump from that
+   address go to the reviewer.
+3. **Synthetic data out.** Every synthetic `CampaignOffer` and the synthetic banner removed through
+   the dashboard; then `supabase/ops/nelo_synthetic_reset.sql` in the SQL Editor. Its result row
+   reads zero for every count, the campaign unpublished and no contact value set, human-attested.
+4. **Real Operators.** The laboratory's Operator accounts created and enrolled (`ADMIN_SPEC.md` §9;
+   CF-10).
+5. **Real content.** An Operator imports the laboratory's real sheet and uploads its media (CF-05,
+   CF-06). `campaign_offer_drift()` returns zero rows; `scan:media-objects` reports zero hits; the
+   orphan count is zero.
+6. **Contacts and copy.** Contact values and the NEL site address entered and tried from the
+   settings page (CF-07, CF-08); copy confirmed by Andrew, or the open drafts listed in the verdict
+   (CF-03).
+7. **Domain.** Vercel: `offers.nileegyptlabs.com` added to the project; GoDaddy: one CNAME record
+   `offers` to the target Vercel names (CF-09); Vercel verifies; the certificate is served.
+   `NEXT_PUBLIC_SITE_URL`, the R2 CORS origins and the Supabase Auth site URL point at the
    production address.
-8. The repository is made private again (OD-01 item 2); an anonymous `git ls-remote` fails
-   and the unauthenticated API answers 404.
-9. An Operator switches the campaign on.
-10. Production screenshots, both locales, both widths.
+8. **Publish.** An Operator switches the campaign on. Production screenshots, both locales, both
+   widths; G4 re-run.
+9. **Close-out.** The spec account removed from Supabase Auth and its `E2E_` values deleted from
+   `.env.local`. The repository made private again (OD-01 item 2; CF-01): an anonymous
+   `git ls-remote` fails and the unauthenticated API answers 404.
 
 ## 5. Usage ledger
 

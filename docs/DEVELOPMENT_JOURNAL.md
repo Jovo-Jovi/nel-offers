@@ -139,3 +139,20 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 ## 2026-10-29 — T03-F (builder, CI)
 
 - `ci / verify` failed on `ba78f39` because `guard:naming` rejects the bare noun in `removeSyntheticOffers`. The helper is now `removeSyntheticCampaignOffers`. The other CI steps had not run.
+
+## 2026-10-29 — Reviewer session 5 (T03-F verdict)
+
+- Fetched `t03-dashboard` at `cae7457b`. Re-ran the bundle verification (3/3 at LANDING and
+  HEAD; the T03 manifest's design-system line superseded), compared the landed rows, the new
+  precedent and the journal entry with the fence (exact), and re-ran a clean install, the four
+  guards with their self-checks, lint, typecheck, the unit specs (28) and the audit. Read the
+  confirm route (`PT409` mapped, no abort), the formatters and the workbook loader. Viewed the
+  changed screenshots: Arabic dates read `18/11/2026`; the sign-in pages show the sign-in form.
+- The human attested the retrying backends terminated, migration 3 applied, both proofs passing,
+  the gate row at zero drift and a flat rollback counter.
+- `ba78f39` failed `guard:naming` in CI after the report's local run; fixed at `cae7457`. Logged
+  and closed.
+- Verdict T03-F: PASS; with it T03 passes. CF-20 to CF-23 close. T04 issued with the designer's
+  source as reference, the wiring decisions (`DESIGN_SYSTEM.md` §11.1), the go-live list with
+  staging on the Vercel address, and the synthetic reset, rehearsed on PostgreSQL 16: it refuses
+  while rows remain and resets to zero after.

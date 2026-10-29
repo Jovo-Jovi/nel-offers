@@ -233,3 +233,50 @@ shimmer; no shimmer under `prefers-reduced-motion`.
 | `a11y.nextImage` | الصورة التالية | Next image | draft |
 | `a11y.closePreview` | إغلاق | Close | draft |
 | `a11y.banner` | صورة حملة معامل النيل مصر | Nile Egypt Labs campaign banner | draft |
+
+### 11.1 Wiring decisions (T04)
+
+Where the approved design shows a placeholder, it is wired as follows. The designer's source at
+`e8f6df73` is kept for reference in `docs/research/design/source/` (each file renamed with a `.txt`
+suffix so that nothing compiles it).
+
+- **Mark.** `public/mark/nel-mark.png` fills the header's 48 px logo slot (`object-contain` on
+  `bg-surface`, the slot's own rounded shape), linking home. Alt text `a11y.mark`.
+- **Hero.** The Operator's banner (`Campaign.banner_media_object_id`) in the designer's image cell,
+  alt `a11y.banner`; with no banner the cell is omitted and the text cell spans the row. Text cell:
+  `home.eyebrow`, `home.heading` with `site.name` as the designer's second line, `home.intro`,
+  then the hotline button (`footer.hotline`, `tel:` from `hotline_dial`) and the WhatsApp button
+  (`actions.whatsapp`, a plain `https://wa.me/<whatsapp_digits>` chat).
+- **Search.** One field (`home.searchPlaceholder`, also its accessible name) at the top of the
+  card-grid panel, in the panel's own style (`rounded-button border border-border bg-bg`, the
+  designer's focus ring, a `Search` icon at inline-start). Filtering hides cards; each card keeps its
+  number. With no match, `home.noMatches` replaces the grid.
+- **Card.** The designer's card: the number (two digits, position in the visible list), the code
+  (`LatinRun`), the name in the page's locale, the price with `campaignOffer.currency` only when
+  `show_card_price`, and the designer's arrow, mirrored for English. The whole card is the link.
+- **CampaignOffer page.** Back link `nav.allCampaignOffers` with the designer's arrow (mirrored).
+  `h1` the name in the page's locale; under it the other locale's name with its own `lang` (English
+  in `LatinRun`, Arabic in a `<bdi>` with no `dir`). `CodeBadge` with `campaignOffer.codeLabel`.
+- **Main media.** A main video is a `<video>` with `controls`, `preload="metadata"`, `playsinline`
+  and the main image as poster; the designer's play button sits over it until it plays
+  (`a11y.playVideo`). Otherwise the main image, which opens the gallery preview. With neither, the
+  designer's `primary-soft` frame stays empty. The designer's caption is not used.
+- **Thumbnails.** The gallery images (`gallery_1`–`gallery_3`) in slot order, labelled
+  `campaignOffer.imageLabel`. With none, the row is omitted and the main media takes the full width.
+  The preview set is the main image (when present) followed by the gallery images.
+- **Price, date, conditions.** `PriceCard` always shows the price. `ExpiryBox` puts the end date's
+  day, month and year (Western digits, each in `LatinRun`) above the designer's labels. `TermsBox`
+  shows the conditions in the page's locale and is omitted when there are none.
+- **Actions.** `ActionButtons`: call (`actions.callShort`, `tel:<hotline_dial>`) and WhatsApp
+  (`actions.whatsapp`) opening `https://wa.me/<whatsapp_digits>?text=<encoded order message>`
+  (`DATA_MODEL.md` §2.1). Below `lg` they sit in the designer's fixed bottom dock.
+- **Header and footer.** Header: mark, `site.name`, the page subtitle (`header.homeSubtitle` or
+  `header.campaignOfferSubtitle`), and `header.labSite` opening `nel_site_url` in a new tab (omitted
+  while the campaign is unpublished). Footer: `footer.hotline` and `footer.whatsapp` from `Campaign`
+  where the designer has its page line, and the language switch.
+- **Gallery preview keys.** Arrow keys follow the screen: in Arabic the left arrow goes to the next
+  image, in English the right arrow does. The position line (`2 / 4`) is in `LatinRun`.
+- **States.** Coming soon (unpublished): header without the lab-site button, `home.comingSoon` in
+  the hero's text cell, footer without contacts. Nothing visible today: `home.nothingVisible` in
+  the grid panel. Not found (unknown code, a code not visible today, or an unknown path): status
+  404, header, `campaignOffer.notFound` and the back link, in the URL's locale (§8; CF-14).
