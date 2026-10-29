@@ -14,6 +14,8 @@ reviewer rehearsal, Opus review before merge (T02).
 | `R2_SECRET_ACCESS_KEY` | Vercel env, `.env.local` | No |
 | `R2_BUCKET` | Vercel env, `.env.local` | No |
 | `NEXT_PUBLIC_SITE_URL` | Vercel env, `.env.local` | Yes |
+| `SUPABASE_DB_URL` | the builder machine's `.env.local` only — never Vercel | No |
+| `SUPABASE_DB_CA` | the builder machine's `.env.local` only: the path of the project's CA certificate, kept outside the repository | No |
 
 - No Supabase secret (service-role) key is used by the application. Operator actions run under
   the Operator's own session and RLS; public reads run under the publishable key and RLS.
@@ -24,6 +26,10 @@ reviewer rehearsal, Opus review before merge (T02).
 - GitHub secret scanning with push protection is on for the repository (the human enables it;
   it is free while the repository is public).
 - Server-only modules that read `R2_*` import `server-only`.
+- `SUPABASE_DB_URL` is the Session pooler connection string and carries the database password
+  (OD-04 item 1). Only `scripts/sql/run.mjs` reads it; no application code, spec or other script
+  does. It is never set in Vercel. The human resets the database password in Supabase at
+  close-out, which invalidates it.
 
 ## 2. Database (Supabase)
 
@@ -40,8 +46,25 @@ reviewer rehearsal, Opus review before merge (T02).
 - **Writes** — only through `is_operator()`. `"CampaignImport"` is insert-only (no update or
   delete policy). `"Operator"` has no write policy at all; the human inserts rows in the SQL
   Editor.
+- Operator state outside the sheet — the publish switch, a `CampaignOffer`'s show switch, removing
+  one slot — changes only through `security definer` functions that check `is_operator()`
+  (`set_campaign_published`, `set_campaign_offer_shown`, `remove_campaign_offer_media`). No
+  Operator policy grants a direct update of `is_shown`.
 - Functions are `security definer` with `set search_path = ''` and fully qualified names.
-- The migration lands byte-exact from reviewer-authored SQL; the human applies it.
+- A migration lands byte-exact from reviewer-authored SQL; the builder applies it with the SQL
+  runner (§2.1), or the human in the SQL Editor.
+
+### 2.1 SQL runner (OD-04 item 1)
+
+`npm run sql -- <path> [--apply]` runs `scripts/sql/run.mjs`, reviewer-authored and landed
+byte-exact. It runs one file only when the path is under `supabase/migrations`, `supabase/checks`
+or `supabase/ops`, is tracked and unchanged in the working tree, and its committed bytes' SHA-256
+is listed for that path in a `docs/method/*_BUNDLE.sha256` manifest at `HEAD`; it runs the
+committed bytes. Migrations and operations need `--apply` and run in one transaction; checks run
+as they are. TLS is verified against `SUPABASE_DB_CA`, with no way to turn verification off. It
+prints the path and a short hash, then only the outcome line or the rows of the last statement —
+never an environment value, host, user name or the connection string; a connection failure prints
+its error code only. The builder reports each line under R1–R4. A fence names every run (PR-13).
 
 ## 3. Operator sign-in
 
@@ -77,8 +100,9 @@ reviewer rehearsal, Opus review before merge (T02).
   and refuse any caller that is not `is_operator()` at `aal2`.
 - **Upload.** The browser checks the selected file against `DECISIONS.md` OD-01 item 10
   (format and size as selected) and re-encodes images. The Operator-only route handler then
-  validates the parsed name and the object about to be sent — `video/mp4` at most 100 MB, or
-  `image/webp` at most 10 MB after re-encoding — chooses the key `media/<uuid>.<ext>`, and returns a
+  validates the chosen code and slot (OD-04 item 4) and the object about to be sent — `video/mp4`
+  at most 100 MB into `main_video`, or `image/webp` at most 10 MB after re-encoding into
+  `main_image` or `gallery_1`–`gallery_3` — chooses the key `media/<uuid>.<ext>`, and returns a
   presigned `PUT` signed over `Content-Type` and `Content-Length`, valid 10 minutes. After the
   browser reports success, the server reads the object's head; only a match records the
   `MediaObject` and its link.
@@ -87,7 +111,8 @@ reviewer rehearsal, Opus review before merge (T02).
 - **CORS** on the bucket: `PUT` and `GET` from the production origin, the Vercel production
   alias and `http://localhost:3000` only; headers `Content-Type` and `Content-Length`.
   Reviewer-authored JSON in T02; the human applies it.
-- **Removal.** Removing a `CampaignOffer`, or replacing a slot, deletes the superseded objects.
+- **Removal.** Removing a `CampaignOffer`, removing one slot, or replacing a slot deletes the
+  superseded objects. An object whose key a `MediaObject` row still holds is never deleted.
 
 ## 6. HTTP headers
 

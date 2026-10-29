@@ -205,3 +205,61 @@ the commit that lands this text on the T05 branch and ratified when the human me
 4. **Dashboard address.** `/dashboard` redirects (307) to `/ar/operator/overview`, and
    `/ar/dashboard` and `/en/dashboard` to their locale's overview; the overview sends a Visitor
    without a session to sign-in.
+
+## OD-04 — Operator controls, media assignment, dashboard v2, link previews and the SQL runner
+
+**Status:** SIGNED. The signature is the human's message of 29 Oct 2026 in the reviewer session,
+after testing T04-F2 on the Vercel address ("admin need to … edit الحالة", "admin needs to select
+and remove one video and a simple message appear to confirm", "when i delete video … it is still
+there", "differ choice of upload video or image … assign video or image to certain offer if its name
+is not the same but mark any assigned already", "revise the dashboard ui/ux … easy clean more
+efficient", "when i add video no preview appears", "when i paste link in whatsapp no preview
+appears", "no fav icon appears", "when select image in browser it opens in the whole page", "add
+readme", "needed sql test make cursor do it"). It is recorded by the commit that lands this text on
+the T05 branch and ratified when the human merges T05.
+
+**Amends:** `SCOPE.md` S-10 and S-11; `DATA_MODEL.md` §§2.2, 3 and 9; `BOUNDARY_MODEL.md` §3.1
+item 1; `SECURITY_MODEL.md` §§1, 2 and 5; `ADMIN_SPEC.md` §§3, 5 and 10; `DESIGN_SYSTEM.md` §§2.1
+and 11.1; PR-29 (superseded by the precedent T05 lands).
+
+1. **SQL runner.** The builder applies reviewer-authored migrations and runs reviewer-authored
+   proofs, gate reads and operations with `npm run sql -- <path> [--apply]`
+   (`scripts/sql/run.mjs`, reviewer-authored, landed byte-exact). It runs only committed bytes
+   listed in a `docs/method/*_BUNDLE.sha256` manifest, over TLS verified against the project's CA
+   certificate, and prints outcomes only (`SECURITY_MODEL.md` §2.1). The Session pooler connection
+   string (`SUPABASE_DB_URL`, which carries the database password) and the certificate's path
+   (`SUPABASE_DB_CA`) live only in the builder machine's `.env.local` — never in Vercel, a commit, a
+   report or a chat. **Risk accepted by the human:** that password opens the whole database to
+   anyone who can read `.env.local` on that machine. The human may still run any of these files in
+   the SQL Editor instead, and does so whenever the runner cannot connect.
+2. **Show or hide one CampaignOffer** (the request to edit الحالة). `CampaignOffer.is_shown`, on by
+   default, set only by an Operator. Off hides the CampaignOffer and its media objects from
+   Visitors whatever its dates; the dashboard status is `off`. It is Operator state like the
+   publish switch, not offer content: the import never sets it and the offer content check never
+   compares it.
+3. **Remove one slot.** An Operator removes the MediaObject in one slot of one CampaignOffer behind
+   a confirmation that names the code and the slot; its object in R2 is deleted.
+4. **Upload by choice.** The media page has two tabs, Videos and Images. A queued file whose name
+   gives a code and a slot is placed there; any file may instead be placed — or re-placed — by the
+   Operator's choice of CampaignOffer (searchable by code or name) and slot. A slot that already
+   holds a MediaObject is marked as assigned in the choice, and uploading into it asks to confirm the
+   replacement. Two queued files may not target the same slot. The browser sends only the code and
+   the slot; the name never leaves the browser.
+5. **Media library.** The media page lists every stored MediaObject by CampaignOffer and slot, with
+   a preview and Remove (item 3). Clearing the upload queue says that it removes nothing stored.
+   Objects in R2 with no record are removed with `npm run scan:media-objects -- --remove-unrecorded`.
+6. **Dashboard v2.** Easier, cleaner, fewer steps: `ADMIN_SPEC.md` §10.
+7. **Public page details.** (a) Link previews: Open Graph and Twitter card tags on every public page
+   — title, description, `og:locale` and `og:image` `/share/nelo-share.png` — with `metadataBase`
+   from `NEXT_PUBLIC_SITE_URL`. These are tags in the page head, read by WhatsApp and other apps; no
+   sharing widget, script or cookie is added (`SCOPE.md` §3 stands). (b) A favicon and app icons. The
+   four images are derived from the mark by the reviewer (`DESIGN_SYSTEM.md` §2.1). (c) A main video
+   with no main image shows its first frame. (d) The gallery preview keeps a margin around the image
+   at every width, so a tap outside it can always close it. (e) On dashboard pages, a file dropped
+   outside a drop zone never opens in the tab.
+8. **README.** `README.md` describes the site, the dashboard, the stack, the commands and where the
+   documents are. It carries no value, account address, key or project reference.
+9. **Not adopted: adding or editing a CampaignOffer by hand** ("admin need to add card manually").
+   Every name, price, date and condition comes from the laboratory's sheet — the offer content
+   gate, which no OD can waive (`SCOPE.md` §3; `DATA_MODEL.md` §5; PR-28). One more card is added by
+   Export current → a new row in Excel → Import → Confirm; item 2 switches one off.

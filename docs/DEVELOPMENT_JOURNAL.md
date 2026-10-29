@@ -239,3 +239,22 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: `npm run start` was already running, so the passing Playwright run reused it and `npm run evidence` used the same server.
+
+## 2026-10-29 — Reviewer session 8 (T04-F2 verdict, OD-04)
+
+- Fetched `t04-f2-routes` at `24e62f5`. Verified the bundle (6/6 at LANDING and HEAD), compared the
+  ledger changes, the journal entries and the usage records with the fence (exact), and re-ran a
+  clean install, the four guards with their self-checks, lint, typecheck, the unit specs (36) and the
+  build. Served the build: `/` and unprefixed page paths answer 307 to `/ar`; `/ar` and `/en` 200;
+  `/dashboard` 307 to `/ar/operator/overview` and `/en/dashboard` to `/en/operator/overview`; the
+  overview sends a Visitor without a session to sign-in. Viewed the coming-soon and not-found
+  screenshots in both locales. The human attested the gate row (drift 0) and CI success on PR #6.
+- Verdict T04-F2: PASS; with T04-F, T04 passes. PR #6 may be merged.
+- The human's requests after testing on the Vercel address are signed as OD-04. Not adopted: adding
+  or editing a CampaignOffer by hand, which the offer content gate forbids (OD-04 item 9).
+- Reviewer-authored for T05 and rehearsed on PostgreSQL 16 over verified TLS: migration
+  `20261029040000_nelo_operator_controls.sql` (show switch, removal of one slot); its proof (16/16;
+  15/16 with the policies planted without `is_shown`; fails before the migration); the existing
+  proofs after it (47/47, 17/17); the gate read; and `scripts/sql/run.mjs`, which refused an edited,
+  untracked or unlisted file, a migration without `--apply`, and a certificate that does not sign
+  the server.

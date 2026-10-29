@@ -1,6 +1,6 @@
 # NELO — Phases
 
-Four tasks, four gates, two days. One task per branch; a task starts only when the previous
+Five tasks, four gates, two days (T05 added by OD-04). One task per branch; a task starts only when the previous
 one is pushed and verified. The reviewer ticks a task at its verdict; a halted task is never
 ticked.
 
@@ -13,6 +13,7 @@ ticked.
 | P02 Data, sign-in, storage | **T02** | `t02-data-auth-storage` | 3 | waived by the human (OD-02) | **G2** | Boundary (schema, routes, bucket) | 29 Oct, afternoon |
 | P03 Operator dashboard | **T03** | `t03-dashboard` | 3 | waived by the human (OD-02) | **G3** | Boundary · Offer content (synthetic) · Data integrity · Bilingual | 30 Oct, morning |
 | P04 Public site and go-live | **T04** | `t04-public-golive` | 2 (DNS: OD-01 item 18) | reviewer only | **G4** launch | Offer content (real) · Boundary · Data integrity · Bilingual | 30 Oct, afternoon |
+| P04 Public site and go-live | **T05** | `t05-operator-controls` | 3 | waived by the human (OD-02) | before G4 | Boundary · Offer content (synthetic) · Data integrity · Bilingual | 30 Oct, morning |
 
 "Reviewer only" on a Risk-2 task becomes "Sonnet review before merge" when the human asks.
 
@@ -38,12 +39,17 @@ ticked.
   publish switch, skeletons and motion (OD-02 items 4, 10). Unit specs for the parser and the name
   rules; end-to-end specs on synthetic sheets and media; the round-trip property; the offer
   content check on synthetic data; `scan:media-objects`.
-- [ ] **T04 — Public site from the approved design.** Home and CampaignOffer page reproduced
+- [x] **T04 — Public site from the approved design** (with its fix tasks T04-F and T04-F2). Home and CampaignOffer page reproduced
   from the approved design (`DESIGN_SYSTEM.md` §§11–11.1) and wired to data: banner hero, search,
   cards with the price switch, main media, gallery preview, end-date boxes, actions, localized
   not-found and coming-soon states, skeletons, no overflow from 320 px. Rendered evidence and
   end-to-end specs in both locales and widths; the offer content check on the rendered pages. Then
   §4 with the human.
+- [ ] **T05 — Operator controls, media choice, dashboard v2, link previews** (OD-04). The SQL
+  runner; migration 5 (show switch, remove one slot) applied and proved through it; the media page
+  with Videos and Images tabs, choice of CampaignOffer and slot, and the library; dashboard v2
+  (`ADMIN_SPEC.md` §10); link previews, icons, the video's first frame, the preview's margin;
+  `README.md`. Specs and evidence in both locales and widths.
 
 ## 3. Gate evidence
 
@@ -84,7 +90,8 @@ and 8.
 8. **Publish.** An Operator switches the campaign on. Production screenshots, both locales, both
    widths; G4 re-run.
 9. **Close-out.** The spec account removed from Supabase Auth and its `E2E_` values deleted from
-   `.env.local`. The repository made private again (OD-01 item 2; CF-01): an anonymous
+   `.env.local`. The database password reset in Supabase, and `SUPABASE_DB_URL` and
+   `SUPABASE_DB_CA` deleted from `.env.local` (OD-04 item 1). The repository made private again (OD-01 item 2; CF-01): an anonymous
    `git ls-remote` fails and the unauthenticated API answers 404.
 
 ## 5. Usage ledger
@@ -118,7 +125,7 @@ recorded with `--not-reported`.
 | `tool` | `^[a-z0-9-]+$` — e.g. `claude-app`, `cursor`, `claude-code` |
 | `model` | the model id as the tool reports it, `^[A-Za-z0-9._:-]+$` |
 | `stage` | `blueprint` · `builder` · `reviewer` · `review-gate` |
-| `task` | `blueprint` · `T01`–`T04`, optionally with a fix suffix `-F` or `-F2`… · `go-live` |
+| `task` | `blueprint` · `T01`–`T05`, optionally with a fix suffix `-F` or `-F2`… · `go-live` |
 | `input` · `output` · `cache_read` · `cache_write` | whole numbers ≥ 0 as reported; all four `null` when not reported |
 | `cost_usd` | the tool's own cost figure, or `null` |
 | `source` | `tool-report` · `session-records` · `not-reported` |

@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-30**
+**Next free id: CF-31**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -38,3 +38,4 @@ cell of any row is ever edited. Closed rows stay.
 | CF-27 | T04's gallery-preview screenshot shows the dimmed page, the buttons and the position line but no enlarged image, and the preview spec never checks that the image loaded or fills the viewport. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
 | CF-28 | On the CampaignOffer page the main-media frame shows an empty band below the media (about 45 px at 1440) and a gap under the image — the approved design's caption space, kept after the caption was removed. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
 | CF-29 | T04's evidence does not show two states: the synthetic banner is a tiny white image, so the hero's image cell looks empty, and `coming-soon-ar-390.png` captured the loading skeleton. Fixed by T04-F. | builder | 2026-10-29 | T04 | CLOSED (T04-F) |
+| CF-30 | The media page's "clear" emptied only the upload list, and the dashboard listed no stored MediaObject, so a video the human took as removed stayed linked and shown on the public page; in R2 the human found it and one more object. Fixed by T05: the library with removal of one slot (OD-04 items 3 and 5), and `scan:media-objects -- --remove-unrecorded` for any object with no record. | builder | 2026-10-29 | T05 | OPEN |

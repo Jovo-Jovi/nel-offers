@@ -26,7 +26,7 @@ NELO holds the laboratory's campaign and nothing about people.
 | WhatsApp / call actions | Visitor | — | Open `wa.me` / `tel:`. The conversation happens in WhatsApp or on the phone, never through NELO. |
 | Sign-in | Operator | Email, password, TOTP code | Supabase Auth only. Nothing copied to `public`. |
 | Sheet import | Operator | Offer fields | §3.2 refusals; only the nine template columns are read. |
-| Media upload | Operator | Images and videos | §3.1 controls; filename parsed, never stored. |
+| Media upload | Operator | Images and videos | §3.1 controls; filename read in the browser only, never sent or stored. |
 | Campaign settings | Operator | Contact values | Format checks (`DATA_MODEL.md` §2.1). |
 | Usage records | Reviewer, human | Tool, model, stage, task, token counts | Fixed keys and formats; the note holds no names (`PHASES.md` §5). |
 
@@ -34,10 +34,12 @@ NELO holds the laboratory's campaign and nothing about people.
 
 ### 3.1 Media
 
-1. **Name pattern.** Only `<code>.<ext>` and `<code>-<1|2|3>.<ext>` are accepted, where
-   `<code>` resolves to an existing `CampaignOffer`. The name is parsed in the browser and at
-   the presign route and is **never stored**; the object key is `media/<uuid>.<ext>`, chosen
-   by the server.
+1. **Target by name or by choice** (OD-04 item 4). A name `<code>.<ext>` or
+   `<code>-<1|2|3>.<ext>` fills the target in the browser; the Operator may choose any
+   `CampaignOffer` and any slot that fits the kind instead. The browser sends only the code and
+   the slot; the presign route checks that the code resolves to an existing `CampaignOffer` and
+   that the slot fits the type. The name is read only in the browser and is **never sent or
+   stored**; the object key is `media/<uuid>.<ext>`, chosen by the server.
 2. **Images are re-encoded** in the browser (decode → canvas → WebP) before upload. Re-encoding
    drops EXIF, XMP and IPTC, including GPS and device owner.
 3. **Videos with a location atom are refused.** The browser scans the MP4 for `©xyz` and
