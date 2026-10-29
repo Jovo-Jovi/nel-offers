@@ -400,3 +400,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Verdict T05-F3: PASS. CF-38 closes. CF-39 records the error page's missing left-to-right isolation.
 - The human relayed the designer's changes, signed as OD-05. The human's screenshot shows a synthetic
   CampaignOffer visible on the live project (CF-40). T06 issued.
+
+## 2026-10-29 — T06 (builder)
+
+- LANDING `06510e3c43957fe3bb61f5bb3debcce90d3dbabd`. Bundle `T06 BUNDLE PASS 5 / 5 []` at LANDING and at HEAD. Carry-forwards `40 12 ['41']`: 38 + 2 = 40 rows, next free 41, open 11 − 1 + 2 = 12. CF-38 is `CLOSED (T05-F3)`. CF-39 and CF-40 hold the landed rows and stay `OPEN`.
+- Ids: `06510e3c43957fe3bb61f5bb3debcce90d3dbabd` OD-05, carry-forward changes, T05-F3 verdict entry and usage records; `c553dc73b352a777c5a85602ade38a4adf538af3` the designer's changes, polish, specs and evidence.
+- On `c553dc73b352a777c5a85602ade38a4adf538af3`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 39 passed. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for T01–T05-F2 evidence, the five bundle files, `supabase/`, `scripts/sql/`, `package.json` and `package-lock.json` is empty. `scripts/usage/record.mjs` differs from `main` only in `T0[1-6]`.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 28 passed. `stale-confirm 367ms`. `preview-picture 24,251 342x342 viewport 390x844`. `preview-picture 294,24 852x852 viewport 1440x900`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
+- Deviation: the suite rewrote `docs/evidence/T05` and `docs/evidence/T05-F2`. Those bytes were restored before the implementation commit, so those folders are unchanged.
+- Deviation: the campaign was already published when the specs started (CF-40). The campaign spec confirms the coming-soon dialog first in that case, then reads the publish dialog, and still leaves the campaign unpublished.
