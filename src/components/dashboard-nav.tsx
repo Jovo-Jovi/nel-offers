@@ -14,12 +14,12 @@ const links = [
 
 export function DashboardNav({ locale, current }: { locale: Locale; current: OperatorSegment }) {
   const messages = messagesFor(locale);
-  const labels: Record<(typeof links)[number]["segment"], string> = {
-    overview: messages.nav.overview,
-    "campaign-offers": messages.nav.campaignOffers,
-    import: messages.nav.importSheet,
-    "media-objects": messages.nav.mediaObjects,
-    "campaign-settings": messages.nav.campaignSettings,
+  const labels: Record<(typeof links)[number]["segment"], { full: string; short: string }> = {
+    overview: { full: messages.nav.overview, short: messages.nav.overviewShort },
+    "campaign-offers": { full: messages.nav.campaignOffers, short: messages.nav.campaignOffersShort },
+    import: { full: messages.nav.importSheet, short: messages.nav.importShort },
+    "media-objects": { full: messages.nav.mediaObjects, short: messages.nav.mediaObjectsShort },
+    "campaign-settings": { full: messages.nav.campaignSettings, short: messages.nav.campaignSettingsShort },
   };
   return (
     <nav
@@ -33,12 +33,15 @@ export function DashboardNav({ locale, current }: { locale: Locale; current: Ope
             key={segment}
             href={operatorPath(locale, segment)}
             aria-current={active ? "page" : undefined}
-            className={`flex min-w-0 flex-1 flex-col items-center gap-1 px-1 py-2 text-center text-xs lg:flex-none lg:flex-row lg:justify-start lg:rounded-button lg:px-3 lg:py-2 lg:text-start lg:text-sm ${focusRing} ${
+            className={`flex min-w-0 flex-1 flex-col items-center gap-1 px-0.5 py-2 text-center text-[10px] leading-tight lg:flex-none lg:flex-row lg:justify-start lg:rounded-button lg:px-3 lg:py-2 lg:text-start lg:text-sm ${focusRing} ${
               active ? "text-primary lg:bg-primary lg:text-surface" : "text-dark"
             }`}
           >
             <Icon className="size-5 shrink-0" aria-hidden="true" />
-            <span className="w-full truncate">{labels[segment]}</span>
+            <span data-nav-short className="block w-full min-w-0 break-words lg:hidden">
+              {labels[segment].short}
+            </span>
+            <span className="hidden w-full truncate lg:inline">{labels[segment].full}</span>
           </a>
         );
       })}

@@ -4,12 +4,12 @@ import { Clapperboard, Image as ImageIcon, Images } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { removeCampaignOfferMedia } from "@/app/[locale]/operator/(dashboard)/actions";
-import { intlLocale, messagesFor, defaultLocale, type Locale } from "@/i18n/config";
+import { messagesFor, defaultLocale, type Locale } from "@/i18n/config";
 import { BusyButton } from "@/components/submit-button";
 import { cardClass, fieldClass } from "@/components/operator-classes";
 import { useOperatorFeedback } from "@/components/operator-feedback";
 import { fillMessage } from "@/lib/fill-message";
-import { megabytes } from "@/lib/format-values";
+import { formatByteSize, megabytes } from "@/lib/format-values";
 import { reencodeImage } from "@/lib/image-reencode";
 import { encodedImageByteLimit, selectedImageByteLimit, videoByteLimit } from "@/lib/media-object-limits";
 import { isUploadSlot, resolveUploadName, uploadSlots, type UploadSlot } from "@/lib/media-object-name";
@@ -423,7 +423,7 @@ export function UploadQueue({
                   {fillMessage(messages.operator.uploadTarget, { code: row.code, slot: slotText(messages, row.slot) })}
                 </p>
               ) : null}
-              <p className="text-xs text-muted">{new Intl.NumberFormat(intlLocale(locale)).format(row.size)}</p>
+              <p data-byte-size className="text-xs text-muted">{formatByteSize(locale, row.size)}</p>
               {row.replaces ? <p className="text-sm">{messages.operator.replaces}</p> : null}
               {row.replaces ? <p className="text-sm">{messages.operator.assigned}</p> : null}
               {row.status === "waiting" ? <p className="text-sm">{messages.operator.waitingChoice}</p> : null}

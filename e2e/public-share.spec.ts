@@ -97,6 +97,7 @@ spec("link preview, icons, video frame and gallery margin", async ({ page, brows
     await page.locator("figure img").first().click();
     const dialog = page.locator("dialog");
     await expect(dialog.locator("img")).toBeVisible();
+    await expect.poll(async () => (await dialog.locator("img").boundingBox())?.width ?? 0).toBeGreaterThan(200);
     await page.screenshot({ path: path.join(evidenceDir, "gallery-preview-ar-390.png") });
     await page.mouse.click(8, 8);
     await expect(dialog).toBeHidden();
@@ -105,6 +106,7 @@ spec("link preview, icons, video frame and gallery margin", async ({ page, brows
     await page.goto("/en/campaign-offers/SYN-001");
     await page.locator("figure img").first().click();
     await expect(page.locator("dialog img")).toBeVisible();
+    await expect.poll(async () => (await page.locator("dialog img").boundingBox())?.width ?? 0).toBeGreaterThan(200);
     const box = await page.locator("dialog img").boundingBox();
     expect(box).toBeTruthy();
     if (box) {

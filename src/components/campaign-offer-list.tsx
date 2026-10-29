@@ -16,6 +16,12 @@ import { slotText } from "@/lib/operator-copy";
 const slotOrder = ["main_video", "main_image", "gallery_1", "gallery_2", "gallery_3"] as const;
 const statusFilters = ["all", "visible", "scheduled", "ended", "off", "hidden"] as const;
 
+export type SlotPicture = {
+  slot: string;
+  previewUrl: string;
+  video: boolean;
+};
+
 export type CampaignOfferView = {
   id: string;
   code: string;
@@ -25,7 +31,7 @@ export type CampaignOfferView = {
   start: string;
   end: string;
   status: string;
-  filled: string[];
+  pictures: SlotPicture[];
 };
 
 function statusLabel(locale: Locale, status: string) {
@@ -41,6 +47,13 @@ function statusLabel(locale: Locale, status: string) {
 function filterLabel(locale: Locale, status: (typeof statusFilters)[number]) {
   if (status === "all") return messagesFor(locale).operator.filterAll;
   return statusLabel(locale, status);
+}
+
+function statusChip(status: string) {
+  if (status === "visible") return "bg-primary-soft text-primary";
+  if (status === "scheduled") return "bg-primary-soft text-warning";
+  if (status === "off") return "bg-primary-soft text-error";
+  return "bg-primary-soft text-muted";
 }
 
 function SlotMark({ slot }: { slot: string }) {
@@ -70,15 +83,19 @@ export function CampaignOfferList({
   const [pending, setPending] = useState("");
   const [hiding, setHiding] = useState("");
   const [statusById, setStatusById] = useState<Record<string, string>>({});
-  const [filledById, setFilledById] = useState<Record<string, string[]>>({});
+  const [picturesById, setPicturesById] = useState<Record<string, SlotPicture[]>>({});
   const [removedIds, setRemovedIds] = useState<string[]>([]);
   const visible = rows
     .filter((row) => !removedIds.includes(row.id))
-    .map((row) => ({
-      ...row,
-      status: statusById[row.id] ?? row.status,
-      filled: filledById[row.id] ?? row.filled,
-    }));
+    .map((row) => {
+      const pictures = picturesById[row.id] ?? row.pictures;
+      return {
+        ...row,
+        status: statusById[row.id] ?? row.status,
+        pictures,
+        filled: pictures.map((entry) => entry.slot),
+      };
+    });
 
   const needle = query.trim().toLowerCase();
   const shown = visible.filter((row) => {
@@ -92,7 +109,7 @@ export function CampaignOfferList({
     );
   });
 
-  async function toggleShown(row: CampaignOfferView) {
+  async function toggleShown(row: CampaignOfferView & { filled: string[] }) {
     if (pending) return;
     const next = row.status === "off";
     setPending(row.id);
@@ -107,7 +124,7 @@ export function CampaignOfferList({
     router.refresh();
   }
 
-  async function removeSlot(row: CampaignOfferView, slot: string) {
+  async function removeSlot(row: CampaignOfferView & { filled: string[] }, slot: string) {
     if (pending) return;
     const accepted = await confirm(
       messages.operator.remove,
@@ -124,14 +141,14 @@ export function CampaignOfferList({
     if ("empty" in outcome && outcome.empty) toast(messages.operator.slotAlreadyEmpty, "alert");
     else if ("storageFailed" in outcome && outcome.storageFailed) toast(messages.operator.storageFailed, "alert");
     else toast(messages.operator.removed, "status");
-    setFilledById((current) => ({
+    setPicturesById((current) => ({
       ...current,
-      [row.id]: (current[row.id] ?? row.filled).filter((held) => held !== slot),
+      [row.id]: (current[row.id] ?? row.pictures).filter((entry) => entry.slot !== slot),
     }));
     router.refresh();
   }
 
-  async function remove(row: CampaignOfferView) {
+  async function remove(row: CampaignOfferView & { filled: string[] }) {
     if (pending) return;
     const accepted = await confirm(messages.operator.remove, fillMessage(messages.operator.removeConfirm, { code: row.code }));
     if (!accepted) return;
@@ -186,8 +203,11 @@ export function CampaignOfferList({
           >
             <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm">
+                <p className="flex flex-wrap items-center gap-2 text-sm">
                   <LatinRun>{row.code}</LatinRun>
+                  <span className={`rounded-button px-2 py-1 text-xs ${statusChip(row.status)}`}>
+                    {statusLabel(locale, row.status)}
+                  </span>
                 </p>
                 <p className="break-words">{row.nameAr}</p>
                 <p className="break-words">
@@ -195,33 +215,58 @@ export function CampaignOfferList({
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <span data-shown-label className="text-sm">
+                  {messages.operator.shownLabel}
+                </span>
                 <SlideSwitch
                   checked={row.status !== "off"}
                   disabled={pending === row.id}
                   label={messages.operator.shownLabel}
                   onToggle={() => void toggleShown(row)}
                 />
-                <span className="text-sm">{statusLabel(locale, row.status)}</span>
               </div>
             </div>
             <p className="text-sm">
               <LatinRun>{row.price}</LatinRun>
               {" · "}
-              <LatinRun>{row.start}</LatinRun>
-              {" – "}
-              <LatinRun>{row.end}</LatinRun>
+              {row.start ? (
+                <>
+                  <LatinRun>{row.start}</LatinRun>
+                  {" – "}
+                  <LatinRun>{row.end}</LatinRun>
+                </>
+              ) : (
+                <>
+                  {messages.operator.untilDate} <LatinRun>{row.end}</LatinRun>
+                </>
+              )}
             </p>
             <ul className="grid min-w-0 gap-2 sm:grid-cols-2">
               {slotOrder.map((slot) => {
-                const present = row.filled.includes(slot);
+                const picture = row.pictures.find((entry) => entry.slot === slot) ?? null;
+                const present = picture !== null;
                 const href = `${operatorPath(locale, "media-objects")}?code=${encodeURIComponent(row.code)}&slot=${slot}`;
                 return (
                   <li key={slot} data-filled={present ? "yes" : "no"} className="flex min-w-0 flex-wrap items-center gap-2 rounded-button border border-border px-3 py-2 text-sm">
-                    <SlotMark slot={slot} />
+                    {picture?.video && picture.previewUrl ? (
+                      <video
+                        className="size-12 rounded-button object-cover"
+                        src={`${picture.previewUrl}#t=0.1`}
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : picture?.previewUrl ? (
+                      // CSP has no style-src, and next/image writes an inline style.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={picture.previewUrl} alt="" className="size-12 rounded-button object-cover" />
+                    ) : (
+                      <SlotMark slot={slot} />
+                    )}
                     <span className="min-w-0 flex-1">{slotText(messages, slot)}</span>
-                    <span className="text-muted">{present ? messages.operator.assigned : messages.operator.slotEmpty}</span>
+                    <span className="sr-only">{present ? messages.operator.assigned : messages.operator.slotEmpty}</span>
                     <a className="text-primary" href={href}>
-                      {messages.operator.slotAdd}
+                      {present ? messages.operator.slotReplace : messages.operator.slotAdd}
                     </a>
                     {present ? (
                       <button

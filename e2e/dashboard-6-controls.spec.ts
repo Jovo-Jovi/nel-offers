@@ -31,8 +31,11 @@ async function dropOnBody(page: Page) {
 }
 
 async function shot(page: Page, name: string) {
+  await expect(page.locator("h1")).toBeVisible();
+  await expect(page.locator(".nel-shimmer")).toHaveCount(0);
+  const width = page.viewportSize()?.width ?? 0;
   fs.mkdirSync(evidenceDir, { recursive: true });
-  await page.screenshot({ path: path.join(evidenceDir, name), fullPage: true });
+  await page.screenshot({ path: path.join(evidenceDir, name), fullPage: width >= 1024 });
 }
 
 spec("operator controls, media choice and dashboard screenshots", async ({ page }) => {
@@ -52,6 +55,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
         await page.goto(`/${locale}/operator/overview`);
         await shot(page, `dashboard-overview-${locale}-${width}.png`);
         await page.goto(`/${locale}/operator/campaign-offers`);
+        await expect(page.locator("[data-code='SYN-001'] [data-filled='yes'] img").first()).toBeVisible();
         await shot(page, `dashboard-campaign-offers-${locale}-${width}.png`);
       }
     }
@@ -59,7 +63,26 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/en/operator/campaign-offers");
     const card = page.locator("[data-code='SYN-001']");
-    await card.getByRole("switch", { name: "Shown" }).click();
+    await expect(card).toContainText("Until");
+    const shownLabel = card.locator("[data-shown-label]");
+    await expect(shownLabel).toHaveText("Shown on the site");
+    const filledTiles = card.locator("[data-filled='yes']");
+    const emptyTiles = card.locator("[data-filled='no']");
+    expect(await filledTiles.count()).toBeGreaterThan(0);
+    expect(await emptyTiles.count()).toBeGreaterThan(0);
+    for (let index = 0; index < (await filledTiles.count()); index += 1) {
+      const tile = filledTiles.nth(index);
+      await expect(tile.locator("img, video")).toHaveCount(1);
+      await expect(tile.getByRole("link", { name: "Replace", exact: true })).toBeVisible();
+      await expect(tile.getByRole("button", { name: /^Remove / })).toBeVisible();
+    }
+    for (let index = 0; index < (await emptyTiles.count()); index += 1) {
+      const tile = emptyTiles.nth(index);
+      await expect(tile.locator("img, video")).toHaveCount(0);
+      await expect(tile.getByRole("link", { name: "Add", exact: true })).toBeVisible();
+    }
+    await card.getByRole("switch", { name: "Shown on the site" }).click();
+    await expect(shownLabel).toHaveText("Shown on the site");
     await expect(card).toContainText("Off");
     await page.goto("/en/operator/overview");
     await page.getByRole("switch", { name: "Published" }).click();
@@ -71,7 +94,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     await page.goto("/ar");
     await expect(page.locator("[data-code='SYN-001']")).toHaveCount(0);
     await page.goto("/en/operator/campaign-offers");
-    await page.locator("[data-code='SYN-001']").getByRole("switch", { name: "Shown" }).click();
+    await page.locator("[data-code='SYN-001']").getByRole("switch", { name: "Shown on the site" }).click();
     await expect(page.locator("[data-code='SYN-001']")).toContainText("Visible");
     const restored = await page.goto("/ar/campaign-offers/SYN-001");
     expect(restored?.status()).toBe(200);
@@ -119,6 +142,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
       { name: "picture-a.png", mimeType: "image/png", buffer: tinyPng },
       { name: "picture-b.png", mimeType: "image/png", buffer: tinyPng },
     ]);
+    await expect(page.locator("[data-byte-size]").first()).toHaveText(/\d[\d.,]*\s*(B|byte|kB|KB|MB)\b/);
     const queued = page.locator("[data-upload]");
     await queued.nth(0).getByLabel("Campaign offer").selectOption("SYN-004");
     await queued.nth(0).getByLabel("Slot").selectOption("gallery_3");
@@ -196,6 +220,19 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     await upload(page);
     await expect(page.locator("[data-upload='done']").last()).toBeVisible({ timeout: 180 * 1000 });
 
+    for (const locale of ["ar", "en"] as const) {
+      for (const width of [320, 390] as const) {
+        await page.setViewportSize({ width, height: 700 });
+        await page.goto(`/${locale}/operator/overview`);
+        await expect(page.locator("h1")).toBeVisible();
+        await expect(page.locator(".nel-shimmer")).toHaveCount(0);
+        const fits = await page.locator("[data-nav-short]").evaluateAll((nodes) =>
+          nodes.every((node) => node instanceof HTMLElement && node.scrollWidth <= node.clientWidth),
+        );
+        expect(fits).toBe(true);
+      }
+    }
+
     for (const raw of posted) {
       const body = JSON.parse(raw) as Record<string, unknown>;
       expect(Object.prototype.hasOwnProperty.call(body, "name")).toBe(false);
@@ -203,7 +240,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     }
   } finally {
     await page.goto("/en/operator/campaign-offers");
-    const restored = page.locator("[data-code='SYN-001']").getByRole("switch", { name: "Shown" });
+    const restored = page.locator("[data-code='SYN-001']").getByRole("switch", { name: "Shown on the site" });
     if ((await restored.count()) > 0 && (await restored.getAttribute("aria-checked")) !== "true") {
       await restored.click();
     }

@@ -366,7 +366,7 @@ spec("campaign offer pages match the public query", async ({ page }) => {
   else expect(poster).toBeNull();
 });
 
-async function assertPreviewPicture(page: Page) {
+async function assertPreviewPicture(page: Page, report: boolean) {
   const image = page.locator("dialog img");
   await expect(image).toBeVisible();
   await expect
@@ -382,11 +382,56 @@ async function assertPreviewPicture(page: Page) {
   expect(box.y).toBeGreaterThanOrEqual(23);
   expect(box.x + box.width).toBeLessThanOrEqual(viewport.width - inline + 1);
   expect(box.y + box.height).toBeLessThanOrEqual(viewport.height - 23);
+  const innerWidth = viewport.width - inline * 2;
+  const innerHeight = viewport.height - 48;
+  expect(box.width >= innerWidth * 0.9 || box.height >= innerHeight * 0.9).toBe(true);
   const hit = await page.evaluate(() => {
     const node = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
     return node instanceof HTMLImageElement;
   });
   expect(hit).toBe(true);
+  if (report) {
+    console.log(
+      `preview-picture ${Math.round(box.x)},${Math.round(box.y)} ${Math.round(box.width)}x${Math.round(box.height)} viewport ${viewport.width}x${viewport.height}`,
+    );
+  }
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator("dialog")).toBeVisible();
+}
+
+async function clickLargestGap(page: Page) {
+  const point = await page.evaluate(() => {
+    const image = document.querySelector("dialog img");
+    if (!(image instanceof HTMLImageElement)) return null;
+    const box = image.getBoundingClientRect();
+    const gaps = [
+      { x: box.left / 2, y: box.top + box.height / 2, size: box.left },
+      {
+        x: box.right + (window.innerWidth - box.right) / 2,
+        y: box.top + box.height / 2,
+        size: window.innerWidth - box.right,
+      },
+      { x: box.left + box.width / 2, y: box.top / 2, size: box.top },
+      {
+        x: box.left + box.width / 2,
+        y: box.bottom + (window.innerHeight - box.bottom) / 2,
+        size: window.innerHeight - box.bottom,
+      },
+    ].sort((left, right) => right.size - left.size);
+    const controls = [...document.querySelectorAll("dialog button")].map((node) => node.getBoundingClientRect());
+    for (const gap of gaps) {
+      const clear = controls.every((control) => {
+        const dx = Math.max(control.left - gap.x, 0, gap.x - control.right);
+        const dy = Math.max(control.top - gap.y, 0, gap.y - control.bottom);
+        return Math.hypot(dx, dy) >= 8;
+      });
+      if (clear) return { x: gap.x, y: gap.y };
+    }
+    return null;
+  });
+  expect(point).toBeTruthy();
+  if (!point) return;
+  await page.mouse.click(point.x, point.y);
 }
 
 async function assertPicturesLoaded(page: Page, pictures: ReturnType<Page["locator"]>) {
@@ -471,10 +516,16 @@ spec("gallery preview", async ({ page }) => {
     await expect(dialog).toBeVisible();
     await expect(page.locator("html")).toHaveClass(/public-scroll-lock/);
     await movePreview(page, locale, count);
-    await assertPreviewPicture(page);
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-    await expect(opener).toBeFocused();
+    await assertPreviewPicture(page, locale === defaultLocale);
+    if (locale === defaultLocale) {
+      await clickLargestGap(page);
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    } else {
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    }
     await expect(page.locator("html")).not.toHaveClass(/public-scroll-lock/);
     const thumb = page.locator("ul button").filter({ hasText: thumbLabel }).first();
     await thumb.click();
@@ -487,6 +538,18 @@ spec("gallery preview", async ({ page }) => {
     await expect(dialog).toBeHidden();
     await expect(thumb).toBeFocused();
   }
+  const english = messagesFor(prefixedLocale);
+  const englishName = imageRow.nameEn;
+  const englishAlt = fillMessage(english.campaignOffer.galleryAlt, { position: "1", name: englishName });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(campaignOfferPath(prefixedLocale, imageRow.code));
+  const wideOpener = page.getByRole("button", { name: englishAlt, exact: true });
+  await wideOpener.click();
+  await expect(page.locator("dialog")).toBeVisible();
+  await assertPreviewPicture(page, true);
+  await clickLargestGap(page);
+  await expect(page.locator("dialog")).toBeHidden();
+  await expect(wideOpener).toBeFocused();
 });
 
 spec("not found", async ({ page }) => {

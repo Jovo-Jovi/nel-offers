@@ -15,6 +15,9 @@ import { defaultLocale, type Locale } from "@/i18n/config";
 
 const dragMinimum = 50;
 
+const previewFit =
+  "block h-auto w-[min(calc(100vw-3rem),calc((100dvh-3rem)*var(--preview-ratio,1)))] md:w-[min(calc(100vw-8rem),calc((100dvh-3rem)*var(--preview-ratio,1)))]";
+
 const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
@@ -160,9 +163,16 @@ export function GalleryPreview({
             // CSP has no style-src, and next/image writes an inline style.
             // eslint-disable-next-line @next/next/no-img-element
             <img
+              key={picture.url}
               src={picture.url}
               alt={picture.label}
-              className="block h-auto max-h-[calc(100dvh-3rem)] w-auto max-w-[calc(100vw-3rem)] object-contain md:max-w-[calc(100vw-8rem)]"
+              className={previewFit}
+              onLoad={(event) => {
+                const image = event.currentTarget;
+                if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+                  image.style.setProperty("--preview-ratio", String(image.naturalWidth / image.naturalHeight));
+                }
+              }}
             />
           ) : null}
         </div>
