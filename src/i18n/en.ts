@@ -13,7 +13,8 @@ export const catalogue: Catalogue = {
     noMatches: "No analysis matches your search.",
     nothingVisible: "No offers are available today.",
     comingSoon: "Offers will be available soon.",
-    viewDetails: "View details"
+    viewDetails: "View details",
+    eyebrow: "Offers for laboratories and doctors"
   },
   campaignOffer: {
     pageHeading: "Offer details — code {code}",
@@ -25,12 +26,18 @@ export const catalogue: Catalogue = {
     conditionsHeading: "Offer conditions",
     galleryAlt: "Image {position} — {name}",
     orderMessage: "I would like to order offer {code} — {name}",
-    notFound: "This offer is not available."
+    notFound: "This offer is not available.",
+    endsOnLabel: "Offer ends on:",
+    day: "Day",
+    month: "Month",
+    year: "Year",
+    imageLabel: "Image {position}"
   },
   actions: {
     whatsapp: "WhatsApp",
     call: "Call {hotline}",
-    order: "Order this offer"
+    order: "Order this offer",
+    callShort: "Call"
   },
   footer: {
     whatsapp: "WhatsApp {number}",
@@ -50,7 +57,17 @@ export const catalogue: Catalogue = {
     closeMenu: "Close menu"
   },
   a11y: {
-    mark: "Nile Egypt Labs logo"
+    mark: "Nile Egypt Labs logo",
+    playVideo: "Play video",
+    previousImage: "Previous image",
+    nextImage: "Next image",
+    closePreview: "Close",
+    banner: "Nile Egypt Labs campaign banner"
+  },
+  header: {
+    homeSubtitle: "Lab to Lab — Online offers guide",
+    campaignOfferSubtitle: "Code {code} — Offer details",
+    labSite: "Lab website"
   },
   operator: {
     signInHeading: "Operator sign-in",

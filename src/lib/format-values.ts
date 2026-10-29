@@ -1,4 +1,4 @@
-import { intlLocale, type Locale } from "@/i18n/config";
+import { intlLocale, type Locale } from "../i18n/config";
 
 const bidiMarks = /[\u200E\u200F\u061C]/g;
 
@@ -19,6 +19,16 @@ export function formatPrice(locale: Locale, value: string) {
       maximumFractionDigits: 2,
     }).format(number),
   );
+}
+
+export function calendarParts(iso: string) {
+  const match = /^(\d+)-(\d+)-(\d+)$/.exec(iso);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (!year || !month || !day) return null;
+  return { year: String(year), month: String(month), day: String(day) };
 }
 
 export function formatCalendar(locale: Locale, iso: string) {

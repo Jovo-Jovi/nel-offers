@@ -4,3 +4,13 @@ export function fillMessage(template: string, values: Record<string, string | nu
     return value === undefined ? match : String(value);
   });
 }
+
+export function splitToken(template: string, token: string) {
+  const marker = `{${token}}`;
+  const index = template.indexOf(marker);
+  if (index < 0) return { before: template, after: "" };
+  return {
+    before: template.slice(0, index),
+    after: template.slice(index + marker.length),
+  };
+}

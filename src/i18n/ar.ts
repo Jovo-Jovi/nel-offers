@@ -11,7 +11,8 @@ export const catalogue = {
     noMatches: "لا توجد تحاليل مطابقة للبحث.",
     nothingVisible: "لا توجد عروض متاحة اليوم.",
     comingSoon: "العروض ستُتاح قريبًا.",
-    viewDetails: "عرض التفاصيل"
+    viewDetails: "عرض التفاصيل",
+    eyebrow: "عروض مخصصة للمعامل والأطباء"
   },
   campaignOffer: {
     pageHeading: "تفاصيل العرض — كود {code}",
@@ -23,12 +24,18 @@ export const catalogue = {
     conditionsHeading: "شروط العرض",
     galleryAlt: "صورة {position} — {name}",
     orderMessage: "أرغب في طلب العرض {code} — {name}",
-    notFound: "هذا العرض غير متاح."
+    notFound: "هذا العرض غير متاح.",
+    endsOnLabel: "ينتهي العرض في:",
+    day: "اليوم",
+    month: "الشهر",
+    year: "السنة",
+    imageLabel: "صورة {position}"
   },
   actions: {
     whatsapp: "واتساب",
     call: "اتصل {hotline}",
-    order: "اطلب العرض"
+    order: "اطلب العرض",
+    callShort: "اتصل"
   },
   footer: {
     whatsapp: "واتساب {number}",
@@ -48,7 +55,17 @@ export const catalogue = {
     closeMenu: "إغلاق القائمة"
   },
   a11y: {
-    mark: "شعار معامل النيل مصر"
+    mark: "شعار معامل النيل مصر",
+    playVideo: "تشغيل الفيديو",
+    previousImage: "الصورة السابقة",
+    nextImage: "الصورة التالية",
+    closePreview: "إغلاق",
+    banner: "صورة حملة معامل النيل مصر"
+  },
+  header: {
+    homeSubtitle: "Lab to Lab ـــ دليل العروض الإلكترونية",
+    campaignOfferSubtitle: "كود {code} ـــ تفاصيل العرض",
+    labSite: "موقع المعمل"
   },
   operator: {
     signInHeading: "دخول المشغّل",
