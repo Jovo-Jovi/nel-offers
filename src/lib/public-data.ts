@@ -30,11 +30,12 @@ export const loadPublishedCampaign = cache(async (): Promise<PublishedCampaign |
   const row = await readCampaignRow(supabase);
   if (!row) return null;
   let bannerUrl: string | null = null;
-  if (row.bannerId) {
+  if (row.isPublished && row.bannerId) {
     const objectKey = await readBannerKey(supabase, row.bannerId);
     if (objectKey) bannerUrl = await presignView(objectKey);
   }
   return {
+    isPublished: row.isPublished,
     showCardPrice: row.showCardPrice,
     whatsappDisplay: row.whatsappDisplay,
     whatsappDigits: row.whatsappDigits,

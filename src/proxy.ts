@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { defaultLocale, localeFromPathname, prefixedLocale } from "./i18n/config";
+import { defaultLocale, isLocale, localeFromPathname } from "./i18n/config";
 import { readVisibleCampaignOffer } from "./lib/public-query";
 import { codePattern } from "./lib/sheet-format";
 import { createPublicClient } from "./lib/supabase/public";
@@ -22,10 +22,19 @@ function isApiPath(pathname: string): boolean {
 }
 
 function isOperatorPath(pathname: string): boolean {
-  if (pathname === "/operator" || pathname.startsWith("/operator/")) return true;
   if (pathname === "/api/operator" || pathname.startsWith("/api/operator/")) return true;
-  const prefixed = `/${prefixedLocale}/operator`;
-  return pathname === prefixed || pathname.startsWith(`${prefixed}/`);
+  const parts = pathname.split("/").filter((part) => part.length > 0);
+  if (!parts[0] || !isLocale(parts[0])) return false;
+  return parts[1] === "operator";
+}
+
+function dashboardTarget(pathname: string): string | null {
+  if (pathname === "/dashboard") return `/${defaultLocale}/operator/overview`;
+  const parts = pathname.split("/").filter((part) => part.length > 0);
+  if (parts.length === 2 && isLocale(parts[0]) && parts[1] === "dashboard") {
+    return `/${parts[0]}/operator/overview`;
+  }
+  return null;
 }
 
 function storageOrigin(): string {
@@ -64,8 +73,8 @@ function securityPolicy(nonce: string): string {
 
 function restPath(pathname: string): string {
   const segment = firstSegment(pathname);
-  if (segment !== prefixedLocale) return pathname;
-  const rest = pathname.slice(`/${prefixedLocale}`.length);
+  if (!segment || !isLocale(segment)) return pathname;
+  const rest = pathname.slice(`/${segment}`.length);
   return rest.length > 0 ? rest : "/";
 }
 
@@ -77,44 +86,37 @@ function campaignCode(rest: string): string | null {
   return code;
 }
 
-// loading.tsx streams a 200 before notFound() can set the status. The read uses RLS only.
-async function routeResponse(request: NextRequest, requestHeaders: Headers): Promise<NextResponse> {
-  const { pathname } = request.nextUrl;
-  // A default-locale prefix is T01's redirect. It must not be rewritten to not-found.
-  if (!isApiPath(pathname) && firstSegment(pathname) !== defaultLocale) {
-    const rest = restPath(pathname);
-    const operator = rest === "/operator" || rest.startsWith("/operator/");
-    const known = rest === "/" || rest === "/missing" || operator;
-    if (!known) {
-      const code = campaignCode(rest);
-      const visible = code ? await readVisibleCampaignOffer(createPublicClient(), code) : null;
-      if (!code || !visible) {
-        const url = request.nextUrl.clone();
-        url.pathname = `/${localeFromPathname(pathname)}/missing`;
-        return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
-      }
-    }
-  }
-  return localeResponse(request, requestHeaders);
+function redirectTo(request: NextRequest, pathname: string) {
+  return NextResponse.redirect(new URL(pathname, request.url), 307);
 }
 
-function localeResponse(request: NextRequest, requestHeaders: Headers): NextResponse {
+// loading.tsx streams a 200 before notFound() can set the status. The read uses RLS only.
+async function routeResponse(request: NextRequest, requestHeaders: Headers): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   if (isApiPath(pathname)) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
+  const dashboard = dashboardTarget(pathname);
+  if (dashboard) return redirectTo(request, dashboard);
   const segment = firstSegment(pathname);
-  if (segment === prefixedLocale) {
-    return NextResponse.next({ request: { headers: requestHeaders } });
+  if (!segment || !isLocale(segment)) {
+    const destination = pathname === "/" ? `/${defaultLocale}` : `/${defaultLocale}${pathname}`;
+    return redirectTo(request, destination);
   }
-  if (segment === defaultLocale) {
-    const rest = pathname.slice(`/${defaultLocale}`.length);
-    const destination = rest.length > 0 ? rest : "/";
-    return NextResponse.redirect(new URL(destination, request.url), 308);
+  const rest = restPath(pathname);
+  const operator = rest === "/operator" || rest.startsWith("/operator/");
+  const known = rest === "/" || rest === "/missing" || operator;
+  if (!known) {
+    const code = campaignCode(rest);
+    const visible = code ? await readVisibleCampaignOffer(createPublicClient(), code) : null;
+    if (!code || !visible) {
+      requestHeaders.set("x-not-found", code ? "campaign-offer" : "page");
+      const url = request.nextUrl.clone();
+      url.pathname = `/${localeFromPathname(pathname)}/missing`;
+      return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+    }
   }
-  const url = request.nextUrl.clone();
-  url.pathname = pathname === "/" ? `/${defaultLocale}` : `/${defaultLocale}${pathname}`;
-  return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 async function operatorCookies(request: NextRequest, requestHeaders: Headers) {

@@ -21,23 +21,29 @@ export function Footer({ hotline, whatsapp, switchHref, switchLabel }: FooterPro
   return (
     <footer className="mt-auto border-t border-border bg-surface">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        {hotline && whatsapp ? (
+        {hotline || whatsapp ? (
           <p className="text-sm font-bold">
-            <a href={hotline.href} className={`text-dark no-underline ${focusRing}`}>
-              <NumberedLine template={hotline.template} number={hotline.number} />
-            </a>
-            <span className="mx-2 font-normal text-muted" aria-hidden="true">
-              |
-            </span>
-            <a
-              href={whatsapp.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1.5 text-whatsapp no-underline ${focusRing}`}
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              <NumberedLine template={whatsapp.template} number={whatsapp.number} />
-            </a>
+            {hotline ? (
+              <a href={hotline.href} className={`text-dark no-underline ${focusRing}`}>
+                <NumberedLine template={hotline.template} number={hotline.number} />
+              </a>
+            ) : null}
+            {hotline && whatsapp ? (
+              <span className="mx-2 font-normal text-muted" aria-hidden="true">
+                |
+              </span>
+            ) : null}
+            {whatsapp ? (
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1.5 text-whatsapp no-underline ${focusRing}`}
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                <NumberedLine template={whatsapp.template} number={whatsapp.number} />
+              </a>
+            ) : null}
           </p>
         ) : null}
         <a href={switchHref} className={`text-sm text-muted no-underline ${focusRing}`}>

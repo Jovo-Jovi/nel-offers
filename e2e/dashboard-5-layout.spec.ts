@@ -14,7 +14,7 @@ const pages = [
 const widths = [320, 390, 768, 1024, 1440];
 
 function pathFor(locale: "ar" | "en", segment: string) {
-  return locale === "ar" ? `/operator/${segment}` : `/en/operator/${segment}`;
+  return `/${locale}/operator/${segment}`;
 }
 
 async function measure(page: Page, urlPath: string, width: number, shot: string | null) {
@@ -31,7 +31,7 @@ async function measure(page: Page, urlPath: string, width: number, shot: string 
   const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   expect(fits).toBe(true);
   if (shot) {
-    fs.mkdirSync(path.join("docs", "evidence", "T03"), { recursive: true });
+    fs.mkdirSync(path.join("docs", "evidence", "T04-F2"), { recursive: true });
     await page.screenshot({ path: shot });
   }
 }
@@ -51,8 +51,8 @@ spec("dashboard layout in both locales", async ({ browser }) => {
         });
         for (const width of widths) {
           const shot =
-            width === 390 || width === 1440
-              ? path.join("docs", "evidence", "T03", `${entry.name}-${locale}-${width}.png`)
+            locale === "ar" && entry.name === "overview" && width === 390
+              ? path.join("docs", "evidence", "T04-F2", "overview-ar-390.png")
               : null;
           await measure(page, pathFor(locale, entry.segment), width, shot);
         }

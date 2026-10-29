@@ -6,12 +6,16 @@ function nonceFrom(policy: string | undefined) {
 }
 
 spec("overview redirects to sign-in in both locales", async ({ page }) => {
-  const arabic = await page.goto("/operator/overview");
-  expect(new URL(page.url()).pathname).toBe("/operator/sign-in");
+  const arabic = await page.goto("/ar/operator/overview");
+  expect(new URL(page.url()).pathname).toBe("/ar/operator/sign-in");
   expect(arabic?.status()).toBe(200);
+  expect(arabic?.headers()["cache-control"] ?? "").toContain("no-store");
+  expect(arabic?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
   const english = await page.goto("/en/operator/overview");
   expect(new URL(page.url()).pathname).toBe("/en/operator/sign-in");
   expect(english?.status()).toBe(200);
+  expect(english?.headers()["cache-control"] ?? "").toContain("no-store");
+  expect(english?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
 });
 
 spec("anonymous operator routes answer 401", async ({ request }) => {
@@ -35,7 +39,7 @@ spec("anonymous operator routes answer 401", async ({ request }) => {
 });
 
 spec("sign-in pages set language and direction", async ({ page }) => {
-  await page.goto("/operator/sign-in");
+  await page.goto("/ar/operator/sign-in");
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await page.goto("/en/operator/sign-in");
@@ -50,7 +54,7 @@ spec("public pages set no cookies and report no policy violation", async ({ page
       violations.push("csp");
     }
   });
-  const home = await page.goto("/");
+  const home = await page.goto("/ar");
   expect(home?.status()).toBe(200);
   expect(await page.context().cookies()).toEqual([]);
   expect(home?.headers()["set-cookie"]).toBeUndefined();
@@ -61,17 +65,20 @@ spec("public pages set no cookies and report no policy violation", async ({ page
   expect(violations).toEqual([]);
 });
 
-spec("a default-locale prefix redirects without being followed", async ({ request }) => {
+spec("unprefixed and dashboard paths redirect without being followed", async ({ request }) => {
   const cases = [
-    ["/ar", "/"],
-    ["/ar/x", "/x"],
-    ["/ar/campaign-offers/SYN-001", "/campaign-offers/SYN-001"],
+    ["/", "/ar"],
+    ["/campaign-offers/SYN-001", "/ar/campaign-offers/SYN-001"],
+    ["/operator/sign-in", "/ar/operator/sign-in"],
+    ["/dashboard", "/ar/operator/overview"],
+    ["/ar/dashboard", "/ar/operator/overview"],
+    ["/en/dashboard", "/en/operator/overview"],
   ];
   for (const [urlPath, pathname] of cases) {
     const response = await request.get(urlPath, { maxRedirects: 0 });
-    expect(response.status()).toBe(308);
+    expect(response.status(), urlPath).toBe(307);
     const location = response.headers().location ?? "";
-    expect(new URL(location, "http://localhost:3000").pathname).toBe(pathname);
+    expect(new URL(location, "http://localhost:3000").pathname, urlPath).toBe(pathname);
   }
 });
 

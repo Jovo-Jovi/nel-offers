@@ -208,3 +208,34 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the dashboard layout spec rewrote two T03 overview screenshots. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
 - Deviation: `npm run evidence` rewrote `docs/evidence/T04/headers.json` (new nonces and dates). The retake list did not name that file; step 5 requires the command.
+
+## 2026-10-29 — Reviewer session 7 (T04-F verdict, OD-03)
+
+- Fetched `t04-public-golive` at `6aea7dbd`. Compared the landed rows and journal entry with the
+  fence (exact), re-ran the four guards with their self-checks, lint, typecheck, the unit specs
+  (36) and a build; dependencies and `supabase/` unchanged. Served the build: `/ar`, `/ar/x` and
+  `/ar/campaign-offers/SYN-001` answer 308 again. Viewed the retaken screenshots: the two-band
+  banner in the hero, no band under the main media, the enlarged preview image, the coming-soon
+  text in both locales. The human attested the gate row at zero drift.
+- Verdict T04-F: PASS; with it T04 passes. CF-26 to CF-29 close.
+- The human tested the Vercel address and asked for `/ar` prefixes, the lab-site link and the
+  footer on the coming-soon page, a different message for unknown paths, and `/dashboard`.
+  Recorded as OD-03 (signed by that message). T04-F2 issued with
+  `20261029030000_nelo_campaign_row_public.sql` and the amended RLS proof, rehearsed on
+  PostgreSQL 16: proof 47/47 and presentation proof 17/17 after it; the old proof after it and
+  the new proof without it each fail check 45 alone.
+
+## 2026-10-29 — T04-F2 (builder)
+
+- LANDING `9feec6cbd24928c9c494f318fc6776ae0bdf1227`. `T04F2 BUNDLE PASS 6 / 6 []` at LANDING and at the checks commit. Carry-forwards `29 9 ['30']`: 29 rows, next free 30 unchanged, open 13 − 4 = 9. CF-26 to CF-29 are `CLOSED (T04-F)`.
+- Ids: `4d2213eef995f539029109b665b1ebe9fbe6104d` locale prefixes, dashboard redirects, the coming-soon shell and the two not-found messages; `3428d3f7ac28d454786b5145e92257b27ba288f2` specs; `a2306f79b20cf07881b7ffc2554495c2b2458cce` checks and evidence.
+- On `a2306f79b20cf07881b7ffc2554495c2b2458cce`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The T01–T04 evidence diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). `package.json` dependencies are unchanged. Nothing under `supabase/` changed after LANDING.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 22 passed. `/` answers 307 `/ar`; `/campaign-offers/SYN-001` answers 307 `/ar/campaign-offers/SYN-001`; `/operator/sign-in` answers 307 `/ar/operator/sign-in`; `/dashboard` and `/ar/dashboard` answer 307 `/ar/operator/overview`; `/en/dashboard` answers 307 `/en/operator/overview`. `/ar/operator/overview` without a session ends on `/ar/operator/sign-in` with `no-store` and `X-Robots-Tag`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: awaiting the human (PR-24). The builder did not run SQL. The campaign is unpublished.
+- `npm run evidence` exited 0. `docs/evidence/T04-F2/` has the ten screenshots and `headers.json`. `/` and `/dashboard` are 307; `/ar`, `/en` and `/ar/operator/sign-in` are 200, the last with `no-store` and `X-Robots-Tag`; `/ar/nope` is 404.
+- Deviation: the campaign was published when the suite first started, so the first publish confirmation was the coming-soon dialog. It was unpublished through the operator switch, and the passing run is the one recorded.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `npm run start` was already running, so the passing Playwright run reused it and `npm run evidence` used the same server.

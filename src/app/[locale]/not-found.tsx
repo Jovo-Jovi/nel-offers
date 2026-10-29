@@ -9,10 +9,13 @@ const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 export default async function NotFound() {
-  const pathname = (await headers()).get("x-pathname") ?? "/";
+  const headerList = await headers();
+  const pathname = headerList.get("x-pathname") ?? "/";
   const locale = localeFromPathname(pathname);
   const messages = messagesFor(locale);
   const campaign = await loadPublishedCampaign();
+  const heading =
+    headerList.get("x-not-found") === "campaign-offer" ? messages.campaignOffer.notFound : messages.site.pageNotFound;
   return (
     <PageShell {...shellProps(locale, campaign, messages.header.homeSubtitle, switchedPath(pathname, locale))}>
       <div className="flex flex-col gap-4">
@@ -25,7 +28,7 @@ export default async function NotFound() {
           </span>{" "}
           {messages.nav.allCampaignOffers}
         </Link>
-        <h1 className="text-3xl font-bold leading-tight text-dark sm:text-4xl">{messages.campaignOffer.notFound}</h1>
+        <h1 className="text-3xl font-bold leading-tight text-dark sm:text-4xl">{heading}</h1>
       </div>
     </PageShell>
   );

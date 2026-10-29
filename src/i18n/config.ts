@@ -44,29 +44,24 @@ export function otherLocale(locale: Locale): Locale {
 }
 
 export function homePath(locale: Locale): string {
-  if (locale === defaultLocale) {
-    return "/";
-  }
   return `/${locale}`;
 }
 
 export function campaignOfferPath(locale: Locale, code: string): string {
-  if (locale === defaultLocale) return `/campaign-offers/${code}`;
   return `/${locale}/campaign-offers/${code}`;
 }
 
 export function localeFromPathname(pathname: string): Locale {
   const segment = pathname.split("/").filter((part) => part.length > 0)[0];
-  if (segment === prefixedLocale) return prefixedLocale;
+  if (segment && isLocale(segment)) return segment;
   return defaultLocale;
 }
 
 export function switchedPath(pathname: string, locale: Locale): string {
   const target = otherLocale(locale);
   const parts = pathname.split("/").filter((part) => part.length > 0);
-  if (parts[0] === prefixedLocale) parts.shift();
+  if (parts[0] && isLocale(parts[0])) parts.shift();
   const rest = parts.join("/");
-  if (target === defaultLocale) return rest.length > 0 ? `/${rest}` : "/";
   return rest.length > 0 ? `/${target}/${rest}` : `/${target}`;
 }
 
@@ -83,13 +78,15 @@ export const operatorSegments = [
 export type OperatorSegment = (typeof operatorSegments)[number];
 
 export function operatorSegment(pathname: string): OperatorSegment {
-  for (const segment of operatorSegments) {
-    if (pathname === `/operator/${segment}` || pathname.endsWith(`/operator/${segment}`)) return segment;
+  const parts = pathname.split("/").filter((part) => part.length > 0);
+  if (parts[0] && isLocale(parts[0])) parts.shift();
+  const segment = parts[0] === "operator" ? parts[1] : undefined;
+  for (const candidate of operatorSegments) {
+    if (segment === candidate) return candidate;
   }
   return "sign-in";
 }
 
 export function operatorPath(locale: Locale, segment: OperatorSegment): string {
-  const prefix = locale === defaultLocale ? "" : `/${locale}`;
-  return `${prefix}/operator/${segment}`;
+  return `/${locale}/operator/${segment}`;
 }

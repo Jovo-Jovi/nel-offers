@@ -3,13 +3,14 @@ import path from "node:path";
 import { chromium } from "@playwright/test";
 
 const origin = "http://localhost:3000";
-const evidenceDir = path.join("docs", "evidence", "T04");
+const evidenceDir = path.join("docs", "evidence", "T04-F2");
 const headerTargets = [
-  { urlPath: "/", expectStatus: 200 },
-  { urlPath: "/en", expectStatus: 200 },
-  { urlPath: "/campaign-offers/SYN-001", expectStatus: 404 },
-  { urlPath: "/en/campaign-offers/SYN-001", expectStatus: 404 },
-  { urlPath: "/campaign-offers/SYN-404", expectStatus: 404 },
+  { urlPath: "/", expectStatus: 307, operator: false },
+  { urlPath: "/ar", expectStatus: 200, operator: false },
+  { urlPath: "/en", expectStatus: 200, operator: false },
+  { urlPath: "/dashboard", expectStatus: 307, operator: false },
+  { urlPath: "/ar/operator/sign-in", expectStatus: 200, operator: true },
+  { urlPath: "/ar/nope", expectStatus: 404, operator: false },
 ];
 
 function redactValue(value) {
@@ -52,6 +53,10 @@ try {
       problems.push(`${target.urlPath} permissions`);
     }
     if (response.status() !== target.expectStatus) problems.push(`${target.urlPath} status ${response.status()}`);
+    if (target.operator) {
+      if (!(headers["cache-control"] ?? "").includes("no-store")) problems.push(`${target.urlPath} no-store`);
+      if (headers["x-robots-tag"] !== "noindex, nofollow") problems.push(`${target.urlPath} robots`);
+    }
   }
   const serialised = `${JSON.stringify({ captures: headerRows }, null, 2)}\n`;
   if (/supabase\.co/i.test(serialised) || /[0-9a-f]{32}\.r2\.cloudflarestorage/i.test(serialised)) {

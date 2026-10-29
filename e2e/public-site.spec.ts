@@ -7,7 +7,9 @@ import {
   defaultLocale,
   directionFor,
   homePath,
+  localeFromPathname,
   messagesFor,
+  operatorPath,
   prefixedLocale,
   type Locale,
 } from "../src/i18n/config";
@@ -74,7 +76,7 @@ function bandPng() {
 }
 
 const operatorState = "e2e/.auth/operator.json";
-const evidenceDir = path.join("docs", "evidence", "T04");
+const evidenceDir = path.join("docs", "evidence", "T04-F2");
 const locales = [defaultLocale, prefixedLocale] as const;
 const widths = [320, 390, 768, 1024, 1440];
 
@@ -174,6 +176,9 @@ spec("synthetic codes only", async ({ browser }) => {
 });
 
 spec("coming soon before publishing", async ({ page }) => {
+  const campaign = await loadCampaign();
+  expect(campaign?.isPublished).toBe(false);
+  if (!campaign) return;
   for (const locale of locales) {
     const response = await page.goto(homePath(locale));
     expect(response?.status()).toBe(200);
@@ -181,9 +186,10 @@ spec("coming soon before publishing", async ({ page }) => {
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page.locator("html")).toHaveAttribute("dir", directionFor(locale));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.home.comingSoon);
-    await expect(page.getByRole("link", { name: messages.header.labSite })).toHaveCount(0);
-    await expect(page.locator("a[href^='tel:']")).toHaveCount(0);
-    await expect(page.locator("a[href*='wa.me']")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: messages.header.labSite })).toHaveAttribute("href", campaign.nelSiteUrl);
+    await expect(page.locator("footer")).toContainText(campaign.hotlineDisplay);
+    await expect(page.locator("footer")).toContainText(campaign.whatsappDisplay);
+    await expect(page.getByRole("img", { name: messages.a11y.banner })).toHaveCount(0);
     await expect(page).toHaveTitle(titled(messages.site.campaignTitle, messages.site.name));
   }
   const missing = await page.goto(campaignOfferPath(defaultLocale, "SYN-001"));
@@ -204,7 +210,7 @@ spec("publish the campaign", async ({ browser }) => {
     await context.close();
   }
   const campaign = await loadCampaign();
-  expect(campaign).toBeTruthy();
+  expect(campaign?.isPublished).toBe(true);
   const rows = await loadRows();
   expect(rows.map((row) => row.code)).toEqual(["SYN-001", "SYN-002", "SYN-003", "SYN-006"]);
 });
@@ -470,9 +476,6 @@ spec("gallery preview", async ({ page }) => {
     await expect(page.locator("html")).toHaveClass(/public-scroll-lock/);
     await movePreview(page, locale, count);
     await assertPreviewPicture(page);
-    if (locale === defaultLocale) {
-      await page.screenshot({ path: path.join(evidenceDir, "gallery-preview-ar-390.png") });
-    }
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(opener).toBeFocused();
@@ -491,23 +494,69 @@ spec("gallery preview", async ({ page }) => {
 });
 
 spec("not found", async ({ page }) => {
-  const cases = [
-    { urlPath: campaignOfferPath(defaultLocale, "SYN-404"), locale: defaultLocale },
-    { urlPath: campaignOfferPath(prefixedLocale, "SYN-404"), locale: prefixedLocale },
-    { urlPath: campaignOfferPath(defaultLocale, "SYN-004"), locale: defaultLocale },
-    { urlPath: campaignOfferPath(prefixedLocale, "SYN-004"), locale: prefixedLocale },
-    { urlPath: campaignOfferPath(defaultLocale, "SYN-005"), locale: defaultLocale },
-    { urlPath: campaignOfferPath(prefixedLocale, "SYN-005"), locale: prefixedLocale },
-    { urlPath: "/fr", locale: defaultLocale },
-    { urlPath: "/en/nope", locale: prefixedLocale },
+  fs.mkdirSync(evidenceDir, { recursive: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const hidden = [
+    { urlPath: campaignOfferPath(defaultLocale, "SYN-404"), locale: defaultLocale, shot: "not-found-campaign-offer-ar-390.png" },
+    { urlPath: campaignOfferPath(prefixedLocale, "SYN-404"), locale: prefixedLocale, shot: "not-found-campaign-offer-en-390.png" },
+    { urlPath: campaignOfferPath(defaultLocale, "SYN-004"), locale: defaultLocale, shot: null },
+    { urlPath: campaignOfferPath(prefixedLocale, "SYN-004"), locale: prefixedLocale, shot: null },
+    { urlPath: campaignOfferPath(defaultLocale, "SYN-005"), locale: defaultLocale, shot: null },
+    { urlPath: campaignOfferPath(prefixedLocale, "SYN-005"), locale: prefixedLocale, shot: null },
   ];
-  for (const entry of cases) {
+  for (const entry of hidden) {
     const response = await page.goto(entry.urlPath);
     expect(response?.status()).toBe(404);
     const messages = messagesFor(entry.locale);
     await expect(page.locator("html")).toHaveAttribute("lang", entry.locale);
     await expect(page.locator("html")).toHaveAttribute("dir", directionFor(entry.locale));
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.campaignOffer.notFound);
+    if (entry.shot) await page.screenshot({ path: path.join(evidenceDir, entry.shot) });
+  }
+  const pages = [
+    { urlPath: "/ar/nope", locale: defaultLocale, shot: "not-found-page-ar-390.png" },
+    { urlPath: "/en/nope", locale: prefixedLocale, shot: "not-found-page-en-390.png" },
+  ];
+  for (const entry of pages) {
+    const response = await page.goto(entry.urlPath);
+    expect(response?.status()).toBe(404);
+    const messages = messagesFor(entry.locale);
+    await expect(page.locator("html")).toHaveAttribute("lang", entry.locale);
+    await expect(page.locator("html")).toHaveAttribute("dir", directionFor(entry.locale));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.site.pageNotFound);
+    await page.screenshot({ path: path.join(evidenceDir, entry.shot) });
+  }
+});
+
+spec("language switch maps the same page", async ({ page, browser }) => {
+  async function roundTrip(current: Page, start: string, arabicHref: string, englishHref: string) {
+    await current.goto(start);
+    const arabic = messagesFor(defaultLocale);
+    const english = messagesFor(prefixedLocale);
+    await expect(current.getByRole("link", { name: arabic.nav.switchLocale })).toHaveAttribute("href", arabicHref);
+    await current.getByRole("link", { name: arabic.nav.switchLocale }).click();
+    await expect.poll(() => new URL(current.url()).pathname).toBe(englishHref);
+    await expect(current.getByRole("link", { name: english.nav.switchLocale })).toHaveAttribute("href", start);
+    await current.getByRole("link", { name: english.nav.switchLocale }).click();
+    await expect.poll(() => new URL(current.url()).pathname).toBe(start);
+  }
+  await roundTrip(page, homePath(defaultLocale), homePath(prefixedLocale), homePath(prefixedLocale));
+  await roundTrip(
+    page,
+    campaignOfferPath(defaultLocale, "SYN-001"),
+    campaignOfferPath(prefixedLocale, "SYN-001"),
+    campaignOfferPath(prefixedLocale, "SYN-001"),
+  );
+  const { context, page: operator } = await operatorPage(browser);
+  try {
+    await roundTrip(
+      operator,
+      operatorPath(defaultLocale, "overview"),
+      operatorPath(prefixedLocale, "overview"),
+      operatorPath(prefixedLocale, "overview"),
+    );
+  } finally {
+    await context.close();
   }
 });
 
@@ -524,17 +573,6 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
   });
   const shots: Record<string, string> = {
     [`${homePath(defaultLocale)}@390`]: "home-ar-390.png",
-    [`${homePath(defaultLocale)}@1440`]: "home-ar-1440.png",
-    [`${homePath(prefixedLocale)}@390`]: "home-en-390.png",
-    [`${homePath(prefixedLocale)}@1440`]: "home-en-1440.png",
-    [`${campaignOfferPath(defaultLocale, "SYN-001")}@390`]: "campaign-offer-image-ar-390.png",
-    [`${campaignOfferPath(defaultLocale, "SYN-001")}@1440`]: "campaign-offer-image-ar-1440.png",
-    [`${campaignOfferPath(prefixedLocale, "SYN-001")}@390`]: "campaign-offer-image-en-390.png",
-    [`${campaignOfferPath(prefixedLocale, "SYN-001")}@1440`]: "campaign-offer-image-en-1440.png",
-    [`${campaignOfferPath(defaultLocale, "SYN-002")}@390`]: "campaign-offer-video-ar-390.png",
-    [`${campaignOfferPath(defaultLocale, "SYN-002")}@1440`]: "campaign-offer-video-ar-1440.png",
-    [`${campaignOfferPath(prefixedLocale, "SYN-002")}@390`]: "campaign-offer-video-en-390.png",
-    [`${campaignOfferPath(prefixedLocale, "SYN-002")}@1440`]: "campaign-offer-video-en-1440.png",
   };
   const publishedPaths = [
     homePath(defaultLocale),
@@ -554,7 +592,7 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       await page.goto(urlPath, { waitUntil: "domcontentloaded" });
       await expect(page.locator("h1")).toBeVisible();
-      const locale = urlPath.startsWith("/en") ? prefixedLocale : defaultLocale;
+      const locale = localeFromPathname(urlPath);
       if (urlPath === homePath(locale)) {
         const loaded = await assertPicturesLoaded(page, page.getByRole("img", { name: messagesFor(locale).a11y.banner }));
         expect(loaded).toBeGreaterThan(0);
@@ -585,6 +623,8 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
   } finally {
     await context.close();
   }
+  const unpublished = await loadCampaign();
+  expect(unpublished?.isPublished).toBe(false);
   for (const locale of locales) {
     const urlPath = homePath(locale);
     const served = await page.request.get(urlPath);
@@ -595,12 +635,21 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       await page.goto(urlPath, { waitUntil: "domcontentloaded" });
       await expect(page.locator(".nel-shimmer")).toHaveCount(0);
-      const heading = page.getByRole("heading", { level: 1, name: messagesFor(locale).home.comingSoon });
+      const messages = messagesFor(locale);
+      const heading = page.getByRole("heading", { level: 1, name: messages.home.comingSoon });
       await expect(heading).toBeVisible();
+      if (unpublished) {
+        await expect(page.getByRole("link", { name: messages.header.labSite })).toHaveAttribute(
+          "href",
+          unpublished.nelSiteUrl,
+        );
+        await expect(page.locator("footer")).toContainText(unpublished.hotlineDisplay);
+        await expect(page.locator("footer")).toContainText(unpublished.whatsappDisplay);
+      }
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits, `${urlPath} ${width}`).toBe(true);
-      if (width === 390) {
-        await page.screenshot({ path: path.join(evidenceDir, `coming-soon-${locale}-390.png`) });
+      if (width === 390 || width === 1440) {
+        await page.screenshot({ path: path.join(evidenceDir, `coming-soon-${locale}-${width}.png`) });
       }
     }
   }
@@ -610,6 +659,5 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
     const allowed = host === "localhost:3000" || host.endsWith(".r2.cloudflarestorage.com");
     expect(allowed, host).toBe(true);
   }
-  const campaign = await loadCampaign();
-  expect(campaign).toBeNull();
+  expect(unpublished?.isPublished).toBe(false);
 });

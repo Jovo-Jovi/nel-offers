@@ -301,8 +301,8 @@ begin
   v_total := v_total + 2;
   select count(*) into v_n from public."CampaignOffer" where code like 'SYN-9%';
   if v_n = 0 then v_pass := v_pass + 1; else v_failed := v_failed || ' | 44 unpublished hides every offer (' || v_n || ')'; end if;
-  select count(*) into v_n from public."Campaign";
-  if v_n = 0 then v_pass := v_pass + 1; else v_failed := v_failed || ' | 45 unpublished hides the contacts'; end if;
+  select count(*) into v_n from public."Campaign" where not is_published and nel_site_url is not null;
+  if v_n = 1 then v_pass := v_pass + 1; else v_failed := v_failed || ' | 45 unpublished shows the contacts (OD-03)'; end if;
 
   -- The drift check: zero after a real import, and it sees a field changed outside the import ----
   reset role;

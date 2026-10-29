@@ -15,17 +15,22 @@ export function shellProps(
     homeHref: homePath(locale),
     siteName: messages.site.name,
     markAlt: messages.a11y.mark,
-    labSite: campaign ? { href: campaign.nelSiteUrl, label: messages.header.labSite } : null,
-    hotline: campaign
-      ? { href: dialLink(campaign.hotlineDial), template: messages.footer.hotline, number: campaign.hotlineDisplay }
-      : null,
-    whatsapp: campaign
-      ? {
-          href: chatLink(campaign.whatsappDigits),
-          template: messages.footer.whatsapp,
-          number: campaign.whatsappDisplay,
-        }
-      : null,
+    labSite:
+      campaign && campaign.nelSiteUrl.length > 0
+        ? { href: campaign.nelSiteUrl, label: messages.header.labSite }
+        : null,
+    hotline:
+      campaign && campaign.hotlineDial.length > 0
+        ? { href: dialLink(campaign.hotlineDial), template: messages.footer.hotline, number: campaign.hotlineDisplay }
+        : null,
+    whatsapp:
+      campaign && campaign.whatsappDigits.length > 0
+        ? {
+            href: chatLink(campaign.whatsappDigits),
+            template: messages.footer.whatsapp,
+            number: campaign.whatsappDisplay,
+          }
+        : null,
     switchHref,
     switchLabel: messages.nav.switchLocale,
   };
