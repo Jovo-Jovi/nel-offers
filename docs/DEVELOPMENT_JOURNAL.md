@@ -194,3 +194,17 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   main media; the banner and coming-soon evidence not showing their states.
 - Verdict T04: FAIL. T04-F issued. CF-14 (localized not-found) and CF-17 (Vercel can see the
   repository; the PR shows a Vercel deployment) close.
+
+## 2026-10-29 — T04-F (builder)
+
+- LANDING `7fa19592f7cc8ed4d50a4b73543f31286dfe068c`. Carry-forwards `29 13 ['30']`: 25 + 4 rows, next free 30, open 11 − 2 + 4 = 13. CF-14 and CF-17 are `CLOSED (T04)`. CF-26 to CF-29 are open.
+- Fixes at `41754436e8d27e26a27d3959ea6b686b1a1e7a69`. A path whose first segment is the default locale skips the visibility read and uses the existing 308. The preview image is sized to the viewport width with `object-contain`. The main-media figure no longer stretches, and the image or video fills the frame. The synthetic banner is a 1600×600 PNG of two solid bands, replaced when the stored banner is not that size. Coming-soon shots wait until `home.comingSoon` is visible.
+- On that commit, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The T01–T03 evidence diff from LANDING is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). `package.json` dependencies are unchanged. Nothing under `supabase/` changed.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 21 passed. The three redirects answer 308 with Location pathnames `/`, `/x` and `/campaign-offers/SYN-001`. The preview image box is `0,227 390x390` in a `390x844` viewport, in both locales.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: awaiting the human (PR-24). The builder did not run SQL. The campaign is unpublished.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: the dashboard layout spec rewrote two T03 overview screenshots. They were restored before `git add`. The committed T01–T03 evidence diff is empty.
+- Deviation: `npm run evidence` rewrote `docs/evidence/T04/headers.json` (new nonces and dates). The retake list did not name that file; step 5 requires the command.
