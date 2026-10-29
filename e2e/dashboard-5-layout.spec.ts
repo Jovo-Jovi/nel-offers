@@ -24,6 +24,10 @@ async function measure(page: Page, urlPath: string, width: number, shot: string 
   await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
   await page.goto(urlPath, { waitUntil: "domcontentloaded" });
   await expect(page.locator("h1")).toBeVisible();
+  if (urlPath.endsWith("/sign-in")) {
+    await expect(page.locator("input[name=email]")).toBeVisible();
+    await expect(page.locator("input[name=password]")).toBeVisible();
+  }
   const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   expect(fits).toBe(true);
   if (shot) {
@@ -35,7 +39,7 @@ async function measure(page: Page, urlPath: string, width: number, shot: string 
 spec("dashboard layout in both locales", async ({ browser }) => {
   spec.setTimeout(300 * 1000);
   const signed = await browser.newContext({ storageState: "e2e/.auth/operator.json" });
-  const anon = await browser.newContext();
+  const anon = await browser.newContext({ storageState: { cookies: [], origins: [] } });
   try {
     for (const locale of ["ar", "en"] as const) {
       for (const entry of pages) {

@@ -119,3 +119,19 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Verdict T03: FAIL. T03-F issued with `20261029020000_nelo_import_conflict.sql` (`PT409`) and the
   amended RLS proof, rehearsed on PostgreSQL 16: proof 47/47 and presentation proof 17/17 after
   it; without it the amended proof aborts. CF-02, CF-04, CF-15, CF-16 and CF-19 close.
+
+## 2026-10-29 — T03-F (builder)
+
+- LANDING: `2c008d3ed1bdd59e15b3e468697f6df31d6414fb`.
+- Allocated CARRY_FORWARDS base 19 + 5 rows = CF-20..CF-24, next free CF-25. Open rows 16 − 5 + 4 = 15. CF-02, CF-04, CF-15, CF-16 and CF-19 read `CLOSED (T03)`. No other existing cell was changed. CF-24 is born `CLOSED (T03)`. PRECEDENTS base 29 + 1 = PR-30, next free PR-31.
+- `npm run guard:naming` exit 0. `npm run guard:design` exit 0. `npm run guard:literals` exit 0. `npm run guard:boundary` exit 0.
+- Self-checks exit 0. naming: string fail 5/5 pass 7/7, file fail 5/5 pass 7/7. design: string fail 9/9 pass 6/6, file fail 9/9 pass 6/6. literals: string fail 7/7 pass 3/3, file fail 7/7 pass 3/3. boundary: string fail 4/4 pass 4/4, file fail 4/4 pass 4/4.
+- `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run test:unit` exit 0 (28 passed). `npm run build` exit 0. `npm audit --omit=dev --audit-level=high` exit 0 (2 moderate). `npx playwright test` exit 0 (11 passed). The stale confirm answered 409 `changed-since-preview` in 298 ms. `npm run evidence` exit 0.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0.
+- Human-attested `xact_rollback`: 7058720, then 7058720 ten seconds later. Difference 0.
+- The campaign is unpublished. SYN-001 through SYN-006 remain. SYN-009 was removed.
+- Deviation: step 2 also showed the untracked task prompt. The human said to continue. That file is not committed.
+- Deviation: the import spec removes existing `SYN-` offers before the seven-addition preview, and its timeout is 300 seconds, because T03 left those offers in place. The campaign spec removes an existing banner before the first upload, because T03 left the synthetic banner.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build prints the same warning and names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.

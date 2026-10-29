@@ -31,36 +31,17 @@ export async function POST(request: Request) {
       return jsonCode(422, "not-a-workbook");
     }
     if (parsed.errors.length > 0 || parsed.rows.length === 0) return jsonCode(422, "sheet-errors");
-    let data: unknown = null;
-    let error: { code?: string; message?: string; details?: string; hint?: string } | null = null;
-    try {
-      const applied = await gate.supabase
-        .rpc("apply_campaign_import", {
-          p_sheet_sha256: digest,
-          p_rows: parsed.rows,
-          p_expected_count: expectedCount,
-          p_expected_updated_at: expectedUpdatedAt,
-        })
-        .abortSignal(AbortSignal.timeout(8 * 1000));
-      data = applied.data;
-      error = applied.error;
-    } catch {
-      return jsonCode(409, "changed-since-preview");
-    }
-    if (error) {
-      const detail = `${error.code ?? ""} ${error.message ?? ""} ${error.details ?? ""} ${error.hint ?? ""}`;
-      const folded = detail.toLowerCase();
-      if (
-        detail.includes("400" + "01") ||
-        folded.includes("preview again") ||
-        folded.includes("upstream request timeout") ||
-        folded.includes("aborted")
-      ) {
-        return jsonCode(409, "changed-since-preview");
-      }
+    const applied = await gate.supabase.rpc("apply_campaign_import", {
+      p_sheet_sha256: digest,
+      p_rows: parsed.rows,
+      p_expected_count: expectedCount,
+      p_expected_updated_at: expectedUpdatedAt,
+    });
+    if (applied.error) {
+      if (applied.error.code === "PT409") return jsonCode(409, "changed-since-preview");
       return jsonCode(422, "rejected");
     }
-    const importId = typeof data === "string" ? data : "";
+    const importId = typeof applied.data === "string" ? applied.data : "";
     const counts = await gate.supabase
       .from("CampaignImport")
       .select("added_count, updated_count, unchanged_count")

@@ -1,13 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { messagesFor, intlLocale, type Locale } from "@/i18n/config";
+import { messagesFor, type Locale } from "@/i18n/config";
 import { cardClass, primaryButton, quietButton } from "@/components/operator-classes";
 import { LatinRun } from "@/components/latin-run";
 import { useOperatorFeedback } from "@/components/operator-feedback";
 import { BusyButton } from "@/components/submit-button";
 import { fillMessage } from "@/lib/fill-message";
-import { megabytes } from "@/lib/format-values";
+import { formatCount, megabytes } from "@/lib/format-values";
 import { sheetErrorText, warningText } from "@/lib/operator-copy";
 import { workbookByteLimit } from "@/lib/sheet-format";
 
@@ -34,10 +34,6 @@ type PreviewView = {
   unchangedCount: number;
   published: boolean;
 };
-
-function countText(locale: Locale, value: number) {
-  return new Intl.NumberFormat(intlLocale(locale)).format(value);
-}
 
 export function ImportPanel({ locale }: { locale: Locale }) {
   const messages = messagesFor(locale);
@@ -211,7 +207,7 @@ export function ImportPanel({ locale }: { locale: Locale }) {
           ) : null}
           <section>
             <h2 className="text-lg">{messages.operator.additionHeading}</h2>
-            <p><LatinRun>{countText(locale, preview.additions.length)}</LatinRun></p>
+            <p><LatinRun>{formatCount(locale, preview.additions.length)}</LatinRun></p>
             <ul>
               {preview.additions.map((row) => (
                 <li key={row.code}>
@@ -222,7 +218,7 @@ export function ImportPanel({ locale }: { locale: Locale }) {
           </section>
           <section>
             <h2 className="text-lg">{messages.operator.updateHeading}</h2>
-            <p><LatinRun>{countText(locale, preview.updates.length)}</LatinRun></p>
+            <p><LatinRun>{formatCount(locale, preview.updates.length)}</LatinRun></p>
             <ul>
               {preview.updates.map((row) => (
                 <li key={row.code}>

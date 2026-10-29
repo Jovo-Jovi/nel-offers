@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { PublishSwitch } from "@/components/publish-switch";
 import { LatinRun } from "@/components/latin-run";
 import { cardClass } from "@/components/operator-classes";
-import { isLocale, intlLocale, messagesFor, operatorPath, type Locale } from "@/i18n/config";
+import { isLocale, messagesFor, operatorPath, type Locale } from "@/i18n/config";
 import { contactsComplete } from "@/lib/campaign-contacts";
-import { formatStamp } from "@/lib/format-values";
+import { formatCount, formatStamp } from "@/lib/format-values";
 import { fillMessage } from "@/lib/fill-message";
 import { contactDraft, readCampaign, readLastImport, readCampaignOfferRows, readStatuses } from "@/lib/operator-data";
 import { requireOperator } from "@/lib/require-operator";
@@ -80,7 +80,7 @@ function Count({
     <li className={cardClass} data-status={status}>
       <p className="text-sm text-muted">{label}</p>
       <p className="text-2xl">
-        <LatinRun>{new Intl.NumberFormat(intlLocale(locale)).format(value)}</LatinRun>
+        <LatinRun>{formatCount(locale, value)}</LatinRun>
       </p>
     </li>
   );

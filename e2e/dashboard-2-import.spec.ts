@@ -42,6 +42,20 @@ function section(page: Page, heading: string) {
   return page.locator("section").filter({ has: page.getByRole("heading", { name: heading }) });
 }
 
+async function removeSyntheticOffers(page: Page) {
+  await page.goto("/en/operator/campaign-offers");
+  for (;;) {
+    const row = page.locator("tr[data-code]").first();
+    if ((await row.count()) === 0) break;
+    const code = (await row.getAttribute("data-code")) ?? "";
+    expect(code.startsWith("SYN-")).toBe(true);
+    await row.getByRole("button", { name: "Remove" }).click();
+    await expect(page.getByRole("dialog")).toContainText(code);
+    await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
+    await expect(page.locator(`[data-code="${code}"]`)).toHaveCount(0);
+  }
+}
+
 async function choose(page: Page, bytes: Buffer) {
   await page.locator("#workbook").setInputFiles({
     name: "sheet.xlsx",
@@ -52,7 +66,7 @@ async function choose(page: Page, bytes: Buffer) {
 }
 
 spec("import template, refusals, additions and a stale confirm", async ({ page }) => {
-  spec.setTimeout(180 * 1000);
+  spec.setTimeout(300 * 1000);
   await page.goto("/en/operator/import");
   const template = await page.request.get("/api/operator/campaign-template");
   expect(template.status()).toBe(200);
@@ -71,6 +85,8 @@ spec("import template, refusals, additions and a stale confirm", async ({ page }
   await page.getByRole("button", { name: "Preview" }).click();
   await expect(page.getByText("belong in campaign settings")).toHaveCount(6);
   await expect(page.getByRole("button", { name: "Confirm import" })).toBeDisabled();
+  await removeSyntheticOffers(page);
+  await page.goto("/en/operator/import");
 
   const rows = [
     line("SYN-001", 1, 100, null, shift(20), false),
@@ -140,8 +156,13 @@ spec("import template, refusals, additions and a stale confirm", async ({ page }
   expect(confirmed.status()).toBe(200);
   await confirmed.json();
   const pending = page.waitForResponse((response) => response.url().includes("/api/operator/campaign-imports/confirm"));
+  const started = Date.now();
   await page.getByRole("button", { name: "Confirm import" }).click();
   const answer = await pending;
+  const elapsed = Date.now() - started;
+  expect(answer.status()).toBe(409);
+  expect(elapsed).toBeLessThan(5 * 1000);
+  console.log(`stale-confirm ${elapsed}ms`);
   const uiBody = await answer.text();
   expect(uiBody, uiBody).toContain("changed-since-preview");
   await expect(page.getByRole("main").getByText("Preview again")).toBeVisible();

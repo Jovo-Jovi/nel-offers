@@ -1,23 +1,37 @@
 import { intlLocale, type Locale } from "@/i18n/config";
 
+const bidiMarks = /[\u200E\u200F\u061C]/g;
+
+function withoutBidiMarks(value: string) {
+  return value.replace(bidiMarks, "");
+}
+
+export function formatCount(locale: Locale, value: number) {
+  return withoutBidiMarks(new Intl.NumberFormat(intlLocale(locale)).format(value));
+}
+
 export function formatPrice(locale: Locale, value: string) {
   const number = Number(value);
   if (!Number.isFinite(number)) return value;
-  return new Intl.NumberFormat(intlLocale(locale), {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(number);
+  return withoutBidiMarks(
+    new Intl.NumberFormat(intlLocale(locale), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(number),
+  );
 }
 
 export function formatCalendar(locale: Locale, iso: string) {
   const [year, month, day] = iso.split("-").map((part) => Number(part));
   if (!year || !month || !day) return iso;
-  return new Intl.DateTimeFormat(intlLocale(locale), {
-    timeZone: "UTC",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(Date.UTC(year, month - 1, day)));
+  return withoutBidiMarks(
+    new Intl.DateTimeFormat(intlLocale(locale), {
+      timeZone: "UTC",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(Date.UTC(year, month - 1, day))),
+  );
 }
 
 export function formatStamp(locale: Locale, iso: string) {

@@ -26,6 +26,14 @@ spec("contacts, card price, banner, publish and removal", async ({ page }) => {
   await card.click();
   await expect(card).toHaveAttribute("aria-checked", "true");
 
+  const removeBannerButton = page.getByRole("button", { name: "Remove banner" });
+  if ((await removeBannerButton.count()) > 0) {
+    await removeBannerButton.click();
+    await expect(page.getByRole("dialog")).toContainText("Remove the campaign banner?");
+    await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
+    await expect(page.getByText("No banner yet.")).toBeVisible();
+  }
+
   async function sendBanner(bytes: Buffer, label: string) {
     await page.locator("#banner").setInputFiles({ name: "banner.png", mimeType: "image/png", buffer: bytes });
     await expect(page.getByAltText("Banner preview")).toBeVisible();
