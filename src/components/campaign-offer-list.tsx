@@ -1,6 +1,6 @@
 "use client";
 
-import { Clapperboard, Image as ImageIcon, Images } from "lucide-react";
+import { Clapperboard, Image as ImageIcon, Images, LoaderCircle as Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { removeCampaignOffer, removeCampaignOfferMedia, setCampaignOfferShown } from "@/app/[locale]/operator/(dashboard)/actions";
@@ -11,6 +11,7 @@ import { SlideSwitch } from "@/components/slide-switch";
 import { cardClass, fieldClass } from "@/components/operator-classes";
 import { messagesFor, operatorPath, type Locale } from "@/i18n/config";
 import { fillMessage } from "@/lib/fill-message";
+import { leaveMs, motionReduced } from "@/lib/leave-motion";
 import { slotText } from "@/lib/operator-copy";
 
 const slotOrder = ["main_video", "main_image", "gallery_1", "gallery_2", "gallery_3"] as const;
@@ -82,6 +83,7 @@ export function CampaignOfferList({
   const [menu, setMenu] = useState("");
   const [pending, setPending] = useState("");
   const [hiding, setHiding] = useState("");
+  const [leavingSlot, setLeavingSlot] = useState("");
   const [statusById, setStatusById] = useState<Record<string, string>>({});
   const [picturesById, setPicturesById] = useState<Record<string, SlotPicture[]>>({});
   const [removedIds, setRemovedIds] = useState<string[]>([]);
@@ -141,11 +143,21 @@ export function CampaignOfferList({
     if ("empty" in outcome && outcome.empty) toast(messages.operator.slotAlreadyEmpty, "alert");
     else if ("storageFailed" in outcome && outcome.storageFailed) toast(messages.operator.storageFailed, "alert");
     else toast(messages.operator.removed, "status");
-    setPicturesById((current) => ({
+    const dropPicture = (current: Record<string, SlotPicture[]>) => ({
       ...current,
       [row.id]: (current[row.id] ?? row.pictures).filter((entry) => entry.slot !== slot),
-    }));
-    router.refresh();
+    });
+    if (motionReduced()) {
+      setPicturesById(dropPicture);
+      router.refresh();
+      return;
+    }
+    setLeavingSlot(`${row.id}:${slot}`);
+    window.setTimeout(() => {
+      setPicturesById(dropPicture);
+      setLeavingSlot("");
+      router.refresh();
+    }, leaveMs);
   }
 
   async function remove(row: CampaignOfferView & { filled: string[] }) {
@@ -160,12 +172,17 @@ export function CampaignOfferList({
       return;
     }
     toast(outcome.storageFailed ? messages.operator.storageFailed : messages.operator.removed, outcome.storageFailed ? "alert" : "status");
+    if (motionReduced()) {
+      setRemovedIds((current) => [...current, row.id]);
+      router.refresh();
+      return;
+    }
     setHiding(row.id);
     window.setTimeout(() => {
       setRemovedIds((current) => [...current, row.id]);
       setHiding("");
-    }, 300);
-    router.refresh();
+      router.refresh();
+    }, leaveMs);
   }
 
   return (
@@ -193,14 +210,17 @@ export function CampaignOfferList({
           </button>
         ))}
       </div>
+      <p className="text-sm text-muted">{messages.operator.statusLegend}</p>
       {visible.length === 0 ? <p>{messages.operator.emptyCampaignOffers}</p> : null}
       <ul className="flex min-w-0 flex-col gap-3">
         {shown.map((row) => (
           <li
             key={row.id}
             data-code={row.code}
-            className={`${cardClass} flex min-w-0 flex-col gap-3 ${hiding === row.id ? "opacity-0 transition-opacity motion-reduce:transition-none" : ""}`}
+            data-leaving={hiding === row.id ? "true" : undefined}
+            className="nel-leave"
           >
+            <div className={`nel-leave-inner ${cardClass} flex min-w-0 flex-col gap-3`}>
             <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="flex flex-wrap items-center gap-2 text-sm">
@@ -218,6 +238,7 @@ export function CampaignOfferList({
                 <span data-shown-label className="text-sm">
                   {messages.operator.shownLabel}
                 </span>
+                {pending === row.id ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
                 <SlideSwitch
                   checked={row.status !== "off"}
                   disabled={pending === row.id}
@@ -247,10 +268,16 @@ export function CampaignOfferList({
                 const present = picture !== null;
                 const href = `${operatorPath(locale, "media-objects")}?code=${encodeURIComponent(row.code)}&slot=${slot}`;
                 return (
-                  <li key={slot} data-filled={present ? "yes" : "no"} className="flex min-w-0 flex-wrap items-center gap-2 rounded-button border border-border px-3 py-2 text-sm">
+                  <li
+                    key={slot}
+                    data-filled={present ? "yes" : "no"}
+                    data-leaving={leavingSlot === `${row.id}:${slot}` ? "true" : undefined}
+                    className="nel-leave"
+                  >
+                    <div className="nel-leave-inner flex min-w-0 flex-wrap items-center gap-2 rounded-button border border-border px-3 py-2 text-sm">
                     {picture?.video && picture.previewUrl ? (
                       <video
-                        className="size-12 rounded-button object-cover"
+                        className="nel-arrive size-12 rounded-button object-cover"
                         src={`${picture.previewUrl}#t=0.1`}
                         muted
                         playsInline
@@ -259,7 +286,7 @@ export function CampaignOfferList({
                     ) : picture?.previewUrl ? (
                       // CSP has no style-src, and next/image writes an inline style.
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={picture.previewUrl} alt="" className="size-12 rounded-button object-cover" />
+                      <img src={picture.previewUrl} alt="" className="nel-arrive size-12 rounded-button object-cover" />
                     ) : (
                       <SlotMark slot={slot} />
                     )}
@@ -271,13 +298,18 @@ export function CampaignOfferList({
                     {present ? (
                       <button
                         type="button"
-                        className="text-sm"
+                        className="inline-flex items-center gap-1 text-sm"
+                        disabled={pending === `${row.id}:${slot}`}
                         aria-label={`${messages.operator.remove} ${slotText(messages, slot)}`}
                         onClick={() => void removeSlot(row, slot)}
                       >
+                        {pending === `${row.id}:${slot}` ? (
+                          <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                        ) : null}
                         {messages.operator.remove}
                       </button>
                     ) : null}
+                    </div>
                   </li>
                 );
               })}
@@ -301,6 +333,7 @@ export function CampaignOfferList({
                 onClick={() => void remove(row)}
               />
             ) : null}
+            </div>
           </li>
         ))}
       </ul>

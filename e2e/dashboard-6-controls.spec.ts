@@ -5,6 +5,15 @@ import { messagesFor } from "../src/i18n/config";
 import { tinyPng } from "./support/samples";
 
 const evidenceDir = path.join("docs", "evidence", "T05");
+const followUpDir = path.join("docs", "evidence", "T05-F2");
+const statusWords = {
+  ar: ["ظاهر الآن", "يبدأ لاحقًا", "انتهى", "موقوف", "غير منشور"],
+  en: ["Visible now", "Starts later", "Ended", "Switched off", "Not published"],
+} as const;
+const legendStart = {
+  ar: "ظاهر الآن: يراه الزوار اليوم",
+  en: "Visible now: visitors see it today",
+} as const;
 const segments = ["overview", "campaign-offers", "import", "media-objects", "campaign-settings"] as const;
 
 async function upload(page: Page) {
@@ -30,12 +39,12 @@ async function dropOnBody(page: Page) {
   expect(page.url()).toBe(before);
 }
 
-async function shot(page: Page, name: string) {
+async function shot(page: Page, name: string, dir = evidenceDir) {
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator(".nel-shimmer")).toHaveCount(0);
   const width = page.viewportSize()?.width ?? 0;
-  fs.mkdirSync(evidenceDir, { recursive: true });
-  await page.screenshot({ path: path.join(evidenceDir, name), fullPage: width >= 1024 });
+  fs.mkdirSync(dir, { recursive: true });
+  await page.screenshot({ path: path.join(dir, name), fullPage: width >= 1024 });
 }
 
 spec("operator controls, media choice and dashboard screenshots", async ({ page }) => {
@@ -54,9 +63,19 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
         await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
         await page.goto(`/${locale}/operator/overview`);
         await shot(page, `dashboard-overview-${locale}-${width}.png`);
+        if (locale === "en" && width === 1440) {
+          await expect(page.getByText(legendStart.en)).toBeVisible();
+          for (const word of statusWords.en) await expect(page.getByRole("main")).toContainText(word);
+          await shot(page, "overview-legend-en-1440.png", followUpDir);
+        }
         await page.goto(`/${locale}/operator/campaign-offers`);
         await expect(page.locator("[data-code='SYN-001'] [data-filled='yes'] img").first()).toBeVisible();
         await shot(page, `dashboard-campaign-offers-${locale}-${width}.png`);
+        if ((locale === "ar" && width === 390) || (locale === "en" && width === 1440)) {
+          for (const word of statusWords[locale]) await expect(page.getByRole("main")).toContainText(word);
+          await expect(page.getByText(legendStart[locale])).toBeVisible();
+          if (locale === "ar") await shot(page, "campaign-offers-legend-ar-390.png", followUpDir);
+        }
       }
     }
 
@@ -83,7 +102,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     }
     await card.getByRole("switch", { name: "Shown on the site" }).click();
     await expect(shownLabel).toHaveText("Shown on the site");
-    await expect(card).toContainText("Off");
+    await expect(card).toContainText("Switched off");
     await page.goto("/en/operator/overview");
     await page.getByRole("switch", { name: "Published" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
@@ -95,7 +114,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     await expect(page.locator("[data-code='SYN-001']")).toHaveCount(0);
     await page.goto("/en/operator/campaign-offers");
     await page.locator("[data-code='SYN-001']").getByRole("switch", { name: "Shown on the site" }).click();
-    await expect(page.locator("[data-code='SYN-001']")).toContainText("Visible");
+    await expect(page.locator("[data-code='SYN-001']")).toContainText("Visible now");
     const restored = await page.goto("/ar/campaign-offers/SYN-001");
     expect(restored?.status()).toBe(200);
     await page.goto("/ar");
@@ -192,16 +211,34 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     await page.locator("[data-code='SYN-002']").getByRole("button", { name: "حذف معرض 2" }).click();
     await expect(page.getByRole("dialog")).toContainText("SYN-002");
     await shot(page, "confirm-remove-slot-ar-390.png");
+    await page.evaluate(() => {
+      const marker = { saw: false };
+      const observer = new MutationObserver(() => {
+        if (document.querySelector("[data-code='SYN-002'] [data-leaving='true']")) marker.saw = true;
+      });
+      observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+      Object.assign(window, { slotLeave: marker });
+    });
     await page.getByRole("dialog").getByRole("button", { name: "تأكيد" }).click();
     await expect(page.locator("[data-code='SYN-002']").locator("[data-filled='yes']", { hasText: "معرض 2" })).toHaveCount(0);
+    expect(await page.evaluate(() => (window as Window & { slotLeave?: { saw: boolean } }).slotLeave?.saw === true)).toBe(true);
 
     await page.goto("/en/operator/media-objects");
     const libraryRow = page.locator("[data-library='SYN-005:main_image']");
     await libraryRow.getByRole("button", { name: "Remove" }).click();
     await expect(page.getByRole("dialog")).toContainText("SYN-005");
     await expect(page.getByRole("dialog")).toContainText("Main image");
+    await page.evaluate(() => {
+      const marker = { saw: false };
+      const observer = new MutationObserver(() => {
+        if (document.querySelector("[data-library='SYN-005:main_image'][data-leaving='true']")) marker.saw = true;
+      });
+      observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+      Object.assign(window, { libraryLeave: marker });
+    });
     await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
     await expect(libraryRow).toHaveCount(0);
+    expect(await page.evaluate(() => (window as Window & { libraryLeave?: { saw: boolean } }).libraryLeave?.saw === true)).toBe(true);
 
     await page.goto("/en/operator/campaign-offers");
     const clip = page.locator("[data-code='SYN-003']");
@@ -251,4 +288,68 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
       await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
     }
   }
+});
+
+spec("a running action shows its spinner, and reduced motion skips the leaving mark", async ({ page }) => {
+  spec.setTimeout(120 * 1000);
+  await page.goto("/en/operator/campaign-offers");
+  const card = page.locator("[data-code='SYN-001']");
+  const toggle = card.getByRole("switch", { name: "Shown on the site" });
+  let pause = true;
+  await page.route("**/*", async (route) => {
+    const action = route.request().headers()["next-action"];
+    if (pause && route.request().method() === "POST" && action) {
+      pause = false;
+      const response = await route.fetch();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await route.fulfill({ response });
+      return;
+    }
+    await route.continue();
+  });
+  try {
+    const done = page.waitForResponse((response) => Boolean(response.request().headers()["next-action"]));
+    const clicked = toggle.click({ noWaitAfter: true });
+    await expect(toggle).toBeDisabled();
+    await expect(card.locator(".animate-spin")).toBeVisible();
+    await done;
+    await clicked;
+  } finally {
+    pause = false;
+    await page.unroute("**/*");
+  }
+  if ((await toggle.getAttribute("aria-checked")) !== "true") {
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+  }
+
+  await page.goto("/en/operator/media-objects");
+  await page.getByRole("tab", { name: "Images" }).click();
+  await page.locator("#uploads-images").setInputFiles({
+    name: "SYN-004-3.png",
+    mimeType: "image/png",
+    buffer: tinyPng,
+  });
+  await upload(page);
+  await expect(page.locator("[data-library='SYN-004:gallery_3']")).toBeVisible({ timeout: 120 * 1000 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/en/operator/campaign-offers");
+  const removal = page.locator("[data-code='SYN-004']").getByRole("button", { name: "Remove Gallery 3", exact: true });
+  await expect(removal).toBeVisible();
+  await removal.click();
+  await page.evaluate(() => {
+    const marker = { saw: false };
+    const observer = new MutationObserver(() => {
+      if (document.querySelector("[data-leaving]")) marker.saw = true;
+    });
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+    Object.assign(window, { leaveMark: marker });
+  });
+  await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
+  await expect(removal).toHaveCount(0);
+  const saw = await page.evaluate(() => {
+    const marker = (window as Window & { leaveMark?: { saw: boolean } }).leaveMark;
+    return marker?.saw === true;
+  });
+  expect(saw).toBe(false);
 });
