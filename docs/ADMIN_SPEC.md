@@ -51,7 +51,11 @@ only; a line under the list says how to change them (export, edit in Excel, impo
 
 - **Download template** — serves `assets/templates/NELO_offers_template.xlsx` byte-identical.
 - **Export current** — `DATA_MODEL.md` §7.
-- **Import** — choose one `.xlsx` (≤ 2 MB). The preview shows, in this order:
+- **Import** — choose or drop one `.xlsx` (≤ 2 MB). The page shows at once the chosen sheet's
+  name and size (read in the browser only; the name is never sent) and starts the preview without
+  a further click; **Preview again** re-reads it and **Choose another** replaces it (the human's
+  test of T05, 29 Oct 2026). The preview opens with one summary line — the number of errors, or
+  the counts of additions, updates and unchanged rows — and shows, in this order:
   1. errors — row, column, the cell as read, and the reason, in the dashboard's locale;
   2. warnings (`DATA_MODEL.md` §4.2);
   3. additions — each new code with its values;
@@ -156,7 +160,9 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
   "to do": `CampaignOffer`s with neither main video nor main image (count, linked to the filtered
   list), and no import yet. Then the last import.
 - **CampaignOffers.** A search field (code or name) and filter chips by status (all, visible,
-  scheduled, ended, off, hidden) at the top. One card per `CampaignOffer`: code, name in the
+  scheduled, ended, off, hidden) at the top, with one line under the chips saying in plain words
+  what each status means. The status words are plain: visible now, starts later, ended, switched
+  off, not published. One card per `CampaignOffer`: code, name in the
   dashboard's locale, price, end date, status chip, the show switch, and the five slots as small
   tiles — a thumbnail when filled, with remove; an empty mark when not, with add. **Remove** the
   `CampaignOffer` sits in the card's "more" menu.
@@ -169,5 +175,9 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
 - **Feedback.** A toast for every outcome; a confirmation dialog for every removal, replacement and
   publish change, naming the code and the slot; disabled buttons say why; skeletons on every page;
   no horizontal overflow from 320 px; motion only as in §1, none under `prefers-reduced-motion`.
+- **Motion for every action** (§1). A button shows a spinner and is disabled while its action
+  runs; a removed card, slot or library row fades and collapses before it leaves; a new library
+  row or thumbnail fades in; the switch slides; the toast slides in. Each motion lasts at most
+  300 ms.
 - **Dropped files.** On every dashboard page, a file dropped outside a drop zone is ignored: the
   browser never navigates to it.
