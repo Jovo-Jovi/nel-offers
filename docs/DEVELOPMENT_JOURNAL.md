@@ -135,3 +135,7 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: the import spec removes existing `SYN-` offers before the seven-addition preview, and its timeout is 300 seconds, because T03 left those offers in place. The campaign spec removes an existing banner before the first upload, because T03 left the synthetic banner.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build prints the same warning and names `outputFileTracingRoot`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-29 — T03-F (builder, CI)
+
+- `ci / verify` failed on `ba78f39` because `guard:naming` rejects the bare noun in `removeSyntheticOffers`. The helper is now `removeSyntheticCampaignOffers`. The other CI steps had not run.

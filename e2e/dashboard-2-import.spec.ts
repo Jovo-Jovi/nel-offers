@@ -42,7 +42,7 @@ function section(page: Page, heading: string) {
   return page.locator("section").filter({ has: page.getByRole("heading", { name: heading }) });
 }
 
-async function removeSyntheticOffers(page: Page) {
+async function removeSyntheticCampaignOffers(page: Page) {
   await page.goto("/en/operator/campaign-offers");
   for (;;) {
     const row = page.locator("tr[data-code]").first();
@@ -85,7 +85,7 @@ spec("import template, refusals, additions and a stale confirm", async ({ page }
   await page.getByRole("button", { name: "Preview" }).click();
   await expect(page.getByText("belong in campaign settings")).toHaveCount(6);
   await expect(page.getByRole("button", { name: "Confirm import" })).toBeDisabled();
-  await removeSyntheticOffers(page);
+  await removeSyntheticCampaignOffers(page);
   await page.goto("/en/operator/import");
 
   const rows = [
