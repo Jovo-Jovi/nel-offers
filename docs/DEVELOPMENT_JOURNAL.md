@@ -273,3 +273,23 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`. The share evidence rewrites that origin to `<site>`.
+
+## 2026-10-29 — Reviewer session 9 (T05 verdict)
+
+- Fetched `t05-operator-controls` at `e0101f7` (PR #7). Verified the bundle (17/17 at LANDING and
+  HEAD), compared the ledger rows, the journal entries and the usage record with the fence (exact),
+  checked the wiring diff (`pg` 8.23.1 only) and that nothing under `supabase/` or earlier evidence
+  changed, and re-ran a clean install, the four guards with their self-checks, lint, typecheck, the
+  unit specs (36), the audit and the build. Served the build: the favicon, icons and share image
+  answer 200; `/ar` and `/en` carry the Open Graph and Twitter tags in the head, also for a WhatsApp
+  user agent; the sign-in page carries none; `/ar` sets no cookie. Read the presign route (code and
+  slot only; a body with `name` is 422) and the two new server actions. Read CI success on `e0101f7`
+  from GitHub.
+- Through the SQL runner: migration 5 applied; proofs 47/47, 17/17 and 16/16; gate row drift 0,
+  orphans 0; the scan clean.
+- Findings: the gallery preview shows a picture smaller than the screen at its own size and the
+  spec's fill check was dropped; three dashboard screenshots show the loading skeleton; the
+  CampaignOffer cards lack thumbnails and "Replace", the status sits where the switch's label
+  belongs, the bottom bar's labels are cut off, a missing start date reads "None", queue sizes have
+  no unit. The report gave no output for steps 1–2; verified here instead.
+- Verdict T05: FAIL. T05-F issued. CF-30 closes: the library, slot removal and a clean scan.
