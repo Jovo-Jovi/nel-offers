@@ -362,3 +362,29 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - `report.mjs --check` exited 0. The secret sweep printed nothing. `git diff --name-only` from LANDING to HEAD printed nothing before this entry. CI is not attested.
 - Deviation: earlier gate reads were not all zero (`campaign_offers=7 not_synthetic=1 media_objects=5`, then `campaign_offers=0 media_objects=1 orphans=0`). The reset was not run until this all-zero read.
 - Deviation: one anonymous `ls-remote` during the resume could not resolve github.com (exit 128, `api status=000`). The step 1 check before this reset exited 0 with `api status=200`.
+
+## 2026-10-29 — Reviewer session 12 (go-live 1 verdict, the empty-contacts crash)
+
+- Fetched `go-live-1` at `5fea78c` (PR #9). Compared the ledger changes, the journal entries and the
+  usage record with the fence (exact); only the four ledger files changed. The runner and the scan
+  show the project empty: the gate read all zero before and after the reset, the reset's row all
+  zero, `SCAN objects=0`. CI success on `5fea78c` read from GitHub.
+- Verdict go-live 1: PASS.
+- The human then saw React error 441 and a Content Security Policy message on the Vercel address.
+  Cause, read in the code: `readCampaignRow` refuses the empty contact values the reset leaves, so
+  every public page throws and Next.js shows its built-in error page, whose inline style the policy
+  blocks. T05-F3 issued (CF-38). Before the reset the human removed a leftover MediaObject (the
+  banner); the scan confirms nothing is left in R2.
+
+## 2026-10-29 — T05-F3 (builder)
+
+- LANDING `9d021e4afbf96eba1b6eb14e2af3d886cb845113`. Carry-forwards `38 11 ['39']`: 37 + 1 = 38 rows, next free 39, open 10 + 1 = 11. CF-38 is the id allocated for this landing and stays `OPEN`.
+- Ids: `9d021e4afbf96eba1b6eb14e2af3d886cb845113` bundle, carry-forward row, go-live 1 verdict entry and usage records; `b6af5fe86672941472d6fae2d2fe385be15d92c2` empty contact values, error state and the unit spec.
+- Campaign read: `SQL supabase/checks/nelo_campaign_read.sql sha256=53805174d67c` and `ROW campaign_rows=1 campaign_row_1=1 published=1 contacts_empty=0`.
+- `readCampaignRow` turns a null WhatsApp display, WhatsApp digits, hotline display, hotline dial or NEL link into `""` and still halts on any other non-string. `src/app/[locale]/error.tsx` uses the URL locale, or the default locale when the param is not one of ours. `src/app/global-error.tsx` has its own document, `lang` and `dir` for the default locale, both languages with Arabic first. Both show `site.errorMessage`, a `site.tryAgain` button that calls `reset`, and the link home, with theme classes only.
+- The live spec did not run, because the Campaign read printed `contacts_empty=0`. No screenshots.
+- On `b6af5fe86672941472d6fae2d2fe385be15d92c2`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 39 passed. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for earlier evidence, `docs/DESIGN_SYSTEM.md`, `supabase/`, `scripts/`, `package.json` and `package-lock.json` is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added. CI is not attested.
+- Deviation: the first Campaign read, before this resume, printed `CONNECT FAILED ETIMEDOUT` and was not retried. This resume's single read is the line above.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
