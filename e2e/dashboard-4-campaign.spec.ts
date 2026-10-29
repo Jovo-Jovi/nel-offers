@@ -51,7 +51,14 @@ spec("contacts, card price, banner, publish and removal", async ({ page }) => {
   await expect(page.locator("img[data-banner-key]")).toHaveAttribute("data-banner-key", secondKey ?? "");
 
   await page.goto("/en/operator/overview");
-  await page.getByRole("switch", { name: "Published" }).click();
+  const published = page.getByRole("switch", { name: "Published" });
+  if ((await published.getAttribute("aria-checked")) === "true") {
+    await published.click();
+    await expect(page.getByRole("dialog")).toContainText("coming-soon");
+    await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
+    await expect(published).toHaveAttribute("aria-checked", "false");
+  }
+  await published.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText(/Publish \d+ campaign offers/);
   await dialog.getByRole("button", { name: "Confirm" }).click();

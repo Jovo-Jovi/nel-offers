@@ -1,15 +1,14 @@
 "use client";
 
-import { Clapperboard, Image as ImageIcon, Images, LoaderCircle as Loader2 } from "lucide-react";
+import { Image as ImageIcon, LoaderCircle as Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { removeCampaignOffer, removeCampaignOfferMedia, setCampaignOfferShown } from "@/app/[locale]/operator/(dashboard)/actions";
 import { LatinRun } from "@/components/latin-run";
 import { useOperatorFeedback } from "@/components/operator-feedback";
-import { BusyButton } from "@/components/submit-button";
 import { SlideSwitch } from "@/components/slide-switch";
-import { cardClass, fieldClass } from "@/components/operator-classes";
-import { messagesFor, operatorPath, type Locale } from "@/i18n/config";
+import { cardClass, fieldClass, focusRing, removeControl } from "@/components/operator-classes";
+import { defaultLocale, messagesFor, operatorPath, type Locale } from "@/i18n/config";
 import { fillMessage } from "@/lib/fill-message";
 import { leaveMs, motionReduced } from "@/lib/leave-motion";
 import { slotText } from "@/lib/operator-copy";
@@ -55,12 +54,6 @@ function statusChip(status: string) {
   if (status === "scheduled") return "bg-primary-soft text-warning";
   if (status === "off") return "bg-primary-soft text-error";
   return "bg-primary-soft text-muted";
-}
-
-function SlotMark({ slot }: { slot: string }) {
-  if (slot === "main_video") return <Clapperboard className="size-4" aria-hidden="true" />;
-  if (slot.startsWith("gallery")) return <Images className="size-4" aria-hidden="true" />;
-  return <ImageIcon className="size-4" aria-hidden="true" />;
 }
 
 export function CampaignOfferList({
@@ -213,129 +206,182 @@ export function CampaignOfferList({
       <p className="text-sm text-muted">{messages.operator.statusLegend}</p>
       {visible.length === 0 ? <p>{messages.operator.emptyCampaignOffers}</p> : null}
       <ul className="flex min-w-0 flex-col gap-3">
-        {shown.map((row) => (
-          <li
-            key={row.id}
-            data-code={row.code}
-            data-leaving={hiding === row.id ? "true" : undefined}
-            className="nel-leave"
-          >
-            <div className={`nel-leave-inner ${cardClass} flex min-w-0 flex-col gap-3`}>
-            <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="flex flex-wrap items-center gap-2 text-sm">
-                  <LatinRun>{row.code}</LatinRun>
-                  <span className={`rounded-button px-2 py-1 text-xs ${statusChip(row.status)}`}>
-                    {statusLabel(locale, row.status)}
-                  </span>
-                </p>
-                <p className="break-words">{row.nameAr}</p>
-                <p className="break-words">
-                  <LatinRun>{row.nameEn}</LatinRun>
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span data-shown-label className="text-sm">
-                  {messages.operator.shownLabel}
-                </span>
-                {pending === row.id ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
-                <SlideSwitch
-                  checked={row.status !== "off"}
-                  disabled={pending === row.id}
-                  label={messages.operator.shownLabel}
-                  onToggle={() => void toggleShown(row)}
-                />
-              </div>
-            </div>
-            <p className="text-sm">
-              <LatinRun>{row.price}</LatinRun>
-              {" · "}
-              {row.start ? (
-                <>
-                  <LatinRun>{row.start}</LatinRun>
-                  {" – "}
-                  <LatinRun>{row.end}</LatinRun>
-                </>
-              ) : (
-                <>
-                  {messages.operator.untilDate} <LatinRun>{row.end}</LatinRun>
-                </>
-              )}
-            </p>
-            <ul className="grid min-w-0 gap-2 sm:grid-cols-2">
-              {slotOrder.map((slot) => {
-                const picture = row.pictures.find((entry) => entry.slot === slot) ?? null;
-                const present = picture !== null;
-                const href = `${operatorPath(locale, "media-objects")}?code=${encodeURIComponent(row.code)}&slot=${slot}`;
-                return (
-                  <li
-                    key={slot}
-                    data-filled={present ? "yes" : "no"}
-                    data-leaving={leavingSlot === `${row.id}:${slot}` ? "true" : undefined}
-                    className="nel-leave"
-                  >
-                    <div className="nel-leave-inner flex min-w-0 flex-wrap items-center gap-2 rounded-button border border-border px-3 py-2 text-sm">
-                    {picture?.video && picture.previewUrl ? (
+        {shown.map((row) => {
+          const cover =
+            row.pictures.find((entry) => entry.slot === "main_image" && entry.previewUrl) ??
+            row.pictures.find((entry) => entry.slot === "main_video" && entry.previewUrl) ??
+            null;
+          const primaryName = locale === defaultLocale ? row.nameAr : row.nameEn;
+          const otherName = locale === defaultLocale ? row.nameEn : row.nameAr;
+          return (
+            <li
+              key={row.id}
+              data-code={row.code}
+              data-leaving={hiding === row.id ? "true" : undefined}
+              className="nel-leave"
+            >
+              <div
+                className={`nel-leave-inner ${cardClass} flex min-w-0 flex-col gap-3 border border-border p-3 motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 sm:p-5`}
+              >
+                <div className="flex min-w-0 flex-wrap items-start gap-3">
+                  <div className="flex size-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-card bg-primary-soft md:size-24">
+                    {cover?.video && cover.previewUrl ? (
                       <video
-                        className="nel-arrive size-12 rounded-button object-cover"
-                        src={`${picture.previewUrl}#t=0.1`}
+                        className="size-full object-cover"
+                        src={`${cover.previewUrl}#t=0.1`}
                         muted
                         playsInline
                         preload="metadata"
                       />
-                    ) : picture?.previewUrl ? (
+                    ) : cover?.previewUrl ? (
                       // CSP has no style-src, and next/image writes an inline style.
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={picture.previewUrl} alt="" className="nel-arrive size-12 rounded-button object-cover" />
+                      <img src={cover.previewUrl} alt="" className="size-full object-cover" />
                     ) : (
-                      <SlotMark slot={slot} />
+                      <ImageIcon className="size-6 text-muted" aria-hidden="true" />
                     )}
-                    <span className="min-w-0 flex-1">{slotText(messages, slot)}</span>
-                    <span className="sr-only">{present ? messages.operator.assigned : messages.operator.slotEmpty}</span>
-                    <a className="text-primary" href={href}>
-                      {present ? messages.operator.slotReplace : messages.operator.slotAdd}
-                    </a>
-                    {present ? (
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-center gap-2 text-sm">
+                      <LatinRun>{row.code}</LatinRun>
+                      <span className={`rounded-button px-2 py-1 text-xs ${statusChip(row.status)}`}>
+                        {statusLabel(locale, row.status)}
+                      </span>
+                    </p>
+                    <p className="break-words text-lg font-bold">
+                      {locale === defaultLocale ? primaryName : <LatinRun>{primaryName}</LatinRun>}
+                    </p>
+                    <p className="break-words text-sm text-muted">
+                      {locale === defaultLocale ? <LatinRun>{otherName}</LatinRun> : otherName}
+                    </p>
+                    <p className="mt-2 flex flex-wrap gap-2">
+                      <span className="rounded-button bg-primary-soft px-2 py-1 text-xs">
+                        <LatinRun>{row.price}</LatinRun> {messages.campaignOffer.currency}
+                      </span>
+                      <span className="rounded-button bg-primary-soft px-2 py-1 text-xs">
+                        {row.start ? (
+                          <>
+                            <LatinRun>{row.start}</LatinRun>
+                            {" – "}
+                            <LatinRun>{row.end}</LatinRun>
+                          </>
+                        ) : (
+                          <>
+                            {messages.operator.untilDate} <LatinRun>{row.end}</LatinRun>
+                          </>
+                        )}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span data-shown-label className="text-sm">
+                      {messages.operator.shownLabel}
+                    </span>
+                    {pending === row.id ? (
+                      <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                    ) : null}
+                    <SlideSwitch
+                      checked={row.status !== "off"}
+                      disabled={pending === row.id}
+                      label={messages.operator.shownLabel}
+                      onToggle={() => void toggleShown(row)}
+                    />
+                    <div className="relative">
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 text-sm"
-                        disabled={pending === `${row.id}:${slot}`}
-                        aria-label={`${messages.operator.remove} ${slotText(messages, slot)}`}
-                        onClick={() => void removeSlot(row, slot)}
+                        aria-label={messages.operator.more}
+                        aria-expanded={menu === row.id}
+                        className={`inline-flex size-11 items-center justify-center rounded-button border border-border text-lg ${focusRing}`}
+                        onClick={() => setMenu((current) => (current === row.id ? "" : row.id))}
                       >
-                        {pending === `${row.id}:${slot}` ? (
-                          <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-                        ) : null}
-                        {messages.operator.remove}
+                        <span aria-hidden="true">⋮</span>
                       </button>
-                    ) : null}
+                      {menu === row.id ? (
+                        <div className="absolute end-0 z-10 mt-1 min-w-36 rounded-card border border-border bg-surface p-2 shadow-card">
+                          <button
+                            type="button"
+                            data-remove="true"
+                            className={removeControl}
+                            disabled={pending === row.id}
+                            onClick={() => void remove(row)}
+                          >
+                            {pending === row.id ? (
+                              <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                            ) : null}
+                            {messages.operator.remove}
+                          </button>
+                        </div>
+                      ) : null}
                     </div>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="rounded-button border border-border px-3 py-2 text-sm"
-                aria-expanded={menu === row.id}
-                onClick={() => setMenu((current) => (current === row.id ? "" : row.id))}
-              >
-                {messages.operator.more}
-              </button>
-            </div>
-            {menu === row.id ? (
-              <BusyButton
-                busy={pending === row.id}
-                quiet
-                label={messages.operator.remove}
-                pendingLabel={messages.operator.pending}
-                onClick={() => void remove(row)}
-              />
-            ) : null}
-            </div>
-          </li>
-        ))}
+                  </div>
+                </div>
+                <ul className="grid min-w-0 grid-cols-5 gap-1">
+                  {slotOrder.map((slot) => {
+                    const picture = row.pictures.find((entry) => entry.slot === slot) ?? null;
+                    const present = picture !== null;
+                    const href = `${operatorPath(locale, "media-objects")}?code=${encodeURIComponent(row.code)}&slot=${slot}`;
+                    const name = slotText(messages, slot);
+                    return (
+                      <li
+                        key={slot}
+                        data-filled={present ? "yes" : "no"}
+                        data-leaving={leavingSlot === `${row.id}:${slot}` ? "true" : undefined}
+                        className="nel-leave min-w-0"
+                      >
+                        <div className="nel-leave-inner flex min-w-0 flex-col gap-1">
+                          {present ? (
+                            <div data-tile className="nel-tile relative aspect-square overflow-hidden rounded-button border border-border">
+                              {picture?.video && picture.previewUrl ? (
+                                <video
+                                  className="nel-arrive size-full object-cover"
+                                  src={`${picture.previewUrl}#t=0.1`}
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                />
+                              ) : (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={picture?.previewUrl} alt="" className="nel-arrive size-full object-cover" />
+                              )}
+                              <div className="nel-tile-actions absolute inset-0 flex flex-col items-center justify-center gap-1 bg-dark/70 p-0.5">
+                                <a className={`text-center text-[0.65rem] font-bold text-surface ${focusRing}`} href={href}>
+                                  {messages.operator.slotReplace}
+                                </a>
+                                <button
+                                  type="button"
+                                  data-remove="true"
+                                  className={`rounded-button border border-error px-1 text-[0.65rem] text-error ${focusRing}`}
+                                  disabled={pending === `${row.id}:${slot}`}
+                                  aria-label={`${messages.operator.remove} ${name}`}
+                                  onClick={() => void removeSlot(row, slot)}
+                                >
+                                  {pending === `${row.id}:${slot}` ? (
+                                    <Loader2 className="size-3 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                                  ) : null}
+                                  {messages.operator.remove}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <a
+                              data-tile
+                              href={href}
+                              aria-label={messages.operator.slotAdd}
+                              className={`flex aspect-square items-center justify-center rounded-button border border-dashed border-border text-lg ${focusRing}`}
+                            >
+                              +
+                            </a>
+                          )}
+                          <p className="break-words text-center text-[0.65rem] leading-tight">{name}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

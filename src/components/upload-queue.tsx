@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { removeCampaignOfferMedia } from "@/app/[locale]/operator/(dashboard)/actions";
 import { messagesFor, defaultLocale, type Locale } from "@/i18n/config";
+import { LatinRun } from "@/components/latin-run";
 import { BusyButton } from "@/components/submit-button";
-import { cardClass, fieldClass } from "@/components/operator-classes";
+import { cardClass, fieldClass, removeControl } from "@/components/operator-classes";
 import { useOperatorFeedback } from "@/components/operator-feedback";
 import { fillMessage } from "@/lib/fill-message";
 import { leaveMs, motionReduced } from "@/lib/leave-motion";
-import { formatByteSize, megabytes } from "@/lib/format-values";
+import { formatByteSize, formatCount, megabytes } from "@/lib/format-values";
 import { reencodeImage } from "@/lib/image-reencode";
 import { encodedImageByteLimit, selectedImageByteLimit, videoByteLimit } from "@/lib/media-object-limits";
 import { isUploadSlot, resolveUploadName, uploadSlots, type UploadSlot } from "@/lib/media-object-name";
@@ -360,6 +361,8 @@ export function UploadQueue({
   }
 
   const filteredLibrary = library.filter((entry) => {
+    const videoRow = entry.slot === "main_video";
+    if (tab === "videos" ? !videoRow : videoRow) return false;
     const needle = libraryQuery.trim().toLowerCase();
     if (!needle) return true;
     return (
@@ -662,7 +665,9 @@ function LibraryList({
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
-      <h2 className="text-lg">{messages.operator.libraryHeading}</h2>
+      <h2 className="text-lg">
+        {messages.operator.libraryHeading} <LatinRun>{formatCount(locale, entries.length)}</LatinRun>
+      </h2>
       <input
         className={fieldClass}
         value={query}
@@ -703,7 +708,8 @@ function LibraryList({
                 </div>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-button border border-border px-3 py-2 text-sm"
+                  data-remove="true"
+                  className={removeControl}
                   disabled={pending === `${entry.campaignOfferId}:${entry.slot}`}
                   onClick={() => void remove(entry)}
                 >

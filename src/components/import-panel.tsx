@@ -24,6 +24,14 @@ type AdditionView = {
 };
 type ChangeView = { field: string; previous: string; next: string };
 type UpdateView = { code: string; changes: ChangeView[] };
+async function readAnswer<T>(response: Response): Promise<T | null> {
+  try {
+    return (JSON.parse(await response.text()) as T) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 type PreviewView = {
   sheetSha256: string;
   expectedCount: number;
@@ -70,16 +78,29 @@ export function ImportPanel({ locale }: { locale: Locale }) {
     setConfirmed("");
     setBusy(true);
     setReading(true);
-    const chosen = await owned(blob);
-    if (ticket.current !== stamp) return;
-    setWorkbook(chosen);
-    const form = new FormData();
-    form.append("workbook", chosen, "sheet.xlsx");
-    const response = await fetch("/api/operator/campaign-imports/preview", { method: "POST", body: form });
-    const body = (await response.json()) as PreviewView & { code?: string };
+    let response: Response;
+    try {
+      const chosen = await owned(blob);
+      if (ticket.current !== stamp) return;
+      setWorkbook(chosen);
+      const form = new FormData();
+      form.append("workbook", chosen, "sheet.xlsx");
+      response = await fetch("/api/operator/campaign-imports/preview", { method: "POST", body: form });
+    } catch {
+      if (ticket.current !== stamp) return;
+      setBusy(false);
+      setReading(false);
+      toast(messages.operator.rejected, "alert");
+      return;
+    }
+    const body = await readAnswer<PreviewView & { code?: string }>(response);
     if (ticket.current !== stamp) return;
     setBusy(false);
     setReading(false);
+    if (!body) {
+      toast(messages.operator.rejected, "alert");
+      return;
+    }
     if (!response.ok) {
       const code = body.code ?? "rejected";
       if (code === "too-large") {
@@ -108,9 +129,20 @@ export function ImportPanel({ locale }: { locale: Locale }) {
     form.append("sheetSha256", preview.sheetSha256);
     form.append("expectedCount", String(preview.expectedCount));
     form.append("expectedUpdatedAt", preview.expectedUpdatedAt ?? "");
-    const response = await fetch("/api/operator/campaign-imports/confirm", { method: "POST", body: form });
-    const body = (await response.json()) as { code?: string; added?: number; updated?: number; unchanged?: number };
+    let response: Response;
+    try {
+      response = await fetch("/api/operator/campaign-imports/confirm", { method: "POST", body: form });
+    } catch {
+      setBusy(false);
+      toast(messages.operator.rejected, "alert");
+      return;
+    }
+    const body = await readAnswer<{ code?: string; added?: number; updated?: number; unchanged?: number }>(response);
     setBusy(false);
+    if (!body) {
+      toast(messages.operator.rejected, "alert");
+      return;
+    }
     if (!response.ok) {
       const code = body.code ?? "rejected";
       if (code === "changed-since-preview" || code === "sheet-changed") {

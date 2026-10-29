@@ -2,7 +2,7 @@
 
 import { LoaderCircle as Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
-import { primaryButton, quietButton } from "@/components/operator-classes";
+import { primaryButton, quietButton, removeControl } from "@/components/operator-classes";
 
 export function SubmitButton({
   label,
@@ -31,6 +31,7 @@ export function BusyButton({
   pendingLabel,
   disabled = false,
   quiet = false,
+  danger = false,
   type = "button",
   onClick,
 }: {
@@ -39,11 +40,13 @@ export function BusyButton({
   pendingLabel: string;
   disabled?: boolean;
   quiet?: boolean;
+  danger?: boolean;
   type?: "button" | "submit";
   onClick?: () => void;
 }) {
+  const tone = danger ? removeControl : quiet ? quietButton : primaryButton;
   return (
-    <button type={type} disabled={busy || disabled} onClick={onClick} className={quiet ? quietButton : primaryButton}>
+    <button type={type} disabled={busy || disabled} onClick={onClick} className={tone} data-remove={danger ? "true" : undefined}>
       {busy ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
       {busy ? pendingLabel : label}
     </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { LatinRun } from "@/components/latin-run";
 import { defaultLocale, directionFor, homePath, messagesFor, prefixedLocale } from "@/i18n/config";
 import "./globals.css";
 
@@ -15,8 +16,8 @@ export default function GlobalError({ reset }: { error: unknown; reset: () => vo
       <body>
         <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-4 px-4 py-10">
           <h1 className="text-3xl font-bold leading-tight text-dark">{arabic.site.errorMessage}</h1>
-          <p className="text-lg leading-relaxed text-dark" lang={prefixedLocale}>
-            {english.site.errorMessage}
+          <p className="text-lg leading-relaxed text-dark">
+            <LatinRun>{english.site.errorMessage}</LatinRun>
           </p>
           <button
             type="button"
@@ -24,14 +25,14 @@ export default function GlobalError({ reset }: { error: unknown; reset: () => vo
             onClick={() => reset()}
           >
             <span>{arabic.site.tryAgain}</span>
-            <span lang={prefixedLocale}>{english.site.tryAgain}</span>
+            <LatinRun>{english.site.tryAgain}</LatinRun>
           </button>
           <Link
             href={homePath(defaultLocale)}
             className={`inline-flex w-fit items-center gap-2 text-sm font-bold text-primary no-underline ${focusRing}`}
           >
             <span>{arabic.site.name}</span>
-            <span lang={prefixedLocale}>{english.site.name}</span>
+            <LatinRun>{english.site.name}</LatinRun>
           </Link>
         </main>
       </body>

@@ -244,10 +244,36 @@ spec("chosen sheet, drop, error summary and a re-read", async ({ page }) => {
   const broken = line("SYN-001", 1, 150, null, end, false);
   broken[1] = "";
   await choose(page, await workbookBytes([broken]), "broken.xlsx");
-  await expect(page.locator("[data-preview-summary]")).toContainText("Fix them in Excel, then choose the sheet again.");
+  await expect(page.locator("[data-preview-summary]")).toContainText("fix them in Excel, then choose the sheet again.");
+  await expect(page.getByRole("columnheader", { name: "Row · Column" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Confirm import" })).toBeDisabled();
   await page.screenshot({ path: path.join(evidenceDir, "import-errors-en-1440.png"), fullPage: true });
   const before = await page.locator("[data-preview-summary]").innerText();
   await choose(page, await workbookBytes([line("SYN-001", 1, 150, null, end, false)]), "edited.xlsx");
   await expect(page.locator("[data-preview-summary]")).not.toHaveText(before);
+});
+
+spec("a failed preview shows the toast, and the error words in both locales", async ({ page }) => {
+  await page.route("**/api/operator/campaign-imports/preview", (route) =>
+    route.fulfill({ status: 500, contentType: "text/html", body: "<html><body>nope</body></html>" }),
+  );
+  await page.goto("/en/operator/import");
+  await page.locator("#workbook").setInputFiles({
+    name: "broken.xlsx",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    buffer: Buffer.from("not-a-workbook"),
+  });
+  await expect(page.locator(".nel-toast")).toContainText("That did not work.");
+  await expect(page.locator(".animate-spin")).toHaveCount(0);
+  await expect(page.locator("#workbook")).toBeEnabled();
+  await expect(page.getByText("Choose another")).toBeVisible();
+  await page.unroute("**/api/operator/campaign-imports/preview");
+
+  const end = shift(20);
+  const broken = line("SYN-001", 1, 150, null, end, false);
+  broken[1] = "";
+  await page.goto("/ar/operator/import");
+  await choose(page, await workbookBytes([broken]), "broken-ar.xlsx");
+  await expect(page.locator("[data-preview-summary]")).toContainText("الأخطاء:");
+  await expect(page.getByRole("columnheader", { name: "الصف · العمود" })).toBeVisible();
 });

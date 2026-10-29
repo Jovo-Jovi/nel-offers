@@ -153,7 +153,7 @@ export function BannerPanel({
           onClick={() => void upload()}
         />
         {bannerKey ? (
-          <BusyButton busy={busy} quiet label={messages.operator.bannerRemove} pendingLabel={messages.operator.pending} onClick={() => void remove()} />
+          <BusyButton busy={busy} danger label={messages.operator.bannerRemove} pendingLabel={messages.operator.pending} onClick={() => void remove()} />
         ) : null}
       </div>
     </section>

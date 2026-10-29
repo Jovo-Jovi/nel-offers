@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { deflateSync } from "node:zlib";
 import { expect, test as spec, type Browser, type Page } from "@playwright/test";
 import {
@@ -527,7 +529,7 @@ spec("gallery preview", async ({ page }) => {
       await expect(opener).toBeFocused();
     }
     await expect(page.locator("html")).not.toHaveClass(/public-scroll-lock/);
-    const thumb = page.locator("ul button").filter({ hasText: thumbLabel }).first();
+    const thumb = page.getByRole("button", { name: thumbLabel, exact: true }).first();
     await thumb.click();
     await expect(dialog).toBeVisible();
     await expect(dialog).toContainText(`2 / ${count}`);
@@ -616,6 +618,32 @@ spec("language switch maps the same page", async ({ page, browser }) => {
   }
 });
 
+async function assertFloatingHeader(page: Page, width: number, locale: Locale) {
+  const messages = messagesFor(locale);
+  const header = page.locator("header");
+  const box = await header.boundingBox();
+  expect(box).toBeTruthy();
+  if (!box) return;
+  const radius = await header.evaluate((node) => Number.parseFloat(getComputedStyle(node).borderTopLeftRadius));
+  expect(radius).toBeGreaterThanOrEqual(box.height / 2 - 0.5);
+  const inset = width >= 768 ? 24 : 12;
+  expect(box.y).toBeGreaterThanOrEqual(inset - 1);
+  expect(box.x).toBeGreaterThanOrEqual(inset - 1);
+  expect(width - (box.x + box.width)).toBeGreaterThanOrEqual(inset - 1);
+  const top = box.y;
+  await page.evaluate(() => window.scrollTo(0, 600));
+  const stuck = await header.boundingBox();
+  expect(stuck).toBeTruthy();
+  if (!stuck) return;
+  expect(Math.abs(stuck.y - top)).toBeLessThanOrEqual(1);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.getByRole("img", { name: messages.a11y.mark })).toBeVisible();
+  await expect(page.getByRole("link", { name: messages.site.name }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: messages.header.labSite })).toBeVisible();
+  const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+  expect(fits).toBe(true);
+}
+
 spec("layout, screenshots and unpublish", async ({ page, browser }) => {
   spec.setTimeout(360 * 1000);
   const hosts = new Set<string>();
@@ -648,10 +676,32 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
       if (urlPath === homePath(locale)) {
         const loaded = await assertPicturesLoaded(page, page.getByRole("img", { name: messagesFor(locale).a11y.banner }));
         expect(loaded).toBeGreaterThan(0);
+        if (width === 320 || width === 390 || width === 1440) await assertFloatingHeader(page, width, locale);
+        const evidence = path.join("docs", "evidence", "T06");
+        fs.mkdirSync(evidence, { recursive: true });
+        if (locale === defaultLocale && width === 390) {
+          await page.screenshot({ path: path.join(evidence, "home-ar-390.png") });
+        }
+        if (locale === prefixedLocale && width === 1440) {
+          await page.screenshot({ path: path.join(evidence, "home-en-1440.png") });
+        }
       }
       if (urlPath === campaignOfferPath(locale, "SYN-001")) {
         expect(await assertPicturesLoaded(page, page.locator("figure img"))).toBeGreaterThan(0);
         expect(await assertPicturesLoaded(page, page.locator("ul img"))).toBeGreaterThan(0);
+        const thumbs = page.locator("ul button");
+        const thumbCount = await thumbs.count();
+        expect(thumbCount).toBeGreaterThan(0);
+        for (let index = 0; index < thumbCount; index += 1) {
+          const thumb = thumbs.nth(index);
+          expect((await thumb.innerText()).trim()).toBe("");
+          expect((await thumb.getAttribute("aria-label")) ?? "").not.toBe("");
+        }
+        if (locale === defaultLocale && width === 390) {
+          const evidence = path.join("docs", "evidence", "T06");
+          fs.mkdirSync(evidence, { recursive: true });
+          await page.screenshot({ path: path.join(evidence, "campaign-offer-ar-390.png") });
+        }
       }
       if (urlPath === campaignOfferPath(locale, "SYN-002")) {
         await assertPicturesLoaded(page, page.locator("figure img"));
