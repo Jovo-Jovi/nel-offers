@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LoaderCircle as Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { saveContacts, setCardPrice } from "@/app/[locale]/operator/(dashboard)/actions";
 import { fieldClass } from "@/components/operator-classes";
@@ -112,6 +113,7 @@ export function CardPriceSwitch({ locale, showCardPrice }: { locale: Locale; sho
 
   return (
     <div className="flex flex-wrap items-center gap-3">
+      {busy ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
       <SlideSwitch checked={on} disabled={busy} label={messages.operator.showCardPrice} onToggle={() => void toggle()} />
       <span className="text-sm">{messages.operator.showCardPrice}</span>
     </div>

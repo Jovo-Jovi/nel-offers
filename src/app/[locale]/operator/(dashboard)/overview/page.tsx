@@ -58,6 +58,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
         <Count locale={locale} status="off" label={messages.operator.statusOff} value={statuses.counts.off} />
         <Count locale={locale} status="hidden" label={messages.operator.statusHidden} value={statuses.counts.hidden} />
       </ul>
+      <p className="text-sm text-muted">{messages.operator.statusLegend}</p>
       <section className={cardClass}>
         <h2 className="text-lg">{messages.operator.todoHeading}</h2>
         <a className="text-sm text-primary" href={`${operatorPath(locale, "campaign-offers")}?gap=media`}>

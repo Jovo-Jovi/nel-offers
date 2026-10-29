@@ -1,6 +1,6 @@
 "use client";
 
-import { Clapperboard, Image as ImageIcon, Images } from "lucide-react";
+import { Clapperboard, Image as ImageIcon, Images, LoaderCircle as Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { removeCampaignOfferMedia } from "@/app/[locale]/operator/(dashboard)/actions";
@@ -9,6 +9,7 @@ import { BusyButton } from "@/components/submit-button";
 import { cardClass, fieldClass } from "@/components/operator-classes";
 import { useOperatorFeedback } from "@/components/operator-feedback";
 import { fillMessage } from "@/lib/fill-message";
+import { leaveMs, motionReduced } from "@/lib/leave-motion";
 import { formatByteSize, megabytes } from "@/lib/format-values";
 import { reencodeImage } from "@/lib/image-reencode";
 import { encodedImageByteLimit, selectedImageByteLimit, videoByteLimit } from "@/lib/media-object-limits";
@@ -625,6 +626,7 @@ function LibraryList({
   const messages = messagesFor(locale);
   const { toast, confirm } = useOperatorFeedback();
   const [pending, setPending] = useState("");
+  const [leaving, setLeaving] = useState("");
 
   async function remove(entry: LibraryEntry) {
     if (pending) return;
@@ -646,7 +648,16 @@ function LibraryList({
     if ("empty" in outcome && outcome.empty) toast(messages.operator.slotAlreadyEmpty, "alert");
     else if ("storageFailed" in outcome && outcome.storageFailed) toast(messages.operator.storageFailed, "alert");
     else toast(messages.operator.removed, "status");
-    onRemoved();
+    const key = `${entry.campaignOfferId}:${entry.slot}`;
+    if (motionReduced()) {
+      onRemoved();
+      return;
+    }
+    setLeaving(key);
+    window.setTimeout(() => {
+      setLeaving("");
+      onRemoved();
+    }, leaveMs);
   }
 
   return (
@@ -663,11 +674,17 @@ function LibraryList({
         {entries.map((entry) => {
           const name = locale === defaultLocale ? entry.nameAr : entry.nameEn;
           return (
-            <li key={`${entry.campaignOfferId}:${entry.slot}`} data-library={`${entry.code}:${entry.slot}`} className={cardClass}>
+            <li
+              key={`${entry.campaignOfferId}:${entry.slot}`}
+              data-library={`${entry.code}:${entry.slot}`}
+              data-leaving={leaving === `${entry.campaignOfferId}:${entry.slot}` ? "true" : undefined}
+              className="nel-leave"
+            >
+              <div className={`nel-leave-inner nel-arrive ${cardClass}`}>
               <div className="flex min-w-0 flex-wrap items-center gap-3">
                 {entry.previewUrl && entry.video ? (
                   <video
-                    className="h-16 w-16 rounded-card object-cover"
+                    className="nel-arrive h-16 w-16 rounded-card object-cover"
                     muted
                     playsInline
                     preload="metadata"
@@ -675,7 +692,7 @@ function LibraryList({
                   />
                 ) : entry.previewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={entry.previewUrl} alt="" className="h-16 w-16 rounded-card object-cover" />
+                  <img src={entry.previewUrl} alt="" className="nel-arrive h-16 w-16 rounded-card object-cover" />
                 ) : (
                   <SlotIcon slot={entry.slot} />
                 )}
@@ -686,12 +703,16 @@ function LibraryList({
                 </div>
                 <button
                   type="button"
-                  className="rounded-button border border-border px-3 py-2 text-sm"
+                  className="inline-flex items-center gap-1 rounded-button border border-border px-3 py-2 text-sm"
                   disabled={pending === `${entry.campaignOfferId}:${entry.slot}`}
                   onClick={() => void remove(entry)}
                 >
+                  {pending === `${entry.campaignOfferId}:${entry.slot}` ? (
+                    <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                  ) : null}
                   {messages.operator.remove}
                 </button>
+              </div>
               </div>
             </li>
           );

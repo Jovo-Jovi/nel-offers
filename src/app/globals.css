@@ -81,6 +81,36 @@ html.public-scroll-lock {
   animation: nel-toast-in 200ms ease;
 }
 
+.nel-leave {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 300ms ease, opacity 300ms ease;
+}
+
+.nel-leave[data-leaving="true"] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.nel-leave-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+@keyframes nel-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.nel-arrive {
+  animation: nel-arrive 300ms ease;
+}
+
 .nel-switch {
   position: relative;
   inline-size: 4.5rem;
@@ -173,7 +203,9 @@ dialog.nel-dialog::backdrop {
   .nel-shimmer,
   .nel-toast,
   .nel-switch,
-  .nel-switch span {
+  .nel-switch span,
+  .nel-leave,
+  .nel-arrive {
     animation: none;
     transition: none;
   }

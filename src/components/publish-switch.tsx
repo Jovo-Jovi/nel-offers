@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LoaderCircle as Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { setPublished } from "@/app/[locale]/operator/(dashboard)/actions";
 import { SlideSwitch } from "@/components/slide-switch";
@@ -54,6 +55,7 @@ export function PublishSwitch({
 
   return (
     <div className="flex flex-wrap items-center gap-3">
+      {busy ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
       <SlideSwitch
         large
         checked={on}
