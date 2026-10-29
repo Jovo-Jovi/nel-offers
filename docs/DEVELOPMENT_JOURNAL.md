@@ -65,3 +65,77 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `check:r2` did not need `WHEN_REQUIRED` checksum settings.
 - Deviation: `next build` and `next start` still warn that a lockfile outside this repository was ignored. Both exited 0.
 - Deviation: the local env file has no `NEXT_PUBLIC_SITE_URL`. This task does not read that name.
+
+## 2026-10-29 — Reviewer session 3 (T02 verdict)
+
+- Fetched `t02-data-auth-storage` at `29f9cd52`. Re-ran the bundle verification (7/7 at LANDING
+  and HEAD), the four guards with their self-checks, lint, typecheck, the unit specs, a clean
+  build, the audit and a secret sweep of every T02 commit. Served the build: public pages set no
+  cookie, every response carries the nonce CSP and the static headers, operator responses add
+  `no-store` and `X-Robots-Tag`, an anonymous overview redirects to sign-in, both upload routes
+  answer 401, and nonces differ per request.
+- Re-probed the three guard gaps of T01 in a scratch tree; each is now caught. CF-11, CF-12 and
+  CF-13 close.
+- Read the proxy, the Operator gate, sign-in, TOTP, the R2 client and both upload routes. One
+  defect: a repeated finalise deletes a recorded object. Logged with the naming guard's filename
+  exemption (a T02 fence defect), the Vercel GitHub connection, Vercel Hobby's terms and the
+  unmet T02 preconditions.
+- Verdict T02: FAIL on missing evidence only — the RLS proof on the real project, a sign-in
+  through TOTP, the column check. The human attests them at the T03 handover; with them the gate
+  closes as PASS and PR #2 is merged. T03 issued with OD-02, migration 2 and its proof, rehearsed
+  on PostgreSQL 16 with a Supabase stub: presentation proof 17/17, RLS proof still 47/47, and
+  each fails on planted defects.
+
+## 2026-10-29 — T03 (builder)
+
+- LANDING: `1776a5b37e0c6fa417b2e31a9b7956cc76f6287d`.
+- Allocated CARRY_FORWARDS base 14 + 5 rows = CF-15..CF-19, next free CF-20. CF-11, CF-12 and CF-13 read `CLOSED (T02)`. No other existing cell was changed. CF-15 and CF-16 stay open until a verdict; a repeated finalise no longer deletes a recorded object, and the filename exemption is gone.
+- `npm run guard:naming` exit 0. `npm run guard:design` exit 0. `npm run guard:literals` exit 0. `npm run guard:boundary` exit 0.
+- Self-checks exit 0. naming: string fail 5/5 pass 7/7, file fail 5/5 pass 7/7. design: string fail 9/9 pass 6/6, file fail 9/9 pass 6/6. literals: string fail 7/7 pass 3/3, file fail 7/7 pass 3/3. boundary: string fail 4/4 pass 4/4, file fail 4/4 pass 4/4.
+- `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run test:unit` exit 0 (26 passed). `npm run build` exit 0. Both template traces print `True`. `npm audit --omit=dev --audit-level=high` exit 0 (2 moderate). `npx playwright test` exit 0 (11 passed). `npm run evidence` exit 0.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0.
+- The campaign is unpublished. SYN-001 through SYN-006, their media objects and the synthetic banner remain. SYN-009 was removed.
+- Deviation: a stale confirm does not surface SQLSTATE 40001. The call holds its lock until the gateway times out. The route aborts that call after 8 seconds and answers 409 `changed-since-preview` for an abort, `upstream request timeout`, `preview again`, or 40001. The next preview returns 200. `supabase/` was not edited.
+- Deviation: exceljs cannot load the template until comment and vml relationships are removed from a copy. The download serves the original bytes. jszip stays a transitive dependency.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: Playwright counts Node's `NO_COLOR`/`FORCE_COLOR` warning as an error outside any test. The config deletes `NO_COLOR` before the workers start, and the suite exits 0.
+- Deviation: the layout spec reads the served document for `style=`. After hydration the framework inserts a route announcer with a style attribute. The served HTML has none.
+
+## 2026-10-29 — Reviewer session 4 (T03 verdict)
+
+- Fetched `t03-dashboard` at `3f18f7b6`. Re-ran the bundle verification (12/12 at LANDING and
+  HEAD), compared the landed carry-forward rows and journal entry with the fence (exact), and
+  re-ran the four guards with their self-checks, lint, typecheck, the unit specs (26), a clean
+  build with both template traces, the audit and the usage check. Served the build: public pages
+  set no cookie and carry no `style` attribute, every dashboard page redirects to sign-in without
+  a session, and every operator route handler answers 401. Viewed all 28 screenshots.
+- Reviewed `f79ceae`, merged through PR #3 outside a fence: it raises the TOTP QR size bound only.
+- Findings: the import function's stale-preview refusal used SQLSTATE 40001, which PostgREST
+  retries without end — a defect in the reviewer's migration that the T03 spec triggered on the
+  live project; Arabic dates reordered inside `LatinRun`; `jszip` imported without being
+  declared; the sign-in screenshots taken while signed in.
+- Verdict T03: FAIL. T03-F issued with `20261029020000_nelo_import_conflict.sql` (`PT409`) and the
+  amended RLS proof, rehearsed on PostgreSQL 16: proof 47/47 and presentation proof 17/17 after
+  it; without it the amended proof aborts. CF-02, CF-04, CF-15, CF-16 and CF-19 close.
+
+## 2026-10-29 — T03-F (builder)
+
+- LANDING: `2c008d3ed1bdd59e15b3e468697f6df31d6414fb`.
+- Allocated CARRY_FORWARDS base 19 + 5 rows = CF-20..CF-24, next free CF-25. Open rows 16 − 5 + 4 = 15. CF-02, CF-04, CF-15, CF-16 and CF-19 read `CLOSED (T03)`. No other existing cell was changed. CF-24 is born `CLOSED (T03)`. PRECEDENTS base 29 + 1 = PR-30, next free PR-31.
+- `npm run guard:naming` exit 0. `npm run guard:design` exit 0. `npm run guard:literals` exit 0. `npm run guard:boundary` exit 0.
+- Self-checks exit 0. naming: string fail 5/5 pass 7/7, file fail 5/5 pass 7/7. design: string fail 9/9 pass 6/6, file fail 9/9 pass 6/6. literals: string fail 7/7 pass 3/3, file fail 7/7 pass 3/3. boundary: string fail 4/4 pass 4/4, file fail 4/4 pass 4/4.
+- `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run test:unit` exit 0 (28 passed). `npm run build` exit 0. `npm audit --omit=dev --audit-level=high` exit 0 (2 moderate). `npx playwright test` exit 0 (11 passed). The stale confirm answered 409 `changed-since-preview` in 298 ms. `npm run evidence` exit 0.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0.
+- Human-attested `xact_rollback`: 7058720, then 7058720 ten seconds later. Difference 0.
+- The campaign is unpublished. SYN-001 through SYN-006 remain. SYN-009 was removed.
+- Deviation: step 2 also showed the untracked task prompt. The human said to continue. That file is not committed.
+- Deviation: the import spec removes existing `SYN-` offers before the seven-addition preview, and its timeout is 300 seconds, because T03 left those offers in place. The campaign spec removes an existing banner before the first upload, because T03 left the synthetic banner.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0. The served build prints the same warning and names `outputFileTracingRoot`.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-29 — T03-F (builder, CI)
+
+- `ci / verify` failed on `ba78f39` because `guard:naming` rejects the bare noun in `removeSyntheticOffers`. The helper is now `removeSyntheticCampaignOffers`. The other CI steps had not run.

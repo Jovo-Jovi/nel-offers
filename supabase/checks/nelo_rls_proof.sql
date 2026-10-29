@@ -243,7 +243,7 @@ begin
   begin
     perform public.apply_campaign_import(repeat('b', 64), v_rows, v_expected_count, v_expected_at);
     v_failed := v_failed || ' | 34 stale preview accepted';
-  exception when serialization_failure then v_pass := v_pass + 1;
+  exception when sqlstate 'PT409' then v_pass := v_pass + 1;
   end;
   select count(*), max(o.updated_at) into v_expected_count, v_expected_at from public."CampaignOffer" o;
   v_total := v_total + 1;

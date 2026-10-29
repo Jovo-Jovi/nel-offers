@@ -33,6 +33,8 @@ CampaignImport ─< CampaignOffer ─< CampaignOfferMedia >─ MediaObject
 | `hotline_dial` | text | `^\+?[0-9]{3,15}$` (for `tel:`) |
 | `nel_site_url` | text | `^https://\S+$`, ≤ 200 chars |
 | `updated_at` | timestamptz | |
+| `show_card_price` | boolean | default `true`; home cards show the price only when true (OD-02 item 5) |
+| `banner_media_object_id` | uuid | the home hero image, a `MediaObject` of kind `image`; set null when it is removed (OD-02 item 6) |
 
 Every contact column is either null or non-blank (check constraints). `is_published` cannot be
 true while any contact column is null; the publish action also refuses while no
@@ -239,9 +241,10 @@ rows (`PHASES.md` §4).
 
 - **Orphan count**, run by the human in the SQL Editor, must return 0:
   `select count(*) from public."MediaObject" m where not exists (select 1 from
-  public."CampaignOfferMedia" l where l.media_object_id = m.id);`
+  public."CampaignOfferMedia" l where l.media_object_id = m.id) and not exists (select 1 from
+  public."Campaign" c where c.banner_media_object_id = m.id);`
 - **`npm run scan:media-objects`** (built in T03) lists every object in the bucket with the
   server-only R2 values from `.env.local`, reads each one, and prints counts only: objects
-  scanned, objects with EXIF, XMP or IPTC, MP4 objects with a location key, and objects with
-  no `MediaObject` row. Zero hits on every count but the first is PASS. It prints no key,
-  value or object name.
+  scanned, objects with EXIF, XMP or IPTC, MP4 objects with a location key, objects with no
+  `MediaObject` row, and `MediaObject` rows with no object. Zero hits on every count but the
+  first is PASS. It prints no key, value or object name.

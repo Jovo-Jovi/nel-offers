@@ -18,6 +18,10 @@ const operatorHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    "/api/operator/campaign-template": ["./assets/templates/**"],
+    "/api/operator/campaign-export": ["./assets/templates/**"],
+  },
   turbopack: {
     rules: {
       "*.css": {

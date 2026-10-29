@@ -11,8 +11,6 @@ const COMPOUNDS = [
   ["media", "object"],
   ["content", "type"],
 ];
-// UNRATIFIED: the T02 fence mandates these filenames; each contains the bare word media.
-const FENCE_FILENAMES = new Set(["media-name.ts", "media-limits.ts"]);
 const FORBIDDEN = [
   "test",
   "result",
@@ -293,7 +291,6 @@ function scanRoot(root) {
   const findings = [];
 
   function consider(name, rel, line) {
-    if (FENCE_FILENAMES.has(name)) return;
     if (nameRejected(name)) findings.push(`${rel}:${line}: rule ${name}`);
   }
 
@@ -337,6 +334,8 @@ function runSelfCheck() {
     { expect: "pass", kind: "identifier", name: "mediaObjectId" },
     { expect: "pass", kind: "sql", text: "-- offer\n/* file */\nselect 1;\n" },
     { expect: "pass", kind: "sql", text: "select 'user file offer';\n" },
+    { expect: "fail", kind: "filename", name: "media-name.ts" },
+    { expect: "pass", kind: "filename", name: "media-object-name.ts" },
     { expect: "pass", kind: "sql", text: "references auth.users (id)\n" },
     { expect: "fail", kind: "sql", text: 'create table public."Offer" (id int);\n' },
     {
@@ -354,6 +353,7 @@ function runSelfCheck() {
       if (sample.kind === "sql") {
         return sqlNames(sample.text).filter((found) => nameRejected(found.name));
       }
+      if (sample.kind === "filename") return nameRejected(sample.name) ? [sample.name] : [];
       return nameRejected(sample.name) ? [sample.name] : [];
     }
     const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "nelo-naming-"));
@@ -362,6 +362,10 @@ function runSelfCheck() {
         const dest = path.join(scratch, "supabase", "hold.sql");
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(dest, sample.text, "utf8");
+      } else if (sample.kind === "filename") {
+        const dest = path.join(scratch, "src", "lib", sample.name);
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.writeFileSync(dest, "export const ready = 1;\n", "utf8");
       } else {
         const dest = path.join(scratch, "src", "sample.mjs");
         fs.mkdirSync(path.dirname(dest), { recursive: true });

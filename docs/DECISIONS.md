@@ -125,3 +125,56 @@ date is the signing date) and ratified when the human merges T01 to `main`.
     `docs/usage/runs.jsonl` by `npm run usage:record` and totalled in `docs/usage/README.md` by
     `npm run usage:report` (`PHASES.md` §5). No prices are kept in the repository; cost is
     worked out outside it from the token totals.
+
+---
+
+## OD-02 — Approved design, review gates, hosting plan and the laboratory's additions
+
+**Status:** SIGNED. The signature is the human's message of 29 Oct 2026 in the reviewer session
+("do not make any opus review", "keep hobby plan", "take it exactly and wire with functions", and
+the list Andrew asked for). It is recorded by the commit that lands this text on the T03 branch
+and ratified when the human merges T03.
+
+**Amends:** OD-01 items 1, 10 and 17; `SCOPE.md` S-01 to S-03 and S-10 to S-13 as listed below;
+`DESIGN_SYSTEM.md` §§3, 4, 8 and 10 for the public pages and the dashboard.
+
+1. **Review gates.** No Opus review for any remaining task, Risk 3 included. Compensating
+   controls: the reviewer verifies every branch itself; every schema change is reviewer-authored
+   SQL, rehearsed, with a rolled-back proof the human runs on the real project. The builder may
+   ask Grok for a self-review; it is not a gate.
+2. **Hosting.** Vercel Hobby, not Pro; function region `fra1`. Vercel's terms keep Hobby for
+   personal, non-commercial use; this is client work, so the risk is tracked as a carry-forward.
+3. **Design source.** The designer's implementation in `tony-saleeb/nile` at commit
+   `e8f6df734fcfcfa877d30c18dbebc7dcb6ddb21e`, approved by Andrew, is reproduced for the home page
+   and the CampaignOffer page: markup structure, components, hover and focus effects, responsive
+   grid and the mobile action dock — wired to the data. Its theme (`app/globals.css` `:root`)
+   becomes the theme of the whole application; Cairo, self-hosted from `@fontsource/cairo`,
+   replaces IBM Plex Sans Arabic; `lucide-react` provides icons. Code is copied once into this
+   repository; nothing links to the designer's repository at build or run time. Not copied: the
+   footer line "صفحة n ـــ قالب قابل للتعديل", the media caption and terms placeholders, the logo
+   placeholder text and the mock data. The header logo is `public/mark/nel-mark.png`.
+   `DESIGN_SYSTEM.md` §5 (bilingual, logical properties) and §7 (guards) still bind.
+4. **Dashboard.** Our own design in the same theme: plain and guided, with animated upload
+   progress, an animated publish switch and short toasts for outcomes; motion stops under
+   `prefers-reduced-motion`.
+5. **Card price switch.** `Campaign.show_card_price`, on by default. When off, home cards hide
+   the price; the CampaignOffer page always shows it.
+6. **Campaign banner.** The home hero image is uploaded by an Operator in Campaign settings
+   (`Campaign.banner_media_object_id`): the laboratory's banner carries its hotline and address
+   in its pixels, so it never lives in source. With no banner, the hero shows its text alone.
+7. **Gallery preview.** Tapping the main image or a thumbnail opens a full-screen preview with
+   previous and next arrows (mirrored in Arabic), arrow keys, Escape and swipe; a tap outside
+   the image closes it and focus returns to what opened it.
+8. **Dates.** The page shows the end date in the designer's day / month / year boxes. The start
+   date is not shown: a visible page's start is always today or earlier. Amends S-02.
+9. **Actions.** On the CampaignOffer page: call (`tel:`) and WhatsApp, and the WhatsApp button
+   carries the order message (code and name) — it is "اطلب العرض". In the home hero: hotline and
+   a plain WhatsApp chat. The header button opens the NEL site.
+10. **Loading.** Skeleton states for the home page, the CampaignOffer page and every dashboard page.
+11. **Search** (S-01) stays: one field above the card grid, in the designer's style.
+12. **No horizontal overflow** at any width from 320 px, proved at 320, 390, 768, 1024 and 1440.
+13. **Copy.** The approved design's header subtitle and hero eyebrow are used — Andrew's approval
+    of the design settles the audience line. Their English versions are reviewer drafts
+    (`DESIGN_SYSTEM.md` §11).
+14. **Any number of CampaignOffers.** Confirmed as built: imports add without limit; one sheet
+    holds up to 500 rows (the template's own range).

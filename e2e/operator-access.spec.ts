@@ -14,11 +14,24 @@ spec("overview redirects to sign-in in both locales", async ({ page }) => {
   expect(english?.status()).toBe(200);
 });
 
-spec("anonymous upload routes answer 401", async ({ request }) => {
-  const presign = await request.post("/api/operator/media-objects/presign", { data: {} });
-  expect(presign.status()).toBe(401);
-  const finalise = await request.post("/api/operator/media-objects/finalise", { data: {} });
-  expect(finalise.status()).toBe(401);
+spec("anonymous operator routes answer 401", async ({ request }) => {
+  const posts = [
+    "/api/operator/media-objects/presign",
+    "/api/operator/media-objects/finalise",
+    "/api/operator/campaign-imports/preview",
+    "/api/operator/campaign-imports/confirm",
+    "/api/operator/campaign-banner/presign",
+    "/api/operator/campaign-banner/finalise",
+  ];
+  for (const urlPath of posts) {
+    const response = await request.post(urlPath, { data: {} });
+    expect(response.status()).toBe(401);
+  }
+  const gets = ["/api/operator/campaign-template", "/api/operator/campaign-export"];
+  for (const urlPath of gets) {
+    const response = await request.get(urlPath);
+    expect(response.status()).toBe(401);
+  }
 });
 
 spec("sign-in pages set language and direction", async ({ page }) => {

@@ -49,6 +49,7 @@ function directionFindings(text, rel) {
 
 function findingsFor(rel, text) {
   const findings = [];
+  const theme = rel === "src/styles/theme.css";
   const physical = [
     "\\bmargin-left\\b",
     "\\bmargin-right\\b",
@@ -75,22 +76,24 @@ function findingsFor(rel, text) {
     "\\bfloat\\s*:\\s*['\"](?:left|right)['\"]",
   ];
   for (const pattern of physical) eachMatch(text, pattern, 1, rel, findings);
-  eachMatch(text, "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b", 2, rel, findings);
-  eachMatch(text, "\\b(?:rgb|rgba|hsl|hsla)\\s*\\(", 2, rel, findings);
-  eachMatch(
-    text,
-    `${EDGE}${VARIANT}(?:${UTILITY})-(?:${PALETTE})-(?:${SHADE})\\b`,
-    2,
-    rel,
-    findings,
-  );
-  eachMatch(
-    text,
-    `${EDGE}${VARIANT}(?:${UTILITY})-(?:black|white)\\b`,
-    2,
-    rel,
-    findings,
-  );
+  if (!theme) {
+    eachMatch(text, "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b", 2, rel, findings);
+    eachMatch(text, "\\b(?:rgb|rgba|hsl|hsla)\\s*\\(", 2, rel, findings);
+    eachMatch(
+      text,
+      `${EDGE}${VARIANT}(?:${UTILITY})-(?:${PALETTE})-(?:${SHADE})\\b`,
+      2,
+      rel,
+      findings,
+    );
+    eachMatch(
+      text,
+      `${EDGE}${VARIANT}(?:${UTILITY})-(?:black|white)\\b`,
+      2,
+      rel,
+      findings,
+    );
+  }
   if (rel !== "src/styles/fonts.css") {
     const family = /font-family\s*:/.exec(text);
     if (family) findings.push(`${rel}:${lineAt(text, family.index)}: rule 3`);
@@ -150,6 +153,21 @@ function runSelfCheck() {
       text: 'body { font-family: "IBM Plex Sans Arabic", sans-serif; }\n',
     },
     { expect: "pass", path: "src/app/shell.tsx", text: '<html dir="ltr"></html>\n' },
+    {
+      expect: "pass",
+      path: "src/styles/theme.css",
+      text: "@theme { --color-whatsapp: #25d366; }\n",
+    },
+    {
+      expect: "fail",
+      path: "src/styles/other.css",
+      text: "@theme { --color-whatsapp: #25d366; }\n",
+    },
+    {
+      expect: "fail",
+      path: "src/styles/theme.css",
+      text: ".x { margin-left: 4px; }\n",
+    },
   ];
   const failSamples = samples.filter((sample) => sample.expect === "fail");
   const passSamples = samples.filter((sample) => sample.expect === "pass");

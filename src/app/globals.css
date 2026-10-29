@@ -1,46 +1,18 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 @import "../styles/fonts.css";
+@import "../styles/theme.css";
 
 @theme inline {
-  --color-primary: var(--nel-color-primary);
   --color-primary-strong: var(--nel-color-primary-strong);
-  --color-accent: var(--nel-color-accent);
-  --color-background: var(--nel-color-background);
-  --color-surface: var(--nel-color-surface);
-  --color-border: var(--nel-color-border);
-  --color-text: var(--nel-color-text);
-  --color-muted: var(--nel-color-muted);
   --color-success: var(--nel-color-success);
   --color-warning: var(--nel-color-warning);
   --color-error: var(--nel-color-error);
+}
 
-  --text-xs: var(--nel-size-xs);
-  --text-sm: var(--nel-size-sm);
-  --text-base: var(--nel-size-base);
-  --text-lg: var(--nel-size-lg);
-  --text-xl: var(--nel-size-xl);
-  --text-2xl: var(--nel-size-2xl);
-  --text-3xl: var(--nel-size-3xl);
-  --text-4xl: var(--nel-size-4xl);
-  --text-5xl: var(--nel-size-5xl);
-
-  --spacing-4: var(--nel-space-4);
-  --spacing-8: var(--nel-space-8);
-  --spacing-12: var(--nel-space-12);
-  --spacing-16: var(--nel-space-16);
-  --spacing-24: var(--nel-space-24);
-  --spacing-32: var(--nel-space-32);
-  --spacing-48: var(--nel-space-48);
-  --spacing-64: var(--nel-space-64);
-  --spacing-96: var(--nel-space-96);
-
-  --radius-none: var(--nel-radius-none);
-  --radius-sm: var(--nel-radius-sm);
-  --radius-md: var(--nel-radius-md);
-  --radius-panel: var(--nel-radius-panel);
-  --radius-well: var(--nel-radius-well);
-  --radius-full: var(--nel-radius-full);
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-dark);
 }
 
 body {
@@ -49,6 +21,7 @@ body {
   background: var(--nel-color-background);
   color: var(--nel-color-text);
   line-height: var(--nel-line-height-body);
+  overflow-x: clip;
 }
 
 .site-bar {
@@ -80,45 +53,129 @@ body {
   font-size: var(--nel-size-xl);
 }
 
-.operator-form {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--nel-space-12);
-  max-inline-size: calc(var(--nel-space-96) * 5);
+@keyframes nel-shimmer {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
 
-.operator-form label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--nel-space-4);
+.nel-shimmer {
+  animation: nel-shimmer 2.4s ease-in-out infinite;
 }
 
-.operator-form input {
-  font: inherit;
-  color: inherit;
-  background: var(--nel-color-surface);
-  border: 1px solid var(--nel-color-border);
-  border-radius: var(--nel-radius-sm);
-  padding-inline: var(--nel-space-8);
-  padding-block: var(--nel-space-8);
+@keyframes nel-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.operator-form button {
-  font: inherit;
-  color: var(--nel-color-background);
-  background: var(--nel-color-primary);
+.nel-toast {
+  animation: nel-toast-in 200ms ease;
+}
+
+.nel-switch {
+  position: relative;
+  inline-size: 4.5rem;
+  block-size: 2.5rem;
   border: 0;
-  border-radius: var(--nel-radius-sm);
-  padding-inline: var(--nel-space-16);
-  padding-block: var(--nel-space-8);
+  border-radius: var(--radius-button);
+  background: var(--color-border);
+  transition: background-color 200ms ease;
 }
 
-.operator-qr {
-  inline-size: calc(var(--nel-space-96) * 2);
-  block-size: auto;
+.nel-switch-large {
+  inline-size: 6rem;
+  block-size: 3.25rem;
 }
 
-.operator-secret {
-  overflow-wrap: anywhere;
+.nel-switch span {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-start: 0.3rem;
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  border-radius: var(--radius-button);
+  background: var(--color-surface);
+  transition: transform 200ms ease;
+}
+
+.nel-switch-large span {
+  inline-size: 2.6rem;
+  block-size: 2.6rem;
+}
+
+.nel-switch[aria-checked="true"] {
+  background: var(--color-primary);
+}
+
+.nel-switch[aria-checked="true"] span {
+  transform: translateX(2rem);
+}
+
+.nel-switch-large[aria-checked="true"] span {
+  transform: translateX(2.7rem);
+}
+
+[dir="rtl"] .nel-switch[aria-checked="true"] span {
+  transform: translateX(-2rem);
+}
+
+[dir="rtl"] .nel-switch-large[aria-checked="true"] span {
+  transform: translateX(-2.7rem);
+}
+
+.nel-switch:disabled {
+  opacity: 0.5;
+}
+
+progress.nel-progress {
+  appearance: none;
+  inline-size: 100%;
+  block-size: 0.5rem;
+  border: 0;
+  background: var(--color-primary-soft);
+}
+
+progress.nel-progress::-webkit-progress-bar {
+  background: var(--color-primary-soft);
+}
+
+progress.nel-progress::-webkit-progress-value {
+  background: var(--color-primary);
+}
+
+progress.nel-progress::-moz-progress-bar {
+  background: var(--color-primary);
+}
+
+dialog.nel-dialog {
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  box-shadow: var(--shadow-card);
+  max-inline-size: min(32rem, calc(100% - 2rem));
+}
+
+dialog.nel-dialog::backdrop {
+  background: color-mix(in srgb, var(--color-dark) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nel-shimmer,
+  .nel-toast,
+  .nel-switch,
+  .nel-switch span {
+    animation: none;
+    transition: none;
+  }
 }

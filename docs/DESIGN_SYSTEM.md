@@ -62,6 +62,10 @@ is computed and recorded here: ≥ 4.5:1 for text, ≥ 3:1 for UI boundaries and
 - **Digits are Western in both locales.** Numbers and dates are formatted with `Intl`, using
   the active locale with the `-u-nu-latn` extension. Dates are plain calendar dates, formatted
   with `timeZone: 'UTC'` so no shift occurs.
+- **Intl output inside `LatinRun` carries no bidi marks.** Arabic `Intl` formats insert U+200F
+  (and may insert U+200E or U+061C) between parts; inside a left-to-right isolate they reorder the
+  groups, so `18/11/2026` renders as `182026/11/`. Every formatter whose result is placed in
+  `LatinRun` removes those three characters first.
 - Directional icons (arrows, chevrons) mirror. The mark, numerals and media controls do not.
 - The language switch keeps the Visitor on the same `CampaignOffer` when there is one.
 
@@ -73,7 +77,8 @@ only those mapped names. No arbitrary colour values (`bg-[#…]`), no default pa
 
 ## 7. `guard:design` — what it certifies
 
-Over `src/**/*.{ts,tsx,css}` (excluding `src/styles/tokens.css`):
+Over `src/**/*.{ts,tsx,css}` (excluding `src/styles/tokens.css`; rule 2 also excludes
+`src/styles/theme.css`, which holds the approved design's own values, §11):
 
 1. No physical property: CSS `margin-left|right`, `padding-left|right`, `left:`, `right:`,
    `border-left|right`, `text-align: left|right`, `float: left|right`; Tailwind `ml- mr- pl-
@@ -162,3 +167,69 @@ Applied in T04 over working pages. The designer's files must be in `docs/researc
 their hashes before T04 is issued. They may change layout, spacing, imagery treatment and
 component shape inside §§3–7; they may not add a colour, a font, a physical property, a
 literal business value, or copy outside §9 without an amendment.
+
+## 11. The approved design (OD-02)
+
+The home page and the CampaignOffer page reproduce the designer's implementation in
+`tony-saleeb/nile` at commit `e8f6df734fcfcfa877d30c18dbebc7dcb6ddb21e`. Reference screenshots
+are in `docs/research/design/`. Where this section and §§3, 4, 6, 8 or 10 differ, this section
+wins; §7 is amended to match.
+
+**Theme.** `src/styles/theme.css` holds the designer's `:root` values (`app/globals.css`) as one
+Tailwind 4 `@theme` block under the designer's names: `--color-primary`, `--color-primary-soft`,
+`--color-dark`, `--color-accent`, `--color-whatsapp`, `--color-bg`, `--color-surface`,
+`--color-muted`, `--color-border`; `--radius-card`, `--radius-button`; `--shadow-card`; `--text-xs`
+… `--text-5xl`, each with the designer's line height as `--text-<size>--line-height`. A value equal
+to a NEL token is written as that token: primary, accent, dark (`--nel-color-text`), bg
+(`--nel-color-background`), surface and muted. The others keep the designer's literal value.
+`globals.css` imports `theme.css` in place of T01's `@theme inline` block and keeps, from NEL, only
+`--color-primary-strong`, `--color-success`, `--color-warning` and `--color-error` (dashboard
+states). It sets no `--spacing-*` and no other `--radius-*`, so Tailwind's default scales give the
+designer's utilities (`p-3`, `w-4`, `max-w-7xl` …) the sizes they had in the designer's Tailwind 3
+build. Type is Cairo (`@fontsource/cairo`, weights 400, 500 and 700 — the weights the design uses),
+declared once in `src/styles/fonts.css`. Icons are `lucide-react`; an icon whose export name holds a
+forbidden noun is imported under another name (`FileSpreadsheet as SheetIcon`).
+
+**Components** (designer name → ours): `PageShell`, `Header`, `Footer`, `OfferCard` →
+`CampaignOfferCard`, `OfferGrid` → `CampaignOfferGrid`, `CodeBadge`, `MediaSlot` → `MainMediaObject`,
+`ThumbnailRow`, `PriceCard`, `ExpiryBox`, `TermsBox`, `ActionButtons`, `WhatsAppIcon`; new:
+`SearchField`, `GalleryPreview`, `Skeleton`. Same markup, same classes' visual result, same hover
+and focus behaviour; physical utilities become logical ones and `dir` spans become `LatinRun`.
+
+**Data.** Card: position number, code, name in the page's locale, price only when
+`show_card_price`. Page: name in the page's locale first and the other second, code badge, main
+media, thumbnails, price, end date in day / month / year boxes, conditions in the page's locale
+(the box is omitted when there are none), call and WhatsApp-order buttons. Header: mark, site
+name, page subtitle, NEL site button. Footer: hotline and WhatsApp from `Campaign`, language
+switch.
+
+**Gallery preview.** A dialog over a dimmed page: the image fitted to the viewport, previous and
+next buttons at the inline edges (mirrored in Arabic), a close button, a position line
+("2 / 4"). Arrow keys move, Escape closes, a swipe moves on touch, a tap outside the image closes.
+Focus is trapped while open and returns to the opener.
+
+**Skeletons.** Each page's `loading.tsx` draws the page's blocks in `primary-soft` with a slow
+shimmer; no shimmer under `prefers-reduced-motion`.
+
+**Inline styles.** The Content Security Policy has no `style-src` exception, so nothing renders a
+`style` attribute: use classes, `<progress>`, or a CSS custom property set from an effect.
+
+**Copy added** (`designer` = the approved design; English is a reviewer draft):
+
+| Key | Arabic | English | Source |
+|---|---|---|---|
+| `header.homeSubtitle` | Lab to Lab ـــ دليل العروض الإلكترونية | Lab to Lab — Online offers guide | designer |
+| `header.campaignOfferSubtitle` | كود {code} ـــ تفاصيل العرض | Code {code} — Offer details | designer |
+| `header.labSite` | موقع المعمل | Lab website | designer |
+| `home.eyebrow` | عروض مخصصة للمعامل والأطباء | Offers for laboratories and doctors | designer |
+| `campaignOffer.endsOnLabel` | ينتهي العرض في: | Offer ends on: | designer |
+| `campaignOffer.day` | اليوم | Day | designer |
+| `campaignOffer.month` | الشهر | Month | designer |
+| `campaignOffer.year` | السنة | Year | designer |
+| `campaignOffer.imageLabel` | صورة {position} | Image {position} | designer |
+| `actions.callShort` | اتصل | Call | designer |
+| `a11y.playVideo` | تشغيل الفيديو | Play video | draft |
+| `a11y.previousImage` | الصورة السابقة | Previous image | draft |
+| `a11y.nextImage` | الصورة التالية | Next image | draft |
+| `a11y.closePreview` | إغلاق | Close | draft |
+| `a11y.banner` | صورة حملة معامل النيل مصر | Nile Egypt Labs campaign banner | draft |
