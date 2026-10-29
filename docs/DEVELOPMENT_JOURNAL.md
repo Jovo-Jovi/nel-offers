@@ -293,3 +293,17 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   belongs, the bottom bar's labels are cut off, a missing start date reads "None", queue sizes have
   no unit. The report gave no output for steps 1–2; verified here instead.
 - Verdict T05: FAIL. T05-F issued. CF-30 closes: the library, slot removal and a clean scan.
+
+## 2026-10-29 — T05-F (builder)
+
+- LANDING `98ee37d1d0085267cebac5db15d19066ce652be6`. Carry-forwards `34 12 ['35']`: 30 + 4 = 34 rows, next free 35, open 10 − 1 + 3 = 12. CF-30 is `CLOSED (T05)`. CF-31 to CF-33 are open. CF-34 is `CLOSED (T05)`.
+- Ids: `98ee37d1d0085267cebac5db15d19066ce652be6` ledger, T05 verdict entry and usage record; `c8af45a47e3ff1a8a8fa86df0b9402d50aec4d55` preview fill, slot tiles, labels and evidence.
+- On `c8af45a47e3ff1a8a8fa86df0b9402d50aec4d55`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 36 passed. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for T01–T04-F2 evidence, `supabase/`, `scripts/sql/`, `package.json` and `package-lock.json` is empty.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `npx playwright test`: 24 passed. `preview-picture 24,251 342x342 viewport 390x844`. `preview-picture 294,24 852x852 viewport 1440x900`.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `ROW drift=0 campaign_offers=6 not_synthetic=0 switched_off=0 media_objects=5 orphans=0`. The campaign is unpublished and every CampaignOffer is shown. CI is not attested.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
+- Deviation: dashboard screenshots below 1024 px are the viewport, so the fixed bottom bar is fully in the frame. Wider shots stay full-page.
