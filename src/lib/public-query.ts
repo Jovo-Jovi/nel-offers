@@ -8,6 +8,7 @@ const campaignOfferColumns =
 const attachmentSlots = ["main_video", "main_image", "gallery_1", "gallery_2", "gallery_3"] as const;
 
 export type PublicCampaign = {
+  isPublished: boolean;
   showCardPrice: boolean;
   whatsappDisplay: string;
   whatsappDigits: string;
@@ -80,20 +81,21 @@ export async function readCampaignRow(supabase: SupabaseClient): Promise<PublicC
   const { data, error } = await supabase
     .from("Campaign")
     .select(
-      "show_card_price, whatsapp_display, whatsapp_digits, hotline_display, hotline_dial, nel_site_url, banner_media_object_id",
+      "is_published, show_card_price, whatsapp_display, whatsapp_digits, hotline_display, hotline_dial, nel_site_url, banner_media_object_id",
     )
     .eq("id", 1)
     .maybeSingle();
   if (error) halt();
   if (!data) return null;
   const row = data as Record<string, unknown>;
-  if (typeof row.show_card_price !== "boolean") halt();
+  if (typeof row.is_published !== "boolean" || typeof row.show_card_price !== "boolean") halt();
   if (typeof row.whatsapp_display !== "string" || typeof row.whatsapp_digits !== "string") halt();
   if (typeof row.hotline_display !== "string" || typeof row.hotline_dial !== "string") halt();
   if (typeof row.nel_site_url !== "string") halt();
   const bannerId = row.banner_media_object_id;
   if (bannerId !== null && typeof bannerId !== "string") halt();
   return {
+    isPublished: row.is_published,
     showCardPrice: row.show_card_price,
     whatsappDisplay: row.whatsapp_display,
     whatsappDigits: row.whatsapp_digits,

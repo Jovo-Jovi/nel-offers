@@ -77,7 +77,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale = localeParam;
   const messages = messagesFor(locale);
   const campaign = await loadPublishedCampaign();
-  const rows = campaign ? await loadVisibleCampaignOffers() : [];
+  const published = campaign?.isPublished ? campaign : null;
+  const rows = published ? await loadVisibleCampaignOffers() : [];
   const cards = rows.map((row, index) => ({
     code: row.code,
     href: campaignOfferPath(locale, row.code),
@@ -85,15 +86,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     name: locale === defaultLocale ? row.nameAr : row.nameEn,
     normalAr: normaliseSearch(row.nameAr),
     normalEn: normaliseSearch(row.nameEn),
-    price: campaign?.showCardPrice ? formatPrice(locale, row.priceText) : null,
+    price: published?.showCardPrice ? formatPrice(locale, row.priceText) : null,
     currency: messages.campaignOffer.currency,
   }));
   return (
     <PageShell
       {...shellProps(locale, campaign, messages.header.homeSubtitle, homePath(otherLocale(locale)))}
-      hero={<HomeHero messages={messages} campaign={campaign} />}
+      hero={<HomeHero messages={messages} campaign={published} />}
     >
-      {campaign ? (
+      {published ? (
         <section
           data-campaign-offer-panel
           className="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6 lg:p-8"

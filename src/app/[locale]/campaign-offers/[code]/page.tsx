@@ -60,7 +60,7 @@ export default async function CampaignOfferPage({
   const row = await visibleRow(locale, code);
   if (!row) notFound();
   const campaign = await loadPublishedCampaign();
-  if (!campaign) notFound();
+  if (!campaign?.isPublished) notFound();
   const messages = messagesFor(locale);
   const attachments = await loadCampaignOfferAttachments(row.id);
   const clip = attachments.find((entry) => entry.slot === "main_video") ?? null;

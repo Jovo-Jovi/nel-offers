@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
       { source: "/", headers: sharedHeaders },
       { source: "/:path*", headers: sharedHeaders },
       { source: "/operator/:path*", headers: operatorHeaders },
+      { source: "/ar/operator/:path*", headers: operatorHeaders },
       { source: "/en/operator/:path*", headers: operatorHeaders },
       { source: "/api/operator/:path*", headers: operatorHeaders },
     ];

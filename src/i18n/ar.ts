@@ -2,7 +2,8 @@
 export const catalogue = {
   site: {
     name: "معامل النيل مصر",
-    campaignTitle: "عروض الافتتاح"
+    campaignTitle: "عروض الافتتاح",
+    pageNotFound: "الصفحة غير موجودة."
   },
   home: {
     heading: "عروض التحاليل الطبية",
