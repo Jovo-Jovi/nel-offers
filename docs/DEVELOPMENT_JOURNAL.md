@@ -338,3 +338,16 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
 - Deviation: the controls spec still writes the T05 dashboard shots. Those bytes were restored before the evidence commit, so `docs/evidence/T05` is unchanged.
+
+## 2026-10-29 — Reviewer session 11 (T05-F2 verdict, go-live 1)
+
+- Fetched `t05-f2-import` at `1f6af14`. Verified the bundle (1/1 at LANDING and HEAD) and compared
+  the ledger changes, the journal entries and the usage records with the fence (exact); nothing under
+  `supabase/` or `scripts/sql/`, no dependency, no earlier evidence and no `docs/ADMIN_SPEC.md` byte
+  changed after LANDING. Re-ran the four guards with their self-checks, lint, typecheck, the unit
+  specs (36), the audit and the build. Read the import panel (the chosen sheet's name and size shown
+  in the browser, the preview started on choice, `sheet.xlsx` sent) and viewed the four screenshots.
+  CI success on `1f6af14` read from GitHub.
+- Verdict T05-F2: PASS. CF-35 and CF-36 close. CF-37 records three small Import-page gaps for a
+  polish task after launch.
+- Go-live 1 issued: the synthetic data leaves the project (go-live step 3) through the SQL runner.
