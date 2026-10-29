@@ -221,7 +221,7 @@ export function CampaignOfferList({
               className="nel-leave"
             >
               <div
-                className={`nel-leave-inner ${cardClass} flex min-w-0 flex-col gap-3 border border-border p-3 motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 sm:p-5`}
+                className={`nel-leave-inner ${cardClass} flex min-w-0 flex-col gap-3 border border-border !p-2 motion-safe:transition-transform motion-safe:hover:-translate-y-0.5 sm:!p-5`}
               >
                 <div className="flex min-w-0 flex-wrap items-start gap-3">
                   <div className="flex size-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-card bg-primary-soft md:size-24">
@@ -315,7 +315,7 @@ export function CampaignOfferList({
                     </div>
                   </div>
                 </div>
-                <ul className="grid min-w-0 grid-cols-5 gap-1">
+                <ul className="grid min-w-0 grid-cols-[repeat(5,minmax(0,5.5rem))] justify-start gap-2">
                   {slotOrder.map((slot) => {
                     const picture = row.pictures.find((entry) => entry.slot === slot) ?? null;
                     const present = picture !== null;
@@ -330,21 +330,23 @@ export function CampaignOfferList({
                       >
                         <div className="nel-leave-inner flex min-w-0 flex-col gap-1">
                           {present ? (
-                            <div data-tile className="nel-tile relative aspect-square overflow-hidden rounded-button border border-border">
-                              {picture?.video && picture.previewUrl ? (
-                                <video
-                                  className="nel-arrive size-full object-cover"
-                                  src={`${picture.previewUrl}#t=0.1`}
-                                  muted
-                                  playsInline
-                                  preload="metadata"
-                                />
-                              ) : (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={picture?.previewUrl} alt="" className="nel-arrive size-full object-cover" />
-                              )}
+                            <div className="nel-tile relative">
+                              <div data-tile className="aspect-square overflow-hidden rounded-xl border border-border">
+                                {picture?.video && picture.previewUrl ? (
+                                  <video
+                                    className="nel-arrive size-full object-cover"
+                                    src={`${picture.previewUrl}#t=0.1`}
+                                    muted
+                                    playsInline
+                                    preload="metadata"
+                                  />
+                                ) : (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={picture?.previewUrl} alt="" className="nel-arrive size-full object-cover" />
+                                )}
+                              </div>
                               <div className="nel-tile-actions absolute inset-0 flex flex-col items-center justify-center gap-1 bg-dark/70 p-0.5">
-                                <a className={`text-center text-[0.65rem] font-bold text-surface ${focusRing}`} href={href}>
+                                <a className={`text-center text-[0.65rem] font-bold text-primary ${focusRing}`} href={href}>
                                   {messages.operator.slotReplace}
                                 </a>
                                 <button
@@ -367,12 +369,12 @@ export function CampaignOfferList({
                               data-tile
                               href={href}
                               aria-label={messages.operator.slotAdd}
-                              className={`flex aspect-square items-center justify-center rounded-button border border-dashed border-border text-lg ${focusRing}`}
+                              className={`flex aspect-square items-center justify-center rounded-xl border border-dashed border-border text-lg ${focusRing}`}
                             >
                               +
                             </a>
                           )}
-                          <p className="break-words text-center text-[0.65rem] leading-tight">{name}</p>
+                          <p className="truncate text-center text-[0.65rem] leading-tight">{name}</p>
                         </div>
                       </li>
                     );

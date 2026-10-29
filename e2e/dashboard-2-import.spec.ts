@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { saveShot } from "./support/shot";
 import { expect, test as spec, type Page } from "@playwright/test";
 import { workbookBytes, type Cell } from "./support/sheet";
 
@@ -230,7 +231,7 @@ spec("chosen sheet, drop, error summary and a re-read", async ({ page }) => {
   const sizeText = (await page.locator("[data-byte-size]").innerText()).replace(/[\d\s.,\u0660-\u0669]/g, "");
   expect(sizeText.length).toBeGreaterThan(0);
   await expect(page.locator("[data-preview-summary]")).toBeVisible();
-  await page.screenshot({ path: path.join(evidenceDir, "import-selected-ar-390.png") });
+  await saveShot(page, path.join(evidenceDir, "import-selected-ar-390.png"));
   const joined = posted.join("\n");
   expect(joined.includes("sheet.xlsx"), joined.slice(0, 500)).toBe(true);
   expect(joined.includes("chosen-sheet.xlsx"), joined.slice(0, 500)).toBe(false);
@@ -247,7 +248,7 @@ spec("chosen sheet, drop, error summary and a re-read", async ({ page }) => {
   await expect(page.locator("[data-preview-summary]")).toContainText("fix them in Excel, then choose the sheet again.");
   await expect(page.getByRole("columnheader", { name: "Row · Column" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Confirm import" })).toBeDisabled();
-  await page.screenshot({ path: path.join(evidenceDir, "import-errors-en-1440.png"), fullPage: true });
+  await saveShot(page, path.join(evidenceDir, "import-errors-en-1440.png"), true);
   const before = await page.locator("[data-preview-summary]").innerText();
   await choose(page, await workbookBytes([line("SYN-001", 1, 150, null, end, false)]), "edited.xlsx");
   await expect(page.locator("[data-preview-summary]")).not.toHaveText(before);

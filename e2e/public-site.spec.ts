@@ -1,6 +1,6 @@
-import fs from "node:fs";
 import path from "node:path";
 import { deflateSync } from "node:zlib";
+import { saveShot } from "./support/shot";
 import { expect, test as spec, type Browser, type Page } from "@playwright/test";
 import {
   campaignOfferPath,
@@ -628,8 +628,14 @@ async function assertFloatingHeader(page: Page, width: number, locale: Locale) {
   expect(radius).toBeGreaterThanOrEqual(box.height / 2 - 0.5);
   const inset = width >= 768 ? 24 : 12;
   expect(box.y).toBeGreaterThanOrEqual(inset - 1);
-  expect(box.x).toBeGreaterThanOrEqual(inset - 1);
-  expect(width - (box.x + box.width)).toBeGreaterThanOrEqual(inset - 1);
+  const section = await page.locator("section").first().boundingBox();
+  expect(section).toBeTruthy();
+  if (section) {
+    expect(Math.abs(box.x - section.x)).toBeLessThanOrEqual(2);
+    expect(Math.abs(box.x + box.width - (section.x + section.width))).toBeLessThanOrEqual(2);
+    const gap = section.y - (box.y + box.height);
+    expect(gap).toBeGreaterThanOrEqual(width >= 1440 ? 24 : 16);
+  }
   const top = box.y;
   await page.evaluate(() => window.scrollTo(0, 600));
   const stuck = await header.boundingBox();
@@ -678,12 +684,11 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
         expect(loaded).toBeGreaterThan(0);
         if (width === 320 || width === 390 || width === 1440) await assertFloatingHeader(page, width, locale);
         const evidence = path.join("docs", "evidence", "T06");
-        fs.mkdirSync(evidence, { recursive: true });
         if (locale === defaultLocale && width === 390) {
-          await page.screenshot({ path: path.join(evidence, "home-ar-390.png") });
+          await saveShot(page, path.join(evidence, "home-ar-390.png"));
         }
         if (locale === prefixedLocale && width === 1440) {
-          await page.screenshot({ path: path.join(evidence, "home-en-1440.png") });
+          await saveShot(page, path.join(evidence, "home-en-1440.png"));
         }
       }
       if (urlPath === campaignOfferPath(locale, "SYN-001")) {
@@ -698,9 +703,7 @@ spec("layout, screenshots and unpublish", async ({ page, browser }) => {
           expect((await thumb.getAttribute("aria-label")) ?? "").not.toBe("");
         }
         if (locale === defaultLocale && width === 390) {
-          const evidence = path.join("docs", "evidence", "T06");
-          fs.mkdirSync(evidence, { recursive: true });
-          await page.screenshot({ path: path.join(evidence, "campaign-offer-ar-390.png") });
+          await saveShot(page, path.join("docs", "evidence", "T06", "campaign-offer-ar-390.png"));
         }
       }
       if (urlPath === campaignOfferPath(locale, "SYN-002")) {

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { saveShot } from "./support/shot";
 import { expect, test as spec, type Page } from "@playwright/test";
 import { messagesFor } from "../src/i18n/config";
 import { tinyPng } from "./support/samples";
@@ -43,8 +44,7 @@ async function shot(page: Page, name: string, dir = evidenceDir) {
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator(".nel-shimmer")).toHaveCount(0);
   const width = page.viewportSize()?.width ?? 0;
-  fs.mkdirSync(dir, { recursive: true });
-  await page.screenshot({ path: path.join(dir, name), fullPage: width >= 1024 });
+  await saveShot(page, path.join(dir, name), width >= 1024);
 }
 
 spec("operator controls, media choice and dashboard screenshots", async ({ page }) => {
@@ -247,7 +247,7 @@ spec("operator controls, media choice and dashboard screenshots", async ({ page 
     const clip = page.locator("[data-code='SYN-003']");
     const mainImage = clip.getByRole("button", { name: "Remove Main image" });
     if ((await mainImage.count()) > 0) {
-      await mainImage.locator("xpath=ancestor::*[@data-tile][1]").hover();
+      await mainImage.locator("xpath=ancestor::div[contains(@class,'nel-tile ')][1]").hover();
       await mainImage.click();
       await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
     }
@@ -339,7 +339,7 @@ spec("a running action shows its spinner, and reduced motion skips the leaving m
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/en/operator/campaign-offers");
   const removal = page.locator("[data-code='SYN-004']").getByRole("button", { name: "Remove Image 3", exact: true });
-  await removal.locator("xpath=ancestor::*[@data-tile][1]").hover();
+  await removal.locator("xpath=ancestor::div[contains(@class,'nel-tile ')][1]").hover();
   await expect(removal).toBeVisible();
   await removal.click();
   await page.evaluate(() => {

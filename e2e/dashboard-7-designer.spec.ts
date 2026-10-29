@@ -1,8 +1,8 @@
-import fs from "node:fs";
 import path from "node:path";
-import { expect, test as spec, type Page } from "@playwright/test";
+import { expect, test as spec, type Browser, type Page } from "@playwright/test";
 import { operatorPath, type Locale } from "../src/i18n/config";
 import { formatCount } from "../src/lib/format-values";
+import { saveShot } from "./support/shot";
 
 const evidence = path.join("docs", "evidence", "T06");
 
@@ -14,8 +14,7 @@ const tileNames = {
 async function shot(page: Page, name: string) {
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator(".nel-shimmer")).toHaveCount(0);
-  fs.mkdirSync(evidence, { recursive: true });
-  await page.screenshot({ path: path.join(evidence, name) });
+  await saveShot(page, path.join(evidence, name));
 }
 
 async function switchSize(page: Page) {
@@ -36,7 +35,15 @@ async function errorColour(page: Page) {
   });
 }
 
-spec("card v3, red removals, centred dialogs and the library", async ({ page }) => {
+async function controlStyle(page: Page) {
+  const filled = page.locator("[data-code='SYN-001'] [data-filled='yes']").first();
+  return filled.locator(".nel-tile-actions").evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { opacity: style.opacity, events: style.pointerEvents };
+  });
+}
+
+spec("card v3, red removals, centred dialogs and the library", async ({ page, browser }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const publish = await page.goto(operatorPath("ar", "overview"));
   expect(publish?.ok()).toBeTruthy();
@@ -55,13 +62,19 @@ spec("card v3, red removals, centred dialogs and the library", async ({ page }) 
       const boxes = await tiles.evaluateAll((nodes) =>
         nodes.map((node) => {
           const box = node.getBoundingClientRect();
-          return { top: box.top, width: box.width };
+          const radius = Number.parseFloat(getComputedStyle(node).borderTopLeftRadius);
+          return { top: box.top, width: box.width, radius };
         }),
       );
+      console.log(`tile-width ${locale} ${width} ${boxes[0]?.width ?? 0}`);
       for (const box of boxes) {
+        expect(Math.abs(box.radius - 12)).toBeLessThanOrEqual(0.5);
+        expect(box.radius).toBeLessThanOrEqual(box.width * 0.26);
+        expect(box.width).toBeLessThanOrEqual(89);
         expect(Math.abs(box.top - boxes[0].top)).toBeLessThanOrEqual(2);
         expect(Math.abs(box.width - boxes[0].width)).toBeLessThanOrEqual(1);
       }
+      if (locale === "ar" && width === 1440) await shot(page, "dashboard-campaign-offers-ar-1440.png");
       const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
       expect(fits).toBe(true);
       for (const name of tileNames[locale]) await expect(card.getByText(name, { exact: true })).toBeVisible();
@@ -161,4 +174,34 @@ spec("card v3, red removals, centred dialogs and the library", async ({ page }) 
   const settingsSwitch = await switchSize(page);
   expect(Math.abs(settingsSwitch.width - published.width)).toBeLessThanOrEqual(1);
   expect(Math.abs(settingsSwitch.height - published.height)).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/en/operator/campaign-offers");
+  await page.mouse.move(0, 0);
+  const hidden = await controlStyle(page);
+  expect(hidden.opacity).toBe("0");
+  expect(hidden.events).toBe("none");
+  await assertTouchControls(browser);
 });
+
+async function assertTouchControls(browser: Browser) {
+  const touch = await browser.newContext({
+    baseURL: "http://localhost:3000",
+    storageState: "e2e/.auth/operator.json",
+    hasTouch: true,
+    isMobile: true,
+    viewport: { width: 390, height: 844 },
+  });
+  const touchPage = await touch.newPage();
+  try {
+    await touchPage.goto("/ar/operator/campaign-offers");
+    const filled = touchPage.locator("[data-code='SYN-001'] [data-filled='yes']").first();
+    const actions = filled.locator(".nel-tile-actions");
+    await expect(actions.getByRole("link", { name: "استبدال" })).toBeVisible();
+    await expect(actions.locator("[data-remove]")).toBeVisible();
+    const shown = await actions.evaluate((node) => getComputedStyle(node).opacity);
+    expect(shown).toBe("1");
+  } finally {
+    await touch.close();
+  }
+}

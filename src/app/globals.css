@@ -205,11 +205,24 @@ dialog.nel-dialog {
 
 .nel-tile-actions {
   opacity: 0;
+  pointer-events: none;
 }
 
-.nel-tile:hover .nel-tile-actions,
-.nel-tile:focus-within .nel-tile-actions {
-  opacity: 1;
+@media (hover: hover) {
+  .nel-tile:hover .nel-tile-actions,
+  .nel-tile:focus-within .nel-tile-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: none) {
+  .nel-tile-actions {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    background: transparent;
+  }
 }
 
 dialog.nel-dialog::backdrop {

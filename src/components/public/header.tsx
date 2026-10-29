@@ -15,7 +15,7 @@ const focusRing =
 
 export function Header({ subtitle, homeHref, siteName, markAlt, labSite }: HeaderProps) {
   return (
-    <header className="sticky top-3 z-30 mx-3 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 shadow-card md:top-6 md:mx-6 md:gap-3 md:px-4">
+    <header className="sticky top-3 z-30 mx-auto mt-3 mb-4 flex w-full max-w-7xl items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 shadow-card md:top-6 md:mt-6 md:mb-6 md:gap-3 md:px-4">
       <Link
         href={homeHref}
         className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-button bg-surface ${focusRing}`}
