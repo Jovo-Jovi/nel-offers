@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { DropGuard } from "@/components/drop-guard";
 import { OperatorFeedback } from "@/components/operator-feedback";
 import { OperatorMark } from "@/components/operator-mark";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { SubmitButton } from "@/components/submit-button";
 import { isLocale, messagesFor, operatorPath, operatorSegment } from "@/i18n/config";
+import { readCampaign } from "@/lib/operator-data";
 import { readOperatorGate } from "@/lib/operator-session";
 import { OperatorLocaleSwitch } from "../locale-switch";
 import { signOut } from "./actions";
@@ -25,8 +27,11 @@ export default async function DashboardLayout({
   const messages = messagesFor(locale);
   const pathname = (await headers()).get("x-pathname") ?? "";
   const segment = operatorSegment(pathname);
+  const campaign = await readCampaign(gate);
+  const published = campaign?.is_published === true;
   return (
     <OperatorFeedback locale={locale}>
+      <DropGuard />
       <div className="flex min-h-dvh min-w-0 flex-col bg-bg text-dark">
         <header className="flex min-w-0 flex-wrap items-center gap-3 border-b border-border px-4 py-3">
           <OperatorMark alt={messages.a11y.mark} />
@@ -34,7 +39,9 @@ export default async function DashboardLayout({
             <p className="text-sm font-medium">{messages.site.name}</p>
             <p className="text-xs text-muted">{messages.nav.dashboard}</p>
           </div>
-          <DashboardNav locale={locale} current={segment} />
+          <span className="rounded-button bg-primary-soft px-3 py-1 text-xs">
+            {published ? messages.operator.publishLabel : messages.operator.notPublished}
+          </span>
           <div className="ms-auto flex flex-wrap items-center gap-2">
             <OperatorLocaleSwitch locale={locale} segment={segment} />
             <form action={signOut.bind(null, locale)}>
@@ -42,7 +49,10 @@ export default async function DashboardLayout({
             </form>
           </div>
         </header>
-        <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6">{children}</main>
+        <div className="flex min-w-0 flex-1">
+          <DashboardNav locale={locale} current={segment} />
+          <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-6 pb-24 lg:pb-6">{children}</main>
+        </div>
       </div>
     </OperatorFeedback>
   );

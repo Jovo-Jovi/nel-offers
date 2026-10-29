@@ -2,39 +2,33 @@ import { NextResponse } from "next/server";
 import { jsonCode } from "@/lib/json-code";
 import { readJsonObject } from "@/lib/json-body";
 import { encodedImageByteLimit, videoByteLimit, withinLimit } from "@/lib/media-object-limits";
-import { resolveUploadName } from "@/lib/media-object-name";
+import { isUploadSlot } from "@/lib/media-object-name";
 import { mimeType } from "@/lib/object-key";
 import { denyUnlessOperator, readOperatorGate, type OperatorGate } from "@/lib/operator-session";
 import { presignUpload } from "@/lib/r2";
 
-const nameLimit = 200;
+const codePattern = /^[A-Za-z0-9-]{2,20}$/;
 
-async function codeKeys(gate: OperatorGate) {
-  const { data, error } = await gate.supabase.from("CampaignOffer").select("code_key");
-  const keys = new Set<string>();
-  if (error || !Array.isArray(data)) return keys;
-  for (const row of data) {
-    if (!row || typeof row !== "object" || !("code_key" in row)) continue;
-    const codeKey = row.code_key;
-    if (typeof codeKey === "string") keys.add(codeKey);
-  }
-  return keys;
+async function knownCode(gate: OperatorGate, code: string) {
+  const { data, error } = await gate.supabase.from("CampaignOffer").select("code_key").eq("code_key", code);
+  if (error || !Array.isArray(data)) return false;
+  return data.some((row) => row && typeof row === "object" && "code_key" in row && row.code_key === code);
 }
 
 async function presign(request: Request, gate: OperatorGate) {
   const body = await readJsonObject(request);
-  if (!body) return jsonCode(422, "rejected");
-  const { name, type, size } = body;
-  if (typeof name !== "string" || typeof type !== "string" || typeof size !== "number") {
+  if (!body || Object.prototype.hasOwnProperty.call(body, "name")) return jsonCode(422, "rejected");
+  const { code, slot, type, size } = body;
+  if (typeof code !== "string" || typeof slot !== "string" || typeof type !== "string" || typeof size !== "number") {
     return jsonCode(422, "rejected");
   }
-  if (name.length === 0 || name.length > nameLimit || type.length === 0 || type.length > 128) {
+  if (!codePattern.test(code) || !isUploadSlot(slot) || type.length === 0 || type.length > 128) {
     return jsonCode(422, "rejected");
   }
-  const resolved = resolveUploadName(name, await codeKeys(gate));
-  if ("refusal" in resolved) return jsonCode(422, resolved.refusal);
+  const codeKey = code.toUpperCase();
+  if (!(await knownCode(gate, codeKey))) return jsonCode(422, "rejected");
   const mime = mimeType(type);
-  const video = resolved.slot === "main_video";
+  const video = slot === "main_video";
   if (video) {
     if (mime !== "video/mp4" || !withinLimit(size, videoByteLimit)) return jsonCode(422, "rejected");
   } else if (mime !== "image/webp" || !withinLimit(size, encodedImageByteLimit)) {
@@ -45,8 +39,8 @@ async function presign(request: Request, gate: OperatorGate) {
   return NextResponse.json({
     objectKey,
     uploadUrl,
-    code: resolved.code,
-    slot: resolved.slot,
+    code: codeKey,
+    slot,
   });
 }
 

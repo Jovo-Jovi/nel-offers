@@ -67,7 +67,8 @@ spec("contacts, card price, banner, publish and removal", async ({ page }) => {
   await expect(page.getByRole("switch", { name: "Published" })).toHaveAttribute("aria-checked", "false");
 
   await page.goto("/en/operator/campaign-offers");
-  await page.locator("tr[data-code='SYN-009']").getByRole("button", { name: "Remove" }).click();
+  await page.locator("[data-code='SYN-009']").getByRole("button", { name: "More" }).click();
+  await page.locator("[data-code='SYN-009']").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("SYN-009");
   await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
   await expect(page.locator("[data-code='SYN-009']")).toHaveCount(0);

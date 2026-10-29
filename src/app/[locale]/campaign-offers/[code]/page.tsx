@@ -25,6 +25,7 @@ import { dialLink, orderLink } from "@/lib/campaign-links";
 import { fillMessage } from "@/lib/fill-message";
 import { calendarParts, formatPrice } from "@/lib/format-values";
 import { loadCampaignOfferAttachments, loadPublishedCampaign, loadVisibleCampaignOffer } from "@/lib/public-data";
+import { publicShareMetadata } from "@/lib/share-metadata";
 import { shellProps } from "@/lib/public-shell";
 
 const focusRing =
@@ -46,7 +47,9 @@ export async function generateMetadata({
   if (!row) notFound();
   const messages = messagesFor(locale);
   const name = locale === defaultLocale ? row.nameAr : row.nameEn;
-  return { title: `${name} — ${messages.site.name}` };
+  const title = `${name} — ${messages.site.name}`;
+  const description = fillMessage(messages.header.campaignOfferSubtitle, { code: row.code });
+  return publicShareMetadata(locale, title, description);
 }
 
 export default async function CampaignOfferPage({
@@ -141,7 +144,7 @@ export default async function CampaignOfferPage({
               }
             >
               <MainMediaObject
-                clipUrl={clip?.url ?? null}
+                clipUrl={clip ? (mainPicture ? clip.url : `${clip.url}#t=0.1`) : null}
                 pictureUrl={mainPicture?.url ?? null}
                 pictureAlt={mainAlt}
                 playLabel={messages.a11y.playVideo}

@@ -112,7 +112,7 @@ export function toNormalised(row: StoredCampaignOffer, sheetRow: number): Normal
 
 export async function readStatuses(gate: OperatorGate) {
   const { data, error } = await gate.supabase.rpc("campaign_offer_statuses");
-  const counts = { visible: 0, scheduled: 0, ended: 0, hidden: 0 };
+  const counts = { visible: 0, scheduled: 0, ended: 0, hidden: 0, off: 0 };
   const byId = new Map<string, string>();
   if (error || !Array.isArray(data)) return { counts, byId };
   for (const row of data) {
@@ -121,7 +121,13 @@ export async function readStatuses(gate: OperatorGate) {
     const status = "status" in row ? row.status : "";
     if (typeof id !== "string" || typeof status !== "string") continue;
     byId.set(id, status);
-    if (status === "visible" || status === "scheduled" || status === "ended" || status === "hidden") {
+    if (
+      status === "visible" ||
+      status === "scheduled" ||
+      status === "ended" ||
+      status === "hidden" ||
+      status === "off"
+    ) {
       counts[status] += 1;
     }
   }
@@ -143,6 +149,54 @@ export async function readLastImport(gate: OperatorGate) {
     updated: typeof data.updated_count === "number" ? data.updated_count : 0,
     unchanged: typeof data.unchanged_count === "number" ? data.unchanged_count : 0,
   };
+}
+
+export type LibraryRecord = {
+  campaignOfferId: string;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+  slot: string;
+  objectKey: string;
+  video: boolean;
+};
+
+export async function readLibrary(gate: OperatorGate): Promise<LibraryRecord[]> {
+  const [rows, slotRows, objects] = await Promise.all([
+    readCampaignOfferRows(gate),
+    gate.supabase.from("CampaignOfferMedia").select("campaign_offer_id, slot, media_object_id"),
+    gate.supabase.from("MediaObject").select("id, object_key, kind"),
+  ]);
+  if (!rows || slotRows.error || !slotRows.data || objects.error || !objects.data) return [];
+  const byCampaignOffer = new Map(rows.map((row) => [row.id, row]));
+  const byObject = new Map(
+    objects.data.flatMap((row) => {
+      if (typeof row.id !== "string" || typeof row.object_key !== "string" || typeof row.kind !== "string") return [];
+      return [[row.id, { objectKey: row.object_key, kind: row.kind }] as const];
+    }),
+  );
+  const records: LibraryRecord[] = [];
+  for (const row of slotRows.data) {
+    if (typeof row.campaign_offer_id !== "string" || typeof row.slot !== "string") continue;
+    const campaignOffer = byCampaignOffer.get(row.campaign_offer_id);
+    const stored = typeof row.media_object_id === "string" ? byObject.get(row.media_object_id) : undefined;
+    if (!campaignOffer || !stored) continue;
+    records.push({
+      campaignOfferId: campaignOffer.id,
+      code: campaignOffer.code,
+      nameAr: campaignOffer.name_ar,
+      nameEn: campaignOffer.name_en,
+      slot: row.slot,
+      objectKey: stored.objectKey,
+      video: stored.kind === "video",
+    });
+  }
+  records.sort((left, right) => {
+    const order = left.code.localeCompare(right.code);
+    if (order !== 0) return order;
+    return left.slot.localeCompare(right.slot);
+  });
+  return records;
 }
 
 export async function readSlots(gate: OperatorGate) {

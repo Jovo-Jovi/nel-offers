@@ -6,7 +6,7 @@ import { isLocale, messagesFor, operatorPath, type Locale } from "@/i18n/config"
 import { contactsComplete } from "@/lib/campaign-contacts";
 import { formatCount, formatStamp } from "@/lib/format-values";
 import { fillMessage } from "@/lib/fill-message";
-import { contactDraft, readCampaign, readLastImport, readCampaignOfferRows, readStatuses } from "@/lib/operator-data";
+import { contactDraft, readCampaign, readLastImport, readCampaignOfferRows, readSlots, readStatuses } from "@/lib/operator-data";
 import { requireOperator } from "@/lib/require-operator";
 
 export default async function OverviewPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -14,11 +14,12 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
   if (!isLocale(locale)) notFound();
   const gate = await requireOperator(locale);
   const messages = messagesFor(locale);
-  const [campaign, rows, statuses, lastImport] = await Promise.all([
+  const [campaign, rows, statuses, lastImport, slots] = await Promise.all([
     readCampaign(gate),
     readCampaignOfferRows(gate),
     readStatuses(gate),
     readLastImport(gate),
+    readSlots(gate),
   ]);
   const draft = campaign
     ? contactDraft(campaign)
@@ -32,20 +33,37 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
   const ready = contactsComplete(draft);
   const campaignOfferCount = rows?.length ?? 0;
   const published = campaign?.is_published === true;
+  const withoutPicture = (rows ?? []).filter((row) => {
+    const filled = slots.filter((slot) => slot.campaignOfferId === row.id).map((slot) => slot.slot);
+    return !filled.includes("main_video") && !filled.includes("main_image");
+  }).length;
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <h1 className="text-2xl">{messages.operator.overviewHeading}</h1>
+      <section className={cardClass}>
+        <h2 className="text-lg">{messages.operator.publishingCard}</h2>
+        <p>{ready ? messages.operator.contactsComplete : messages.operator.contactsMissing}</p>
+        {campaignOfferCount === 0 ? <p>{messages.operator.publishNeedCampaignOffers}</p> : null}
+        <a className="mt-2 inline-block text-sm text-primary" href={operatorPath(locale, "campaign-settings")}>
+          {messages.operator.openSettings}
+        </a>
+        <div className="mt-3">
+          <PublishSwitch locale={locale} published={published} campaignOfferCount={campaignOfferCount} contactsReady={ready} />
+        </div>
+      </section>
       <ul className="grid min-w-0 gap-3 sm:grid-cols-2">
         <Count locale={locale} status="visible" label={messages.operator.statusVisible} value={statuses.counts.visible} />
         <Count locale={locale} status="scheduled" label={messages.operator.statusScheduled} value={statuses.counts.scheduled} />
         <Count locale={locale} status="ended" label={messages.operator.statusEnded} value={statuses.counts.ended} />
+        <Count locale={locale} status="off" label={messages.operator.statusOff} value={statuses.counts.off} />
         <Count locale={locale} status="hidden" label={messages.operator.statusHidden} value={statuses.counts.hidden} />
       </ul>
       <section className={cardClass}>
-        <p>{ready ? messages.operator.contactsComplete : messages.operator.contactsMissing}</p>
-        <a className="mt-2 inline-block text-sm text-primary" href={operatorPath(locale, "campaign-settings")}>
-          {messages.operator.openSettings}
+        <h2 className="text-lg">{messages.operator.todoHeading}</h2>
+        <a className="text-sm text-primary" href={`${operatorPath(locale, "campaign-offers")}?gap=media`}>
+          {fillMessage(messages.operator.todoWithoutPicture, { count: withoutPicture })}
         </a>
+        {lastImport ? null : <p className="mt-2">{messages.operator.noImport}</p>}
       </section>
       <section className={cardClass}>
         <h2 className="text-lg">{messages.operator.lastImport}</h2>
@@ -60,7 +78,6 @@ export default async function OverviewPage({ params }: { params: Promise<{ local
           <p>{messages.operator.noImport}</p>
         )}
       </section>
-      <PublishSwitch locale={locale} published={published} campaignOfferCount={campaignOfferCount} contactsReady={ready} />
     </div>
   );
 }
@@ -78,10 +95,12 @@ function Count({
 }) {
   return (
     <li className={cardClass} data-status={status}>
-      <p className="text-sm text-muted">{label}</p>
-      <p className="text-2xl">
-        <LatinRun>{formatCount(locale, value)}</LatinRun>
-      </p>
+      <a className="block text-inherit no-underline" href={`${operatorPath(locale, "campaign-offers")}?status=${status}`}>
+        <p className="text-sm text-muted">{label}</p>
+        <p className="text-2xl">
+          <LatinRun>{formatCount(locale, value)}</LatinRun>
+        </p>
+      </a>
     </li>
   );
 }

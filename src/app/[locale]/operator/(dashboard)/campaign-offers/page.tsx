@@ -5,9 +5,16 @@ import { formatCalendar, formatPrice } from "@/lib/format-values";
 import { readCampaignOfferRows, readSlots, readStatuses } from "@/lib/operator-data";
 import { requireOperator } from "@/lib/require-operator";
 
-export default async function CampaignOffersPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function CampaignOffersPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ status?: string; gap?: string }>;
+}) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  const query = await searchParams;
   const gate = await requireOperator(locale);
   const messages = messagesFor(locale);
   const [rows, statuses, slots] = await Promise.all([
@@ -16,9 +23,7 @@ export default async function CampaignOffersPage({ params }: { params: Promise<{
     readSlots(gate),
   ]);
   const views: CampaignOfferView[] = (rows ?? []).map((row) => {
-    const filled = slots
-      .filter((slot) => slot.campaignOfferId === row.id)
-      .map((slot) => slot.slot);
+    const filled = slots.filter((slot) => slot.campaignOfferId === row.id).map((slot) => slot.slot);
     return {
       id: row.id,
       code: row.code,
@@ -34,7 +39,13 @@ export default async function CampaignOffersPage({ params }: { params: Promise<{
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <h1 className="text-2xl">{messages.operator.campaignOffersHeading}</h1>
-      <CampaignOfferList locale={locale} rows={views} />
+      <p className="text-sm text-muted">{messages.operator.readOnlyLine}</p>
+      <CampaignOfferList
+        locale={locale}
+        rows={views}
+        initialStatus={typeof query.status === "string" ? query.status : ""}
+        initialGap={typeof query.gap === "string" ? query.gap : ""}
+      />
     </div>
   );
 }

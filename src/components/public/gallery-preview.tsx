@@ -162,7 +162,7 @@ export function GalleryPreview({
             <img
               src={picture.url}
               alt={picture.label}
-              className="block h-auto max-h-full w-full object-contain"
+              className="block h-auto max-h-[calc(100dvh-3rem)] w-auto max-w-[calc(100vw-3rem)] object-contain md:max-w-[calc(100vw-8rem)]"
             />
           ) : null}
         </div>

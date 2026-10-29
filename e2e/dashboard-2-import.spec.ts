@@ -45,11 +45,12 @@ function section(page: Page, heading: string) {
 async function removeSyntheticCampaignOffers(page: Page) {
   await page.goto("/en/operator/campaign-offers");
   for (;;) {
-    const row = page.locator("tr[data-code]").first();
+    const row = page.locator("[data-code]").first();
     if ((await row.count()) === 0) break;
     const code = (await row.getAttribute("data-code")) ?? "";
     expect(code.startsWith("SYN-")).toBe(true);
-    await row.getByRole("button", { name: "Remove" }).click();
+    await row.getByRole("button", { name: "More" }).click();
+    await row.getByRole("button", { name: "Remove", exact: true }).click();
     await expect(page.getByRole("dialog")).toContainText(code);
     await page.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
     await expect(page.locator(`[data-code="${code}"]`)).toHaveCount(0);

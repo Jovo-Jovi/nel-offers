@@ -6,6 +6,7 @@ import { createOperatorClient } from "@/lib/supabase/server";
 import { contactProblems, type ContactDraft } from "@/lib/campaign-contacts";
 import { revalidateOperator } from "@/lib/require-operator";
 import { readOperatorGate } from "@/lib/operator-session";
+import { uploadSlots } from "@/lib/media-object-name";
 import { deleteObject } from "@/lib/r2";
 
 async function gateOrDeny() {
@@ -27,6 +28,52 @@ export async function setPublished(locale: Locale, published: boolean) {
   if (error) return { ok: false as const, code: "rejected" as const };
   revalidateOperator("overview");
   return { ok: true as const, locale };
+}
+
+export async function setCampaignOfferShown(locale: Locale, campaignOfferId: string, shown: boolean) {
+  const opened = await gateOrDeny();
+  if (!opened.gate) return { ok: false as const, code: opened.code };
+  if (!/^[0-9a-f-]{36}$/i.test(campaignOfferId) || typeof shown !== "boolean") {
+    return { ok: false as const, code: "rejected" as const };
+  }
+  const { error } = await opened.gate.supabase.rpc("set_campaign_offer_shown", {
+    p_campaign_offer_id: campaignOfferId,
+    p_shown: shown,
+  });
+  if (error) return { ok: false as const, code: "rejected" as const };
+  revalidateOperator("campaign-offers");
+  revalidateOperator("overview");
+  revalidateOperator("media-objects");
+  return { ok: true as const, locale };
+}
+
+export async function removeCampaignOfferMedia(locale: Locale, campaignOfferId: string, slot: string) {
+  const opened = await gateOrDeny();
+  if (!opened.gate) return { ok: false as const, code: opened.code };
+  if (!/^[0-9a-f-]{36}$/i.test(campaignOfferId) || !uploadSlots.includes(slot as (typeof uploadSlots)[number])) {
+    return { ok: false as const, code: "rejected" as const };
+  }
+  const { data, error } = await opened.gate.supabase.rpc("remove_campaign_offer_media", {
+    p_campaign_offer_id: campaignOfferId,
+    p_slot: slot,
+  });
+  if (error) return { ok: false as const, code: "rejected" as const };
+  if (typeof data !== "string" || data.length === 0) {
+    revalidateOperator("campaign-offers");
+    revalidateOperator("media-objects");
+    revalidateOperator("overview");
+    return { ok: true as const, empty: true, locale };
+  }
+  let storageFailed = false;
+  try {
+    await deleteObject(data);
+  } catch {
+    storageFailed = true;
+  }
+  revalidateOperator("campaign-offers");
+  revalidateOperator("media-objects");
+  revalidateOperator("overview");
+  return { ok: true as const, storageFailed, locale };
 }
 
 export async function removeCampaignOffer(locale: Locale, campaignOfferId: string) {

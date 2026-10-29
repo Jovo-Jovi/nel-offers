@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { directionFor, isLocale, messagesFor } from "@/i18n/config";
+import { iconMetadata, siteMetadataBase } from "@/lib/share-metadata";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -16,7 +17,9 @@ export async function generateMetadata({
   }
   const messages = messagesFor(locale);
   return {
+    metadataBase: siteMetadataBase() ?? undefined,
     title: `${messages.site.campaignTitle} — ${messages.site.name}`,
+    icons: iconMetadata(),
   };
 }
 
