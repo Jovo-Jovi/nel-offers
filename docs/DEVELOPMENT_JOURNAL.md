@@ -351,3 +351,14 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Verdict T05-F2: PASS. CF-35 and CF-36 close. CF-37 records three small Import-page gaps for a
   polish task after launch.
 - Go-live 1 issued: the synthetic data leaves the project (go-live step 3) through the SQL runner.
+
+## 2026-10-29 — Go-live 1 (builder)
+
+- LANDING `16205613465571f9046154a76c733a5f3e2a90f7`. Carry-forwards `37 10 ['38']`: 36 + 1 = 37 rows, next free 38, open 11 − 2 + 1 = 10. CF-35 and CF-36 are `CLOSED (T05-F2)`. CF-37 is the id allocated for this landing and stays `OPEN`.
+- Gate read before the reset: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=0 not_synthetic=0 switched_off=0 media_objects=0 orphans=0`.
+- Reset: `SQL supabase/ops/nelo_synthetic_reset.sql sha256=cba732e932c1`, `ROW campaign_offers=0 campaign_imports=0 media_objects=0 links=0 campaign_not_reset=0`, `APPLIED`.
+- `SCAN objects=0 metadata=0 location=0 no-row=0 no-object=0`. No `REMOVED` line.
+- Gate read after: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=0 not_synthetic=0 switched_off=0 media_objects=0 orphans=0`.
+- `report.mjs --check` exited 0. The secret sweep printed nothing. `git diff --name-only` from LANDING to HEAD printed nothing before this entry. CI is not attested.
+- Deviation: earlier gate reads were not all zero (`campaign_offers=7 not_synthetic=1 media_objects=5`, then `campaign_offers=0 media_objects=1 orphans=0`). The reset was not run until this all-zero read.
+- Deviation: one anonymous `ls-remote` during the resume could not resolve github.com (exit 128, `api status=000`). The step 1 check before this reset exited 0 with `api status=200`.
