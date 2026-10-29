@@ -85,3 +85,20 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   closes as PASS and PR #2 is merged. T03 issued with OD-02, migration 2 and its proof, rehearsed
   on PostgreSQL 16 with a Supabase stub: presentation proof 17/17, RLS proof still 47/47, and
   each fails on planted defects.
+
+## 2026-10-29 — T03 (builder)
+
+- LANDING: `1776a5b37e0c6fa417b2e31a9b7956cc76f6287d`.
+- Allocated CARRY_FORWARDS base 14 + 5 rows = CF-15..CF-19, next free CF-20. CF-11, CF-12 and CF-13 read `CLOSED (T02)`. No other existing cell was changed. CF-15 and CF-16 stay open until a verdict; a repeated finalise no longer deletes a recorded object, and the filename exemption is gone.
+- `npm run guard:naming` exit 0. `npm run guard:design` exit 0. `npm run guard:literals` exit 0. `npm run guard:boundary` exit 0.
+- Self-checks exit 0. naming: string fail 5/5 pass 7/7, file fail 5/5 pass 7/7. design: string fail 9/9 pass 6/6, file fail 9/9 pass 6/6. literals: string fail 7/7 pass 3/3, file fail 7/7 pass 3/3. boundary: string fail 4/4 pass 4/4, file fail 4/4 pass 4/4.
+- `node scripts/usage/report.mjs --check` exit 0. `npm run lint` exit 0. `npm run typecheck` exit 0. `npm run test:unit` exit 0 (26 passed). `npm run build` exit 0. Both template traces print `True`. `npm audit --omit=dev --audit-level=high` exit 0 (2 moderate). `npx playwright test` exit 0 (11 passed). `npm run evidence` exit 0.
+- `npm run check:r2`: PUT 200. HEAD 200 16 image/webp. GET 200 16 equal. DELETE 204. HEAD 404.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Human-attested gate row: drift 0, campaign_offers 6, not_synthetic 0, media_objects 5, orphans 0.
+- The campaign is unpublished. SYN-001 through SYN-006, their media objects and the synthetic banner remain. SYN-009 was removed.
+- Deviation: a stale confirm does not surface SQLSTATE 40001. The call holds its lock until the gateway times out. The route aborts that call after 8 seconds and answers 409 `changed-since-preview` for an abort, `upstream request timeout`, `preview again`, or 40001. The next preview returns 200. `supabase/` was not edited.
+- Deviation: exceljs cannot load the template until comment and vml relationships are removed from a copy. The download serves the original bytes. jszip stays a transitive dependency.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: Playwright counts Node's `NO_COLOR`/`FORCE_COLOR` warning as an error outside any test. The config deletes `NO_COLOR` before the workers start, and the suite exits 0.
+- Deviation: the layout spec reads the served document for `style=`. After hydration the framework inserts a route announcer with a style attribute. The served HTML has none.
