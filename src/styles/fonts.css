@@ -1,7 +1,7 @@
-@import "@fontsource/ibm-plex-sans-arabic/400.css";
-@import "@fontsource/ibm-plex-sans-arabic/500.css";
-@import "@fontsource/ibm-plex-sans-arabic/600.css";
+@import "@fontsource/cairo/400.css";
+@import "@fontsource/cairo/500.css";
+@import "@fontsource/cairo/700.css";
 
 body {
-  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-family: "Cairo", sans-serif;
 }
