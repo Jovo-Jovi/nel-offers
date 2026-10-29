@@ -171,7 +171,8 @@ Plain, phone-first, one main action per screen. Every rule of §§1–9 still ho
     locale's name, muted; one meta line of small soft chips — the price with its currency, and the
     dates (`Until <end>` or `<start> – <end>`). At the inline end: the show switch with its own label,
     and a "more" button (a ⋮ icon with an accessible name) whose menu holds **Remove** for the
-    `CampaignOffer`, in red.
+    `CampaignOffer`, in red. The names' column is never narrower than 10rem; below `sm` the show
+    switch and the ⋮ button sit on their own row under the names (T06-F2).
   - **Media strip.** Below the head, the five slots as five equal squares with a 12 px corner
     radius (`rounded-xl`; never round), in one row at every width from 320 px: the tiles share the
     row equally up to 88 px each and the row sits at the inline start; each has its slot name under

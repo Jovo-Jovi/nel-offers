@@ -447,3 +447,16 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: the suite rewrote `docs/evidence/T05` and `docs/evidence/T05-F2`. Those bytes were restored before the evidence commit, so those folders are unchanged.
 - Deviation: the naming guard rejected `filePath` in the screenshot helper. The parameter is `shotPath`. The checks above are the run after that rename.
 - Deviation: one `npx playwright test` waited out on the import preview and was not given a timeout of its own. The following run is the 28 passed line above.
+
+## 2026-10-29 — Reviewer session 15 (T06-F verdict)
+
+- Fetched `t06-designer-changes` at `b98f1dd` (PR #11). Verified the bundle (2/2 at LANDING and
+  HEAD), compared the carry-forward changes, the journal entries and the usage record with the fence
+  (exact), and re-ran the four guards, lint, typecheck and the unit specs (39). Read the tile grid
+  (12 px corners, at most 88 px), the hover and touch rules and the header classes, and viewed the
+  nine screenshots. CI success on `b98f1dd` read from GitHub.
+- The tiles are square and at most 88 px; touch screens show Replace and Remove; the library rows
+  are drawn in full. CF-41 closes.
+- Findings: at 390 px the card's names and chips are squeezed into a column a few characters wide;
+  the public header is still wider than the hero card. Verdict T06-F: FAIL. T06-F2 issued with
+  `ADMIN_SPEC.md` §10 and `DESIGN_SYSTEM.md` §11.1 amended; CF-42 stays open for the header.
