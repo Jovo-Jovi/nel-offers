@@ -7,7 +7,7 @@ and name what it replaces. Never deviate silently.
 Rows marked with a NEL source restate rulings proven on the NEL build, narrowed to this
 project. They are this project's own rulings from the moment they land.
 
-**Next free id: PR-30**
+**Next free id: PR-31**
 
 | Id | Ruling | Source |
 |---|---|---|
@@ -40,3 +40,4 @@ project. They are this project's own rulings from the moment they land.
 | PR-27 | **Public-repository rules**, binding while the repository is public. No credential, key, token, connection string, Supabase project reference or project URL in any commit — exposure is immediate, and a later commit does not unpublish it. No CI trigger runs fork-supplied code with repository context: `pull_request_target` is forbidden, a `pull_request` job runs only when the head repository is this one, and no workflow reads a secret. No assessment of a third-party system's operational weaknesses in a tracked file. The return to private is a go-live item, not a courtesy. | NEL rows 21, 23, 27; NELO OD-01 item 2 |
 | PR-28 | **Offer content is the laboratory's.** No code, seed, fixture, design mock, builder or reviewer supplies a real analysis name, price, date or condition. Sheet → confirm → publish is the only path. Fixtures use `SYN-` codes and names that say they are synthetic. | NELO, OD-01 |
 | PR-29 | **NEL decoupling.** The only NEL artefacts in this repository are the two files listed in `DESIGN_SYSTEM.md` §2, at their hashes. Nothing at build or run time references NEL's repository, database, bucket, account or key. | NELO, OD-01 item 3 |
+| PR-30 | **No class-40 SQLSTATE through PostgREST.** A function reached through the API never raises `40001` or `40P01`: PostgREST treats them as transient and retries the transaction without end, after the client has gone. A refusal the caller must see as a conflict raises `PT409` (HTTP 409); any other refusal uses a non-40 class. A builder who meets a call that does not answer halts and reports; a client-side timeout is never the fix. | NELO, 29 Oct 2026: T03's stale-confirm spec left PostgREST retrying the import on the live project |

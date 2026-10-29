@@ -102,3 +102,20 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: Playwright counts Node's `NO_COLOR`/`FORCE_COLOR` warning as an error outside any test. The config deletes `NO_COLOR` before the workers start, and the suite exits 0.
 - Deviation: the layout spec reads the served document for `style=`. After hydration the framework inserts a route announcer with a style attribute. The served HTML has none.
+
+## 2026-10-29 — Reviewer session 4 (T03 verdict)
+
+- Fetched `t03-dashboard` at `3f18f7b6`. Re-ran the bundle verification (12/12 at LANDING and
+  HEAD), compared the landed carry-forward rows and journal entry with the fence (exact), and
+  re-ran the four guards with their self-checks, lint, typecheck, the unit specs (26), a clean
+  build with both template traces, the audit and the usage check. Served the build: public pages
+  set no cookie and carry no `style` attribute, every dashboard page redirects to sign-in without
+  a session, and every operator route handler answers 401. Viewed all 28 screenshots.
+- Reviewed `f79ceae`, merged through PR #3 outside a fence: it raises the TOTP QR size bound only.
+- Findings: the import function's stale-preview refusal used SQLSTATE 40001, which PostgREST
+  retries without end — a defect in the reviewer's migration that the T03 spec triggered on the
+  live project; Arabic dates reordered inside `LatinRun`; `jszip` imported without being
+  declared; the sign-in screenshots taken while signed in.
+- Verdict T03: FAIL. T03-F issued with `20261029020000_nelo_import_conflict.sql` (`PT409`) and the
+  amended RLS proof, rehearsed on PostgreSQL 16: proof 47/47 and presentation proof 17/17 after
+  it; without it the amended proof aborts. CF-02, CF-04, CF-15, CF-16 and CF-19 close.

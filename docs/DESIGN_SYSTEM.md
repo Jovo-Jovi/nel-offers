@@ -62,6 +62,10 @@ is computed and recorded here: ≥ 4.5:1 for text, ≥ 3:1 for UI boundaries and
 - **Digits are Western in both locales.** Numbers and dates are formatted with `Intl`, using
   the active locale with the `-u-nu-latn` extension. Dates are plain calendar dates, formatted
   with `timeZone: 'UTC'` so no shift occurs.
+- **Intl output inside `LatinRun` carries no bidi marks.** Arabic `Intl` formats insert U+200F
+  (and may insert U+200E or U+061C) between parts; inside a left-to-right isolate they reorder the
+  groups, so `18/11/2026` renders as `182026/11/`. Every formatter whose result is placed in
+  `LatinRun` removes those three characters first.
 - Directional icons (arrows, chevrons) mirror. The mark, numerals and media controls do not.
 - The language switch keeps the Visitor on the same `CampaignOffer` when there is one.
 
