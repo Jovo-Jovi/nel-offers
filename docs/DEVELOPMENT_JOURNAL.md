@@ -475,3 +475,17 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `NEXT_PUBLIC_SITE_URL` is unset, so the running build warns that `metadataBase` falls back to `http://localhost:3000`.
 - Deviation: the suite rewrote `docs/evidence/T05`, `docs/evidence/T05-F2`, `docs/evidence/T06/campaign-offer-ar-390.png` and `docs/evidence/T06/confirm-remove-ar-390.png`. Those bytes were restored before the implementation commit, so those files are unchanged.
 - Deviation: one `npx playwright test` waited out on the import preview and was not given a timeout of its own. The following run is the 28 passed line above.
+
+## 2026-10-30 — Reviewer sessions 16 and 17 (T06-F2 verdict, T07)
+
+- 29 Oct: fetched `t06-designer-changes` at `a23c1ff` (PR #11). Verified the bundle (2/2 at
+  LANDING and HEAD), compared the carry-forward changes, the journal entries and the usage record
+  with the fence (exact), and re-ran the four guards, lint, typecheck and the unit specs (39).
+  Viewed the four screenshots: the card head readable at 390 in both locales, the header on the
+  hero card's edges at 1440. CI success on `a23c1ff` read from GitHub. Verdict T06-F2: PASS; with
+  T06-F, T06 passes. CF-42 and CF-43 close. Go-live 2 was issued and did not run.
+- 30 Oct: the laboratory's real sheet is in the project. Andrew asked for "اضغط هنا" on the cards
+  and for no code in front of Visitors; the human signed OD-06 (the code stays the sheet's key and
+  the dashboard's identifier). New precedent: no build fence writes to the project. New
+  carry-forward: no staging project for the end-to-end specs. T07 issued, rehearsed on a clean
+  clone of `83ef91f` (landing counts, the four guards, lint, typecheck, 43 unit specs, build).

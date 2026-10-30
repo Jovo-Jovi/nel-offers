@@ -290,3 +290,27 @@ when the human merges T06.
 7. **Library by type.** The media page's library shows the kind of the selected tab only.
 8. **Unchanged:** the offer content gate (no hand-made CampaignOffer field), the boundary rules
    (no file name sent or stored), the theme's colours and font.
+
+## OD-06 — No code for Visitors, and "اضغط هنا" on the cards
+
+**Status:** SIGNED. The signature is the human's messages of 30 Oct 2026 in the reviewer session,
+after the laboratory's real data was imported, relaying Andrew ("Andrew needs to add (اضغط هنا) on
+cards"; "remove the code … as he does not need it"), and the human's answers: "make it hidden from
+the card"; "do not show code in offer page and do not add code to whatsapp message"; "keep it for
+admin but not in any view for visitors". It is recorded by the commit that lands this text on the
+T07 branch and ratified when the human merges T07.
+
+**Amends:** `PRODUCT_BRIEF.md` §2 item 2; SCOPE S-02 and S-03 (by this OD; `SCOPE.md` stays
+frozen); OD-02 items 3 and 9 (the approved card and page, the order message); `DESIGN_SYSTEM.md`
+§§9, 11 and 11.1; `DATA_MODEL.md` §2.1.
+
+1. **No code in any Visitor view.** The public pages show no CampaignOffer code: not on the home
+   cards, not on the CampaignOffer page (the code badge goes), not in the header subtitle, not in
+   the link-preview description. The WhatsApp order message carries the name only.
+2. **The code stays for the Operator.** It remains the sheet's key column, so an import still
+   updates by code, never makes a duplicate and never deletes; the dashboard's identifier; and the
+   key that links an uploaded file named by it. The Excel template does not change. The page's
+   address still carries the code (`/campaign-offers/<code>`); hiding it there is a route change
+   and needs its own OD.
+3. **"اضغط هنا" on every card.** Each home card shows `home.cardAction` — "اضغط هنا" / "Click
+   here" — with the designer's arrow at its inline end; the whole card stays the one link.

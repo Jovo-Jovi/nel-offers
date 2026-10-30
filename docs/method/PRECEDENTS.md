@@ -7,7 +7,7 @@ and name what it replaces. Never deviate silently.
 Rows marked with a NEL source restate rulings proven on the NEL build, narrowed to this
 project. They are this project's own rulings from the moment they land.
 
-**Next free id: PR-33**
+**Next free id: PR-34**
 
 | Id | Ruling | Source |
 |---|---|---|
@@ -43,3 +43,4 @@ project. They are this project's own rulings from the moment they land.
 | PR-30 | **No class-40 SQLSTATE through PostgREST.** A function reached through the API never raises `40001` or `40P01`: PostgREST treats them as transient and retries the transaction without end, after the client has gone. A refusal the caller must see as a conflict raises `PT409` (HTTP 409); any other refusal uses a non-40 class. A builder who meets a call that does not answer halts and reports; a client-side timeout is never the fix. | NELO, 29 Oct 2026: T03's stale-confirm spec left PostgREST retrying the import on the live project |
 | PR-31 | **SQL through the runner.** The builder runs SQL against the project only as `npm run sql -- <path>`, on a reviewer-authored file whose committed bytes a `docs/method/*_BUNDLE.sha256` manifest lists, and only for the runs its fence names. No ad hoc SQL, no other client, no TLS verification turned off, no connection string in any output; `.env.local` is never opened or printed. On `CONNECT FAILED` the builder stops the SQL runs and the human runs the same files in the SQL Editor; those outcomes are human-attested (PR-24). For the runs a fence names, this replaces the "builder never applies SQL" halt of earlier fences; PR-13 binds every other call. | NELO, OD-04 item 1 |
 | PR-32 | **NEL decoupling** (supersedes PR-29). The only NEL artefacts in this repository are the files listed in `DESIGN_SYSTEM.md` §§2 and 2.1, at their hashes: the two inherited files and the four images the reviewer derived from the mark. Nothing at build or run time references NEL's repository, database, bucket, account or key. | NELO, OD-04 item 7 |
+| PR-33 | **Production data.** From 30 Oct 2026 the project and the bucket hold the laboratory's real data. A build fence writes nothing to them: no Playwright spec, no `check:r2`, no `--remove-unrecorded`, no SQL but a named read check, no Operator action. Evidence comes from unit specs, the guards, a local production build whose public pages are captured read-only, and the human's look. The end-to-end specs keep compiling and run again only against a separate staging project. | NELO, 30 Oct 2026: the real sheet was imported before go-live 2 ran |

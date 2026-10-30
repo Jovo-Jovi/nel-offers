@@ -19,10 +19,11 @@ that publishes that campaign at `offers.nileegyptlabs.com`.
 
 1. **Home** — the campaign's `CampaignOffer`s that are visible today, in display order, with
    search by analysis name (Arabic or English).
-2. **One page per `CampaignOffer`** — its code, Arabic and English names, price, its own
+2. **One page per `CampaignOffer`** — its Arabic and English names, price, its own
    start and end dates, conditions, a main video or image, a gallery of up to three images,
    and three actions: WhatsApp, call, and **اطلب العرض** (order), which opens WhatsApp with
-   the code and name filled in. A link leads to the NEL site.
+   the name filled in. A link leads to the NEL site. The code is the laboratory's key for the
+   sheet and the dashboard and is shown to no Visitor (OD-06).
 3. Arabic by default, English second. Every string and every offer field exists in both.
 
 When the campaign is not published, the site shows a coming-soon state and no
