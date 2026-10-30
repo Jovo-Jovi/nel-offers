@@ -244,7 +244,8 @@ spec("home matches the public query", async ({ page }) => {
       const card = page.locator(`[data-code="${row.code}"]`);
       const name = locale === defaultLocale ? row.nameAr : row.nameEn;
       await expect(card.locator("a > span").first()).toHaveText(String(index + 1).padStart(2, "0"));
-      await expect(card).toContainText(row.code);
+      await expect(card).not.toContainText(row.code);
+      await expect(card).toContainText(messages.home.cardAction);
       await expect(card).toContainText(name);
       if (campaign.showCardPrice) {
         await expect(card).toContainText(formatPrice(locale, row.priceText));
@@ -304,7 +305,7 @@ async function expectPage(page: Page, locale: Locale, row: PublicCampaignOffer, 
   await expect(page).toHaveTitle(titled(name, messages.site.name));
   await expect(page.locator("h1")).toHaveText(name);
   await expect(page.getByText(otherName, { exact: true })).toBeVisible();
-  await expect(page.getByText(row.code, { exact: true }).first()).toBeVisible();
+  await expect(page.locator("main")).not.toContainText(row.code);
   await expect(page.getByText(formatPrice(locale, row.priceText), { exact: true }).first()).toBeVisible();
   await expect(page.getByText(messages.campaignOffer.currency, { exact: true }).first()).toBeVisible();
   const parts = calendarParts(row.endsOn);
@@ -323,7 +324,7 @@ async function expectPage(page: Page, locale: Locale, row: PublicCampaignOffer, 
   } else {
     await expect(heading).toHaveCount(0);
   }
-  const orderMessage = fillMessage(messages.campaignOffer.orderMessage, { code: row.code, name });
+  const orderMessage = fillMessage(messages.campaignOffer.orderMessage, { name });
   const actions = page.locator("[data-actions]");
   await expect(actions.locator("a").nth(0)).toHaveAttribute("href", dialLink(campaign.hotlineDial));
   await expect(actions.locator("a").nth(1)).toHaveAttribute("href", orderLink(campaign.whatsappDigits, orderMessage));

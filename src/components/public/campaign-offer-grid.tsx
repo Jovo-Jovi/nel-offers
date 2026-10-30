@@ -1,6 +1,7 @@
 import { CampaignOfferCard } from "@/components/public/campaign-offer-card";
 
 type CampaignOfferGridProps = {
+  action: string;
   cards: readonly {
     code: string;
     href: string;
@@ -13,7 +14,7 @@ type CampaignOfferGridProps = {
   }[];
 };
 
-export function CampaignOfferGrid({ cards }: CampaignOfferGridProps) {
+export function CampaignOfferGrid({ cards, action }: CampaignOfferGridProps) {
   return (
     <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-campaign-offer-grid>
       {cards.map((card) => (
@@ -28,10 +29,10 @@ export function CampaignOfferGrid({ cards }: CampaignOfferGridProps) {
           <CampaignOfferCard
             href={card.href}
             position={card.position}
-            code={card.code}
             name={card.name}
             price={card.price}
             currency={card.currency}
+            action={action}
           />
         </li>
       ))}

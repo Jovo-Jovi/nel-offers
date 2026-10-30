@@ -118,7 +118,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           ) : (
             <>
               <SearchField placeholder={messages.home.searchPlaceholder} noMatches={messages.home.noMatches} />
-              <CampaignOfferGrid cards={cards} />
+              <CampaignOfferGrid cards={cards} action={messages.home.cardAction} />
             </>
           )}
         </section>

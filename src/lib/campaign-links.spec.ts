@@ -8,7 +8,6 @@ describe("campaign links", () => {
     const digits = ["20", "111", "222", "333"].join("");
     const dial = ["+", "2", "0", "0"].join("");
     const message = fillMessage(catalogue.campaignOffer.orderMessage, {
-      code: "SYN-001",
       name: "\u062A\u062D\u0644\u064A\u0644 \u062A\u062C\u0631\u064A\u0628\u064A 01",
     });
     expect(chatLink(digits)).toBe(`https://wa.me/${digits}`);

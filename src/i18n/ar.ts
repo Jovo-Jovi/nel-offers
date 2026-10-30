@@ -15,18 +15,18 @@ export const catalogue = {
     nothingVisible: "لا توجد عروض متاحة اليوم.",
     comingSoon: "العروض ستُتاح قريبًا.",
     viewDetails: "عرض التفاصيل",
+    cardAction: "اضغط هنا",
     eyebrow: "عروض مخصصة للمعامل والأطباء"
   },
   campaignOffer: {
-    pageHeading: "تفاصيل العرض — كود {code}",
-    codeLabel: "كود العرض",
+    pageHeading: "تفاصيل العرض",
     priceLabel: "سعر العرض",
     currency: "جنيه مصري",
     endsOn: "ينتهي العرض في {end}",
     validFromTo: "العرض من {start} إلى {end}",
     conditionsHeading: "شروط العرض",
     galleryAlt: "صورة {position} — {name}",
-    orderMessage: "أرغب في طلب العرض {code} — {name}",
+    orderMessage: "أرغب في طلب العرض: {name}",
     notFound: "هذا العرض غير متاح.",
     endsOnLabel: "ينتهي العرض في:",
     day: "اليوم",
@@ -72,7 +72,7 @@ export const catalogue = {
   },
   header: {
     homeSubtitle: "Lab to Lab ـــ دليل العروض الإلكترونية",
-    campaignOfferSubtitle: "كود {code} ـــ تفاصيل العرض",
+    campaignOfferSubtitle: "تفاصيل العرض",
     labSite: "موقع المعمل"
   },
   operator: {

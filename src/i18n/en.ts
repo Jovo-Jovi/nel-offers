@@ -17,18 +17,18 @@ export const catalogue: Catalogue = {
     nothingVisible: "No offers are available today.",
     comingSoon: "Offers will be available soon.",
     viewDetails: "View details",
+    cardAction: "Click here",
     eyebrow: "Offers for laboratories and doctors"
   },
   campaignOffer: {
-    pageHeading: "Offer details — code {code}",
-    codeLabel: "Offer code",
+    pageHeading: "Offer details",
     priceLabel: "Offer price",
     currency: "EGP",
     endsOn: "Offer ends on {end}",
     validFromTo: "Offer runs from {start} to {end}",
     conditionsHeading: "Offer conditions",
     galleryAlt: "Image {position} — {name}",
-    orderMessage: "I would like to order offer {code} — {name}",
+    orderMessage: "I would like to order this offer: {name}",
     notFound: "This offer is not available.",
     endsOnLabel: "Offer ends on:",
     day: "Day",
@@ -74,7 +74,7 @@ export const catalogue: Catalogue = {
   },
   header: {
     homeSubtitle: "Lab to Lab — Online offers guide",
-    campaignOfferSubtitle: "Code {code} — Offer details",
+    campaignOfferSubtitle: "Offer details",
     labSite: "Lab website"
   },
   operator: {
