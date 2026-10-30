@@ -503,3 +503,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the first `npm run build` failed typecheck on the card spec's name map. The map became a function before the implementation commit. The build line above is the run that exited 0.
 - Deviation: `npx playwright screenshot` had no browser binary. `npx playwright install chromium` downloaded one. No dependency was added. The eight screenshots are the run after that download.
+
+## 2026-10-30 — Reviewer session 17 (T07 verdict, T08)
+
+- Fetched `t07-no-visible-code` at `367ddaf` (PR #12). Verified the bundle (6/6 at LANDING and
+  HEAD), compared the ledger changes, the journal entries and the usage records with the fence
+  (exact), re-ran the four guards, lint, typecheck, the unit specs (43) and the build, read the
+  diff, and viewed the eight screenshots: no code on any card or page, the "اضغط هنا" pill on all
+  47 cards in both locales. The builder's gate read: drift 0, 47 CampaignOffers, all the
+  laboratory's. Verdict T07: PASS; PR #12 merged.
+- Logged: the live contact texts read "hotline" and "WhatsApp"; rows 30 and 31 are both "anti
+  phospholipid IgM"; long names are cut after two lines at desktop width.
+- After the merge the human found the laboratory's first video cropped on its page: the designer's
+  16:10 frame uses `object-cover`. OD-07 signed; T08 issued, rehearsed on a clean clone of
+  `74f971d` (landing counts, the four guards, lint, typecheck, 43 unit specs, build, and a tall
+  and a wide test video drawn with the built styles).
