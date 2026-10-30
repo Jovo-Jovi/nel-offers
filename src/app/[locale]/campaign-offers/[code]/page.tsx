@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ActionButtons } from "@/components/public/action-buttons";
-import { CodeBadge } from "@/components/public/code-badge";
 import { ExpiryBox } from "@/components/public/expiry-box";
 import { GalleryPreview } from "@/components/public/gallery-preview";
 import { MainMediaObject } from "@/components/public/main-media-object";
@@ -11,7 +10,6 @@ import { PriceCard } from "@/components/public/price-card";
 import { TermsBox } from "@/components/public/terms-box";
 import { ThumbnailRow } from "@/components/public/thumbnail-row";
 import { LatinRun } from "@/components/latin-run";
-import { TokenLine } from "@/components/public/numbered-line";
 import {
   campaignOfferPath,
   defaultLocale,
@@ -48,7 +46,7 @@ export async function generateMetadata({
   const messages = messagesFor(locale);
   const name = locale === defaultLocale ? row.nameAr : row.nameEn;
   const title = `${name} — ${messages.site.name}`;
-  const description = fillMessage(messages.header.campaignOfferSubtitle, { code: row.code });
+  const description = messages.header.campaignOfferSubtitle;
   return publicShareMetadata(locale, title, description);
 }
 
@@ -84,17 +82,13 @@ export default async function CampaignOfferPage({
     ...(mainPicture ? [{ url: mainPicture.url, label: mainAlt }] : []),
     ...thumbs.map((thumb) => ({ url: thumb.url, label: thumb.label })),
   ];
-  const orderMessage = fillMessage(messages.campaignOffer.orderMessage, { code: row.code, name });
+  const orderMessage = fillMessage(messages.campaignOffer.orderMessage, { name });
   return (
     <PageShell
       {...shellProps(
         locale,
         campaign,
-        <TokenLine
-          template={messages.header.campaignOfferSubtitle}
-          token="code"
-          value={<LatinRun>{row.code}</LatinRun>}
-        />,
+        messages.header.campaignOfferSubtitle,
         campaignOfferPath(otherLocale(locale), row.code),
       )}
       dockActions
@@ -111,22 +105,19 @@ export default async function CampaignOfferPage({
               </span>{" "}
               {messages.nav.allCampaignOffers}
             </Link>
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="min-w-0 text-start">
-                <h1 className="text-3xl font-bold leading-tight text-dark sm:text-4xl">{name}</h1>
-                {locale === defaultLocale ? (
-                  <p className="mt-2 text-end text-sm text-muted">
-                    <LatinRun>
-                      <span lang={prefixedLocale}>{otherName}</span>
-                    </LatinRun>
-                  </p>
-                ) : (
-                  <p lang={defaultLocale} className="mt-2 text-end text-sm text-muted">
-                    <bdi>{otherName}</bdi>
-                  </p>
-                )}
-              </div>
-              <CodeBadge label={messages.campaignOffer.codeLabel} code={row.code} />
+            <div className="min-w-0 text-start">
+              <h1 className="text-3xl font-bold leading-tight text-dark sm:text-4xl">{name}</h1>
+              {locale === defaultLocale ? (
+                <p className="mt-2 text-end text-sm text-muted">
+                  <LatinRun>
+                    <span lang={prefixedLocale}>{otherName}</span>
+                  </LatinRun>
+                </p>
+              ) : (
+                <p lang={defaultLocale} className="mt-2 text-end text-sm text-muted">
+                  <bdi>{otherName}</bdi>
+                </p>
+              )}
             </div>
           </div>
           <GalleryPreview

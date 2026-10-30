@@ -42,8 +42,8 @@ true while any contact column is null; the publish action also refuses while no
 
 Links built from it: WhatsApp `https://wa.me/<whatsapp_digits>`; order
 `https://wa.me/<whatsapp_digits>?text=<encoded order message>` where the message is the
-catalogue string `campaignOffer.orderMessage` with `{code}` and `{name}` (name in the page's
-locale); call `tel:<hotline_dial>`; NEL site `nel_site_url`.
+catalogue string `campaignOffer.orderMessage` with `{name}` (the name in the page's locale; no code,
+OD-06); call `tel:<hotline_dial>`; NEL site `nel_site_url`.
 
 ### 2.2 `"CampaignOffer"`
 

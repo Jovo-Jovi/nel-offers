@@ -8,9 +8,9 @@ State is taken from this file and the repository, never from conversation.
 | | |
 |---|---|
 | Phase | P04 Public site and go-live |
-| Task in flight | T06 — The designer's changes (`t06-designer-changes`, OD-05) |
+| Task in flight | T07 — No code for Visitors, "اضغط هنا" on the cards (`t07-no-visible-code`, OD-06) |
 | Next | Go-live with the human (`PHASES.md` §4), staging on the Vercel address first |
-| Last verdict | T05-F3 — PASS; T05 passed with T05-F, T05-F2 and T05-F3; go-live 1 PASS, 29 Oct 2026 |
+| Last verdict | T06-F2 — PASS; T06 passed with T06-F and T06-F2, 29 Oct 2026. Since 30 Oct the project holds the laboratory's real data: no build fence writes to it (`PRECEDENTS.md`, "Production data") |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 

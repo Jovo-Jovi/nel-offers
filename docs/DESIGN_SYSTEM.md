@@ -150,15 +150,14 @@ renders a page.
 | `home.nothingVisible` | لا توجد عروض متاحة اليوم. | No offers are available today. | draft |
 | `home.comingSoon` | العروض ستُتاح قريبًا. | Offers will be available soon. | draft |
 | `home.viewDetails` | عرض التفاصيل | View details | pack s1 · en draft |
-| `campaignOffer.pageHeading` | تفاصيل العرض — كود {code} | Offer details — code {code} | pack s2 · en draft |
-| `campaignOffer.codeLabel` | كود العرض | Offer code | pack s2 · en draft |
+| `campaignOffer.pageHeading` | تفاصيل العرض | Offer details | pack s2 · en draft (OD-06: no code) |
 | `campaignOffer.priceLabel` | سعر العرض | Offer price | pack s2 · en draft |
 | `campaignOffer.currency` | جنيه مصري | EGP | pack s2 · en draft |
 | `campaignOffer.endsOn` | ينتهي العرض في {end} | Offer ends on {end} | pack s2 · en draft |
 | `campaignOffer.validFromTo` | العرض من {start} إلى {end} | Offer runs from {start} to {end} | draft |
 | `campaignOffer.conditionsHeading` | شروط العرض | Offer conditions | pack s2 · en draft |
 | `campaignOffer.galleryAlt` | صورة {position} — {name} | Image {position} — {name} | draft |
-| `campaignOffer.orderMessage` | أرغب في طلب العرض {code} — {name} | I would like to order offer {code} — {name} | draft |
+| `campaignOffer.orderMessage` | أرغب في طلب العرض: {name} | I would like to order this offer: {name} | draft (OD-06: no code) |
 | `campaignOffer.notFound` | هذا العرض غير متاح. | This offer is not available. | draft |
 | `actions.whatsapp` | واتساب | WhatsApp | pack s2 |
 | `actions.call` | اتصل {hotline} | Call {hotline} | pack s2 · en draft |
@@ -204,14 +203,13 @@ declared once in `src/styles/fonts.css`. Icons are `lucide-react`; an icon whose
 forbidden noun is imported under another name (`FileSpreadsheet as SheetIcon`).
 
 **Components** (designer name → ours): `PageShell`, `Header`, `Footer`, `OfferCard` →
-`CampaignOfferCard`, `OfferGrid` → `CampaignOfferGrid`, `CodeBadge`, `MediaSlot` → `MainMediaObject`,
+`CampaignOfferCard`, `OfferGrid` → `CampaignOfferGrid`, `MediaSlot` → `MainMediaObject` (`CodeBadge` removed by OD-06),
 `ThumbnailRow`, `PriceCard`, `ExpiryBox`, `TermsBox`, `ActionButtons`, `WhatsAppIcon`; new:
 `SearchField`, `GalleryPreview`, `Skeleton`. Same markup, same classes' visual result, same hover
 and focus behaviour; physical utilities become logical ones and `dir` spans become `LatinRun`.
 
-**Data.** Card: position number, code, name in the page's locale, price only when
-`show_card_price`. Page: name in the page's locale first and the other second, code badge, main
-media, thumbnails, price, end date in day / month / year boxes, conditions in the page's locale
+**Data.** Card: position number, name in the page's locale, price only when `show_card_price`, and
+`home.cardAction` (OD-06). Page: name in the page's locale first and the other second, main media, thumbnails, price, end date in day / month / year boxes, conditions in the page's locale
 (the box is omitted when there are none), call and WhatsApp-order buttons. Header: mark, site
 name, page subtitle, NEL site button. Footer: hotline and WhatsApp from `Campaign`, language
 switch.
@@ -232,7 +230,8 @@ shimmer; no shimmer under `prefers-reduced-motion`.
 | Key | Arabic | English | Source |
 |---|---|---|---|
 | `header.homeSubtitle` | Lab to Lab ـــ دليل العروض الإلكترونية | Lab to Lab — Online offers guide | designer |
-| `header.campaignOfferSubtitle` | كود {code} ـــ تفاصيل العرض | Code {code} — Offer details | designer |
+| `header.campaignOfferSubtitle` | تفاصيل العرض | Offer details | designer (OD-06: no code) |
+| `home.cardAction` | اضغط هنا | Click here | Andrew (OD-06) · en draft |
 | `header.labSite` | موقع المعمل | Lab website | designer |
 | `home.eyebrow` | عروض مخصصة للمعامل والأطباء | Offers for laboratories and doctors | designer |
 | `campaignOffer.endsOnLabel` | ينتهي العرض في: | Offer ends on: | designer |
@@ -267,12 +266,15 @@ suffix so that nothing compiles it).
   card-grid panel, in the panel's own style (`rounded-button border border-border bg-bg`, the
   designer's focus ring, a `Search` icon at inline-start). Filtering hides cards; each card keeps its
   number. With no match, `home.noMatches` replaces the grid.
-- **Card.** The designer's card: the number (two digits, position in the visible list), the code
-  (`LatinRun`), the name in the page's locale, the price with `campaignOffer.currency` only when
-  `show_card_price`, and the designer's arrow, mirrored for English. The whole card is the link.
+- **Card.** The designer's card: the number (two digits, position in the visible list), the name in
+  the page's locale (up to two lines), the price with `campaignOffer.currency` only when
+  `show_card_price`, and at the inline end a small `primary-soft` pill holding `home.cardAction`
+  ("اضغط هنا") and the designer's arrow, mirrored for English; the pill is hidden from assistive
+  technology, since the link already names the analysis. No code (OD-06). The whole card is the
+  one link.
 - **CampaignOffer page.** Back link `nav.allCampaignOffers` with the designer's arrow (mirrored).
   `h1` the name in the page's locale; under it the other locale's name with its own `lang` (English
-  in `LatinRun`, Arabic in a `<bdi>` with no `dir`). `CodeBadge` with `campaignOffer.codeLabel`.
+  in `LatinRun`, Arabic in a `<bdi>` with no `dir`). No code badge (OD-06).
 - **Main media.** A main video is a `<video>` with `controls`, `preload="metadata"`, `playsinline`
   and the main image as poster; the designer's play button sits over it until it plays
   (`a11y.playVideo`). With no main image, the video's source URL ends with `#t=0.1` so the browser
@@ -308,7 +310,7 @@ suffix so that nothing compiles it).
   `og:image` `/share/nelo-share.png` with its width and height, `twitter:card`
   `summary_large_image`, and the icons of §2.1, with `metadataBase` from `NEXT_PUBLIC_SITE_URL`.
   Title: the page's existing title. Description: `home.intro` on the home page and the coming-soon
-  page; `header.campaignOfferSubtitle` with the code on a CampaignOffer page. The image is the same
+  page; `header.campaignOfferSubtitle` on a CampaignOffer page (no code, OD-06). The image is the same
   on every page — never a presigned link, which expires. The dashboard sets no Open Graph tags.
 - **States** (OD-03 items 2–3). Coming soon (unpublished): the full header and footer as above,
   and `home.comingSoon` in the hero's text cell. Nothing visible today: `home.nothingVisible` in the
