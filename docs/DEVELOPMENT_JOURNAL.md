@@ -503,3 +503,30 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the first `npm run build` failed typecheck on the card spec's name map. The map became a function before the implementation commit. The build line above is the run that exited 0.
 - Deviation: `npx playwright screenshot` had no browser binary. `npx playwright install chromium` downloaded one. No dependency was added. The eight screenshots are the run after that download.
+
+## 2026-10-30 — Reviewer session 17 (T07 verdict, T08)
+
+- Fetched `t07-no-visible-code` at `367ddaf` (PR #12). Verified the bundle (6/6 at LANDING and
+  HEAD), compared the ledger changes, the journal entries and the usage records with the fence
+  (exact), re-ran the four guards, lint, typecheck, the unit specs (43) and the build, read the
+  diff, and viewed the eight screenshots: no code on any card or page, the "اضغط هنا" pill on all
+  47 cards in both locales. The builder's gate read: drift 0, 47 CampaignOffers, all the
+  laboratory's. Verdict T07: PASS; PR #12 merged.
+- Logged: the live contact texts read "hotline" and "WhatsApp"; rows 30 and 31 are both "anti
+  phospholipid IgM"; long names are cut after two lines at desktop width.
+- After the merge the human found the laboratory's first video cropped on its page: the designer's
+  16:10 frame uses `object-cover`. OD-07 signed; T08 issued, rehearsed on a clean clone of
+  `74f971d` (landing counts, the four guards, lint, typecheck, 43 unit specs, build, and a tall
+  and a wide test video drawn with the built styles).
+
+## 2026-10-30 — T08 (builder)
+
+- LANDING `38bc9f6960dbc96aed580a7b368f9529ae3c085c`. Bundle `T08 BUNDLE PASS 4 / 4 []` at LANDING and at HEAD. Carry-forwards `47 14 ['48']`: 44 + 3 = 47 rows, next free 48, open 11 + 3 = 14. CF-45, CF-46 and CF-47 hold the landed rows and stay `OPEN`.
+- Ids: `38bc9f6960dbc96aed580a7b368f9529ae3c085c` OD-07 and amendments, carry-forward rows, reviewer entry and usage records; `e8f6ab96208da1b386beaa898bbf4713e626b495` the whole frame of the main video and image.
+- On `e8f6ab96208da1b386beaa898bbf4713e626b495`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 43 passed. `git diff --name-only` from LANDING printed only `src/components/public/main-media-object.tsx`. The secret sweep printed nothing. Tracked count 0. `scripts/usage/record.mjs` differs from `main` only in `T0[1-8]`.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added. No Playwright spec, `check:r2` or Operator action ran.
+- `SCAN objects=5 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=47 not_synthetic=47 switched_off=0 media_objects=5 orphans=0`. Drift is 0. The other counts are the laboratory's data and are reported as read. CI is not attested.
+- Four screenshots of the one public CampaignOffer page that contains a video, at 390 and 1440 in both locales, were written outside the repository. The handoff left the code as a placeholder; that page was read from the local build. The video is shown whole, with the soft fill beside it where the picture is narrower than the column.
+- Deviation: the first anonymous visibility check exited 128 and the API returned 404. The human asked for the check again. The second check exited 0 with `api status=200`.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.

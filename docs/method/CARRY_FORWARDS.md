@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-45**
+**Next free id: CF-48**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -53,3 +53,6 @@ cell of any row is ever edited. Closed rows stay.
 | CF-42 | On a screen without hover a slot tile's Replace and Remove are invisible (opacity 0 until hover or focus) yet still take taps, so a tap on a thumbnail can open the remove dialog unseen; and the floating header is wider than the page content and touches the first section. Fixed by T06-F. | builder · reviewer | 2026-10-29 | T06 | CLOSED (T06-F2) |
 | CF-43 | T06-F's CampaignOffer card at 390 px squeezes the names and the chips into a column a few characters wide — the show switch and the ⋮ button now fit on the head's first line and the names' column may shrink to nothing — and the public header is still wider than the hero card (about 32 px each side at 1440). No spec checked the names' width, and the spec's "page content" was ambiguous (reviewer). Fixed by T06-F2. | builder · reviewer | 2026-10-29 | T06 | CLOSED (T06-F2) |
 | CF-44 | No staging project. The end-to-end specs import, upload, publish and reset data, and since 30 Oct 2026 the project holds the laboratory's real CampaignOffers, so no fence runs them (the "Production data" precedent); T07 is checked by unit specs, a read-only local build and the human's look. A second Supabase project and R2 bucket for the specs, or an accepted loss of end-to-end coverage until the campaign ends, is the human's decision. | the human | 2026-10-30 | next task that needs end-to-end specs | OPEN |
+| CF-45 | The live contact texts read "hotline" and "WhatsApp" where the laboratory's numbers should show (Campaign settings: the hotline display text and the WhatsApp display text), so the header, the hero and the footer read "الخط الساخن hotline". An Operator corrects them in the dashboard; no code change. Rows 30 and 31 of the live sheet are both "anti phospholipid IgM"; the content is the laboratory's, and Andrew confirms or corrects it through the sheet. | Andrew (laboratory) · Operator | 2026-10-30 | before the site is announced | OPEN |
+| CF-46 | At desktop width the home grid has four columns and the "اضغط هنا" pill leaves the name little room, so a long name is cut after two lines: cards 30 and 31 both read "anti phospholipid…". Three columns at that width, or the pill under the name, would give the name room. The human decides with Andrew. | the human · Andrew (laboratory) | 2026-10-30 | next design change | OPEN |
+| CF-47 | The CampaignOffer page crops the main video and the main image: the designer's frame is fixed at 16:10 with `object-cover`, so a video of another shape — the laboratory's first upload — loses part of its frame. Fixed by T08 (OD-07). | builder · reviewer | 2026-10-30 | T08 | OPEN |

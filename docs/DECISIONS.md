@@ -314,3 +314,20 @@ frozen); OD-02 items 3 and 9 (the approved card and page, the order message); `D
    and needs its own OD.
 3. **"اضغط هنا" on every card.** Each home card shows `home.cardAction` — "اضغط هنا" / "Click
    here" — with the designer's arrow at its inline end; the whole card stays the one link.
+
+## OD-07 — The whole frame of the main video and image
+
+**Status:** SIGNED. The signature is the human's message of 30 Oct 2026 in the reviewer session,
+after the laboratory's first video was uploaded: "i discovered that the uploaded video shows part
+not whole frame size". It is recorded by the commit that lands this text on the T08 branch and
+ratified when the human merges T08.
+
+**Amends:** OD-02 item 3 (the approved page's 16:10 media frame); `DESIGN_SYSTEM.md` §11.1 "Main
+media".
+
+1. **Never cropped.** On the CampaignOffer page the main video and the main image are shown whole:
+   the frame takes their own shape, up to 75% of the screen's height. When that limit makes the
+   picture narrower than the column, the designer's `primary-soft` fill shows beside it.
+2. **Empty frame unchanged.** With neither, the designer's empty 16:10 `primary-soft` frame stays.
+3. **Unchanged:** the play button, the poster and first-frame rules, the thumbnails, the dashboard
+   tiles and the gallery preview (which already shows the whole image).

@@ -279,8 +279,10 @@ suffix so that nothing compiles it).
   and the main image as poster; the designer's play button sits over it until it plays
   (`a11y.playVideo`). With no main image, the video's source URL ends with `#t=0.1` so the browser
   draws its first frame instead of a blank frame (OD-04 item 7c). Otherwise the main image, which
-  opens the gallery preview. With neither, the designer's `primary-soft` frame stays empty. The
-  designer's caption is not used.
+  opens the gallery preview. The video or image is never cropped: the frame takes its shape
+  (`object-contain`), at most 75% of the viewport's height, with the `primary-soft` fill beside a
+  picture narrower than the column (OD-07). With neither, the designer's 16:10 `primary-soft` frame
+  stays empty. The designer's caption is not used.
 - **Thumbnails.** The gallery images (`gallery_1`–`gallery_3`) in slot order. `campaignOffer.imageLabel`
   is their accessible name only; no caption is drawn under them (OD-05 item 2). With none, the row is omitted and the main media takes the full width.
   The preview set is the main image (when present) followed by the gallery images.
