@@ -489,3 +489,17 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   the dashboard's identifier). New precedent: no build fence writes to the project. New
   carry-forward: no staging project for the end-to-end specs. T07 issued, rehearsed on a clean
   clone of `83ef91f` (landing counts, the four guards, lint, typecheck, 43 unit specs, build).
+
+## 2026-10-30 — T07 (builder)
+
+- LANDING `3467f3621a49a1f64c4805c62b445258cafd3eb4`. Bundle `T07 BUNDLE PASS 6 / 6 []` at LANDING and at HEAD. Carry-forwards `44 11 ['45']`: 43 + 1 = 44 rows, next free 45, open 12 − 2 + 1 = 11. CF-42 and CF-43 are `CLOSED (T06-F2)`. CF-44 holds the landed row and stays `OPEN`. Precedents `33 ['34']`: 32 + 1 = 33 rows, next free 34. PR-33 is the production-data row.
+- Ids: `3467f3621a49a1f64c4805c62b445258cafd3eb4` OD-06 and amendments, ledger changes, reviewer entry and usage records; `9e6b42026d3f262faf0e108ec936806830067d09` no code for Visitors, call to action on the cards.
+- On `9e6b42026d3f262faf0e108ec936806830067d09`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 43 passed. Both `git grep` lines printed nothing. The secret sweep printed nothing. Tracked count 0. The diff from LANDING for `docs/`, `supabase/`, `scripts/`, `package.json` and `package-lock.json` is empty. `scripts/usage/record.mjs` differs from `main` only in `T0[1-7]`.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (2 moderate, none high). No dependency was added. No Playwright spec, `check:r2` or Operator action ran.
+- `SCAN objects=1 metadata=0 location=0 no-row=0 no-object=0`. Gate row: `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6` and `ROW drift=0 campaign_offers=47 not_synthetic=47 switched_off=0 media_objects=1 orphans=0`. Drift is 0. The other counts are the laboratory's data and are reported as read (CF-40). CI is not attested.
+- Eight screenshots of the public home page and the first card's page, at 390 and 1440 in both locales, were written outside the repository. The campaign is published. The cards show the action pill. The pages do not show a code.
+- Deviation: the first anonymous visibility check exited 128 and the API returned 404. The human asked for the check again. The second check exited 0 with `api status=200`.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: the first `npm run build` failed typecheck on the card spec's name map. The map became a function before the implementation commit. The build line above is the run that exited 0.
+- Deviation: `npx playwright screenshot` had no browser binary. `npx playwright install chromium` downloaded one. No dependency was added. The eight screenshots are the run after that download.
