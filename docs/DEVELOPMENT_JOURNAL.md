@@ -569,3 +569,16 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the first `npm run build` failed typecheck (`Blob` has no `name`; the banner kind was widened to `string`). The chosen file is a `File`, and `readBannerKey` now returns `"image" | "video"`. The build line above is the run that exited 0.
+
+## 2026-10-31 — Reviewer session 18 (T09 verdict, T10)
+
+- Fetched `t09-banner-video` at `2dafc54` (PR #14). Verified the bundle (9/9 at LANDING and HEAD),
+  the CF-47 closure, the journal entries and the usage records against the fence (exact), re-ran
+  the four guards, lint, typecheck, the unit specs (45) and the build, compared the code with the
+  reviewer's rehearsal file by file, and viewed the four screenshots (the image banner unchanged).
+  Step 4: migration APPLIED, proof PASS 13/13; H6 stopped the fence because an Operator uploaded
+  a file during step 4 (60 → 61) and the scan's own timing (no-object 1 → 3); resumed without
+  further SQL. Verdict T09: PASS; PR #14 merged.
+- The human asked that the banner video always play: OD-09 signed after the reviewer's question
+  and the reviewer's note on WCAG 2.2.2 and reduced motion. T10 issued, rehearsed on a clean
+  clone of `b7a13f3` (landing counts, the four guards, lint, typecheck, 46 unit specs, build).

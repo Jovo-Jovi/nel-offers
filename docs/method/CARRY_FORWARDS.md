@@ -5,7 +5,7 @@ reviewer and numbered by the task that lands it, from the live maximum. A row cl
 verdict, with the evidence named: its Status cell becomes `CLOSED (<task>)`, and no other
 cell of any row is ever edited. Closed rows stay.
 
-**Next free id: CF-48**
+**Next free id: CF-50**
 
 | Id | Item | Owner | Opened | Blocks | Status |
 |---|---|---|---|---|---|
@@ -56,3 +56,5 @@ cell of any row is ever edited. Closed rows stay.
 | CF-45 | The live contact texts read "hotline" and "WhatsApp" where the laboratory's numbers should show (Campaign settings: the hotline display text and the WhatsApp display text), so the header, the hero and the footer read "الخط الساخن hotline". An Operator corrects them in the dashboard; no code change. Rows 30 and 31 of the live sheet are both "anti phospholipid IgM"; the content is the laboratory's, and Andrew confirms or corrects it through the sheet. | Andrew (laboratory) · Operator | 2026-10-30 | before the site is announced | OPEN |
 | CF-46 | At desktop width the home grid has four columns and the "اضغط هنا" pill leaves the name little room, so a long name is cut after two lines: cards 30 and 31 both read "anti phospholipid…". Three columns at that width, or the pill under the name, would give the name room. The human decides with Andrew. | the human · Andrew (laboratory) | 2026-10-30 | next design change | OPEN |
 | CF-47 | The CampaignOffer page crops the main video and the main image: the designer's frame is fixed at 16:10 with `object-cover`, so a video of another shape — the laboratory's first upload — loses part of its frame. Fixed by T08 (OD-07). | builder · reviewer | 2026-10-30 | T08 | CLOSED (T08) |
+| CF-48 | The media scan lists R2 first, downloads every object, and only then reads the `MediaObject` rows, so a file uploaded during a scan counts as `no-object` (T09: 1, then 3, with the dashboard in use). While Operators are at work, gate reads and scans are compared on drift, orphans, metadata and location only; `no-row` and `no-object` are read again at a quiet moment at the final go-live check. | reviewer | 2026-10-31 | final go-live check | OPEN |
+| CF-49 | The dashboard's preview of a chosen banner video has no accessible name, where the image preview is named `operator.bannerPreview`. Fixed by T10. | builder · reviewer | 2026-10-31 | T10 | OPEN |
