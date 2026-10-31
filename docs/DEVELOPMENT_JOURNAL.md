@@ -582,3 +582,14 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - The human asked that the banner video always play: OD-09 signed after the reviewer's question
   and the reviewer's note on WCAG 2.2.2 and reduced motion. T10 issued, rehearsed on a clean
   clone of `b7a13f3` (landing counts, the four guards, lint, typecheck, 46 unit specs, build).
+
+## 2026-10-31 — T10 (builder)
+
+- LANDING `750814b8ec1fbe943e42e499604a601153c45260`. Bundle `T10 BUNDLE PASS 4 / 4 []` at LANDING and at HEAD. Carry-forwards `49 15 ['50']`: 47 + 2 = 49 rows, next free 50, open 13 + 2 = 15. CF-48 and CF-49 hold the landed rows and stay `OPEN`. No existing cell changed.
+- Ids: `750814b8ec1fbe943e42e499604a601153c45260` OD-09 and amendments, carry-forward rows, reviewer entry and usage records; `65bb620efb1e96a7a94eca24d387a63d892a165b` the banner video always plays.
+- On `65bb620efb1e96a7a94eca24d387a63d892a165b`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 46 passed. `git grep` for `pauseBanner|playBanner` under `src` printed nothing. `git diff --name-only` from LANDING printed only files under `src/`. The secret sweep printed nothing. Tracked count 0. `scripts/usage/record.mjs` differs from `main` only in the task pattern.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (9 moderate, none high). No dependency was added. No SQL, scan, Playwright spec or Operator action ran.
+- Two screenshots of the home page, Arabic at 390 and English at 1440, were written outside the repository. The hero shows the live banner, which is still an image.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: the first `npm run build` failed typecheck because the video element looked nullable inside the effect. It is bound after the null check. The build line above is the run that exited 0.
