@@ -142,7 +142,7 @@ renders a page.
 | Key | Arabic | English | Source |
 |---|---|---|---|
 | `site.name` | معامل النيل مصر | Nile Egypt Labs | pack s1 · template |
-| `site.campaignTitle` | عروض الافتتاح | Opening offers | template |
+| `site.campaignTitle` | عروض | Offers | OD-11 · en draft |
 | `home.heading` | عروض التحاليل الطبية | Analysis offers | pack s1 · en draft |
 | `home.intro` | اختَر التحليل لعرض التفاصيل والسعر ومدة العرض ووسائل الطلب. | Choose an analysis to see its details, price, offer period and how to order. | pack s1 · en draft |
 | `home.searchPlaceholder` | ابحث باسم التحليل... | Search by analysis name… | pack s1 · en draft |

@@ -402,3 +402,18 @@ ratified when the human merges T11.
    round play button over it (`a11y.playVideo`, as on the CampaignOffer page). A tap on the button,
    or any tap on the page, starts it muted and looped, and the button goes.
 4. **Unchanged:** CampaignOffer videos, an image banner, the dashboard, the strings.
+
+## OD-11 — The campaign title is "عروض"
+
+**Status:** SIGNED. The signature is the human's message of 31 Oct 2026 in the reviewer session: "i need
+to edit the link text appears in whatsapp (عروض الافتتاح — معامل النيل مصر) to (عروض — معامل النيل
+مصر)". It is recorded by the commit that lands this text on the T11 branch (T11-F) and ratified when
+the human merges that branch.
+
+**Amends:** `DESIGN_SYSTEM.md` §9, row `site.campaignTitle`.
+
+1. **The title.** `site.campaignTitle` becomes "عروض", and "Offers" in English (the reviewer's
+   matching English, draft). It is the first half of the home page's link preview and tab title
+   ("عروض — معامل النيل مصر") and the line under the dashboard's sign-in heading.
+2. **Previews already shared.** WhatsApp keeps a link's preview for a while; a link shared before
+   the change may still show the old text, and a newly shared one shows the new.

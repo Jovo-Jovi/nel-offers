@@ -617,3 +617,14 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Two screenshots of the home page, Arabic at 390 and English at 1440, were written outside the repository. The hero shows the live banner, which is a still image.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-31 — Reviewer session 18 (T11 verdict, T11-F)
+
+- Fetched `t11-banner-held` at `73d7b4e` (PR #16). Verified the bundle (4/4 at LANDING and HEAD),
+  the carry-forward file and the usage records against the reviewer's rehearsal (identical), the
+  journal entries, re-ran the four guards, lint, typecheck, the unit specs (46) and the build, read
+  the banner component (equivalent to the rehearsal), and viewed the two screenshots. CI success
+  on `73d7b4e` read from the human's message. Verdict T11: PASS. CF-50 closes.
+- Before the merge the human asked that the WhatsApp link text read "عروض — معامل النيل مصر":
+  OD-11 signed; T11-F issued on the same branch, rehearsed (the four guards, lint, typecheck,
+  46 unit specs, build).
