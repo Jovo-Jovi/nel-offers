@@ -593,3 +593,17 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
 - Deviation: the first `npm run build` failed typecheck because the video element looked nullable inside the effect. It is bound after the null check. The build line above is the run that exited 0.
+
+## 2026-10-31 — Reviewer session 18 (T10 verdict, T11)
+
+- Fetched `t10-banner-always` at `96e108c` (PR #15). Verified the bundle (4/4 at LANDING and
+  HEAD), CF-48 and CF-49, the journal entries and the usage records against the fence (exact),
+  re-ran the four guards, lint, typecheck, the unit specs (46) and the build, read the new banner
+  component, and viewed the two screenshots. Verdict T10: PASS; PR #15 merged. CF-49 closes.
+- The human then found the banner blank on real phones. The reviewer read the live page (the
+  video tag carries autoplay, muted, loop and playsinline), the live banner's file (first a
+  fragmented MP4, then a standard one, both H.264), the storage's range answers (206, as an iPhone
+  asks), and loaded the page in phone emulation under the strictest autoplay policies (playing).
+  The human's checks closed it: the iPhone had "Auto-Play Video Previews" off, and a W3Schools
+  autoplay example also needed a tap there. OD-10 signed; T11 issued, rehearsed on a clean clone
+  of `e6e9eda` (landing counts, the four guards, lint, typecheck, 46 unit specs, build).

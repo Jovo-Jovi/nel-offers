@@ -381,3 +381,24 @@ when the human merges T10.
 4. **Unchanged:** CampaignOffer videos (they wait for a tap), an image banner, the dashboard — except
    that the preview of a chosen banner video is named `operator.bannerPreview`, as the image preview
    is.
+
+## OD-10 — A banner the phone holds back shows its first frame and a play button
+
+**Status:** SIGNED. The signature is the human's messages of 31 Oct 2026 in the reviewer session
+("it does not work on mobile just blank"; "no i need to play any video in banner") and the
+diagnosis that followed: the iPhone's Settings → Accessibility → Motion → "Auto-Play Video
+Previews" was off, the W3Schools autoplay example also needed a tap on that phone, and with the
+setting on, videos play. It is recorded by the commit that lands this text on the T11 branch and
+ratified when the human merges T11.
+
+**Amends:** OD-09 item 1; `DESIGN_SYSTEM.md` §11.1 "Hero".
+
+1. **The cause.** A phone set not to start videos by itself (on an iPhone, "Auto-Play Video
+   Previews" off or Low Power Mode; on Android, some power or data savers) refuses autoplay on
+   every site. The banner then showed an empty box. No site can override that setting.
+2. **Where the phone allows it**, the banner video starts by itself, muted, and loops, with no
+   button — as OD-09.
+3. **Where the phone holds it back**, the banner shows the video's first frame and the designer's
+   round play button over it (`a11y.playVideo`, as on the CampaignOffer page). A tap on the button,
+   or any tap on the page, starts it muted and looped, and the button goes.
+4. **Unchanged:** CampaignOffer videos, an image banner, the dashboard, the strings.

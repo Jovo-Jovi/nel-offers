@@ -261,10 +261,12 @@ suffix so that nothing compiles it).
   `bg-surface`, the slot's own rounded shape), linking home. Alt text `a11y.mark`.
 - **Hero.** The Operator's banner (`Campaign.banner_media_object_id`) in the designer's image cell,
   alt `a11y.banner`; with no banner the cell is omitted and the text cell spans the row. A video
-  banner (OD-08, OD-09) fills the same cell, whole (`object-contain`): `autoPlay`, muted, looped,
-  inline, no controls and no button, named `a11y.bannerVideo`. Script also starts it after load and
-  again whenever the browser pauses it while the page is visible, whatever the reduced-motion
-  setting. Text cell:
+  banner (OD-08, OD-09, OD-10) fills the same cell, whole (`object-contain`): `autoPlay`, muted,
+  looped, inline, no controls, named `a11y.bannerVideo`, its source ending in `#t=0.1` so that the
+  first frame shows. Script also starts it after load, again whenever the browser pauses it while
+  the page is visible, and on any tap on the page, whatever the reduced-motion setting. Only when
+  the phone refuses to start it does the designer's round play button (`a11y.playVideo`, as on the
+  CampaignOffer page) cover the cell; a tap starts it and the button goes. Text cell:
   `home.eyebrow`, `home.heading` with `site.name` as the designer's second line, `home.intro`,
   then the hotline button (`footer.hotline`, `tel:` from `hotline_dial`) and the WhatsApp button
   (`actions.whatsapp`, a plain `https://wa.me/<whatsapp_digits>` chat).
