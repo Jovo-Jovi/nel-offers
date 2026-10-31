@@ -34,7 +34,7 @@ CampaignImport ─< CampaignOffer ─< CampaignOfferMedia >─ MediaObject
 | `nel_site_url` | text | `^https://\S+$`, ≤ 200 chars |
 | `updated_at` | timestamptz | |
 | `show_card_price` | boolean | default `true`; home cards show the price only when true (OD-02 item 5) |
-| `banner_media_object_id` | uuid | the home hero image, a `MediaObject` of kind `image`; set null when it is removed (OD-02 item 6) |
+| `banner_media_object_id` | uuid | the home hero banner, a `MediaObject` of kind `image` or `video` (OD-08); set null when it is removed (OD-02 item 6) |
 
 Every contact column is either null or non-blank (check constraints). `is_published` cannot be
 true while any contact column is null; the publish action also refuses while no

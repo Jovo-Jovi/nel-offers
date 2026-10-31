@@ -530,3 +530,42 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: the first anonymous visibility check exited 128 and the API returned 404. The human asked for the check again. The second check exited 0 with `api status=200`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-31 — Reviewer sessions 17 and 18 (T08 verdict, T09)
+
+- 30 Oct: fetched `t08-whole-frame` at `9618963` (PR #13). Verified the bundle (4/4 at LANDING and
+  HEAD), compared the carry-forward rows, the journal entries and the usage records with the fence
+  (exact), re-ran the four guards, lint, typecheck, the unit specs (43) and the build, and viewed
+  the four screenshots: the laboratory's tall video whole at 390 and 1440 in both locales.
+  Verdict T08: PASS; PR #13 merged. CF-47 closes.
+- 31 Oct: the human asked that the campaign banner may be a video, with nothing in the database
+  or the uploads lost. OD-08 signed. The reviewer authored
+  `20261031000000_nelo_banner_video.sql` (two functions replaced in place) and its rolled-back
+  proof, and rehearsed both on PostgreSQL 16 with every migration and a live image banner:
+  APPLIED, proof PASS 13/13, the banner and every row unchanged, grants unchanged, a second run
+  harmless. T09 issued, rehearsed on a clean clone of `824b030` (landing counts, the four guards,
+  lint, typecheck, 45 unit specs, build).
+
+## 2026-10-31 — T09 (builder)
+
+- LANDING `dbe0026cacec5d6dc05b766102f71fce1d777c54`. Bundle `T09 BUNDLE PASS 9 / 9 []` at LANDING and at HEAD. Carry-forwards `47 13 ['48']`: 47 rows, next free 48, open 14 − 1 = 13. CF-47 reads `CLOSED (T08)` and no other cell changed.
+- Ids: `dbe0026cacec5d6dc05b766102f71fce1d777c54` OD-08, the amendments, the migration and its proof, CF-47 closure, reviewer entry and usage records; `5b61c722ba002b9d4086e8003e03e1c6a2a5168a` the campaign banner may be a video.
+- Step 4, before the halt:
+  `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6`
+  `ROW drift=0 campaign_offers=47 not_synthetic=47 switched_off=14 media_objects=60 orphans=0`
+  `SCAN objects=60 metadata=0 location=0 no-row=0 no-object=1`
+  `SQL supabase/migrations/20261031000000_nelo_banner_video.sql sha256=bab09de47f52`
+  `APPLIED`
+  `SQL supabase/checks/nelo_rls_proof_banner_video.sql sha256=290d23905c03`
+  `RAISED BANNER VIDEO PROOF (rolled back): PASS 13/13`
+  `SQL supabase/checks/nelo_gate_read.sql sha256=d49b4c86eba6`
+  `ROW drift=0 campaign_offers=47 not_synthetic=47 switched_off=14 media_objects=61 orphans=0`
+  `SCAN objects=61 metadata=0 location=0 no-row=0 no-object=3`
+- H6: the gate row and the scan after the migration were not identical to the ones before, so the banner code was not started. The human then resumed: the dashboard stays in use, and the differences are uploads made in the live dashboard during step 4. `media_objects` and `objects` went 60 → 61. `no-object` 1 → 3 is the scan listing R2 first and reading the rows afterwards. Both gate rows show drift 0 and orphans 0. Both scans show `metadata=0 location=0`. The migration was not run again. No SQL and no scan after the resume.
+- On `5b61c722ba002b9d4086e8003e03e1c6a2a5168a`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 45 passed. `git diff --name-only` from LANDING printed only files under `src/`. The secret sweep printed nothing. Tracked count 0. `scripts/usage/record.mjs` differs from `main` only in `T0[1-9]`.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (9 moderate, none high). No dependency was added. No Playwright spec, `check:r2` or Operator action ran.
+- Four screenshots of the home page, at 390 and 1440 in both locales, were written outside the repository. The hero shows the current image banner.
+- Deviation: the first anonymous visibility check exited 128 and the API returned 404. The human asked for the check again. The second check exited 0 with `api status=200`.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+- Deviation: the first `npm run build` failed typecheck (`Blob` has no `name`; the banner kind was widened to `string`). The chosen file is a `File`, and `readBannerKey` now returns `"image" | "video"`. The build line above is the run that exited 0.

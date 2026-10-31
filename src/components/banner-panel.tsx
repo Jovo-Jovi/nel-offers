@@ -8,7 +8,8 @@ import { useOperatorFeedback } from "@/components/operator-feedback";
 import { BusyButton } from "@/components/submit-button";
 import { messagesFor, type Locale } from "@/i18n/config";
 import { reencodeImage } from "@/lib/image-reencode";
-import { encodedImageByteLimit, selectedImageByteLimit } from "@/lib/media-object-limits";
+import { encodedImageByteLimit, selectedImageByteLimit, videoByteLimit } from "@/lib/media-object-limits";
+import { readMp4Location } from "@/lib/mp4-location";
 import { fillMessage } from "@/lib/fill-message";
 import { megabytes } from "@/lib/format-values";
 
@@ -36,11 +37,34 @@ export function BannerPanel({
   const { toast, confirm } = useOperatorFeedback();
   const router = useRouter();
   const [previewUrl, setPreviewUrl] = useState("");
+  const [previewVideo, setPreviewVideo] = useState(false);
   const [body, setBody] = useState<Blob | null>(null);
+  const [mime, setMime] = useState("image/webp");
   const [busy, setBusy] = useState(false);
 
-  async function choose(blob: Blob | null) {
+  function keepPreview(next: Blob, video: boolean) {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setBody(next);
+    setMime(video ? "video/mp4" : "image/webp");
+    setPreviewVideo(video);
+    setPreviewUrl(URL.createObjectURL(next));
+  }
+
+  async function choose(blob: File | null) {
     if (!blob) return;
+    if (blob.name.toLowerCase().endsWith(".mp4")) {
+      if (blob.size > videoByteLimit) {
+        toast(fillMessage(messages.operator.reasonTooLarge, { megabytes: megabytes(videoByteLimit) }), "alert");
+        return;
+      }
+      const located = await readMp4Location(blob);
+      if (!("clean" in located)) {
+        toast(located.refusal === "location" ? messages.operator.reasonLocation : messages.operator.reasonUnreadable, "alert");
+        return;
+      }
+      keepPreview(blob, true);
+      return;
+    }
     if (blob.size > selectedImageByteLimit) {
       toast(fillMessage(messages.operator.reasonTooLarge, { megabytes: megabytes(selectedImageByteLimit) }), "alert");
       return;
@@ -56,9 +80,7 @@ export function BannerPanel({
       toast(reason, "alert");
       return;
     }
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setBody(encoded.blob);
-    setPreviewUrl(URL.createObjectURL(encoded.blob));
+    keepPreview(encoded.blob, false);
   }
 
   async function upload() {
@@ -67,7 +89,7 @@ export function BannerPanel({
     const presign = await fetch("/api/operator/campaign-banner/presign", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ type: "image/webp", size: body.size }),
+      body: JSON.stringify({ type: mime, size: body.size }),
     });
     const presignBody = (await presign.json()) as { objectKey?: string; uploadUrl?: string };
     if (!presign.ok || !presignBody.objectKey || !presignBody.uploadUrl) {
@@ -75,7 +97,7 @@ export function BannerPanel({
       toast(messages.operator.rejected, "alert");
       return;
     }
-    const sent = await putBytes(presignBody.uploadUrl, body, "image/webp");
+    const sent = await putBytes(presignBody.uploadUrl, body, mime);
     if (!sent) {
       setBusy(false);
       toast(messages.operator.rejected, "alert");
@@ -114,15 +136,33 @@ export function BannerPanel({
   return (
     <section className={`${cardClass} flex min-w-0 flex-col gap-3`}>
       <h2 className="text-lg">{messages.operator.bannerHeading}</h2>
+      <p>{fillMessage(messages.operator.bannerHint, { megabytes: megabytes(videoByteLimit) })}</p>
       {bannerUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img data-banner-key={bannerKey} src={bannerUrl} alt={messages.operator.bannerCurrent} className="max-w-full rounded-card" />
+        bannerKey.toLowerCase().endsWith(".mp4") ? (
+          <video
+            data-banner-key={bannerKey}
+            src={bannerUrl}
+            controls
+            muted
+            playsInline
+            preload="metadata"
+            aria-label={messages.operator.bannerCurrent}
+            className="max-w-full rounded-card"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img data-banner-key={bannerKey} src={bannerUrl} alt={messages.operator.bannerCurrent} className="max-w-full rounded-card" />
+        )
       ) : (
         <p>{messages.operator.bannerNone}</p>
       )}
       {previewUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={previewUrl} alt={messages.operator.bannerPreview} className="max-w-full rounded-card" />
+        previewVideo ? (
+          <video src={previewUrl} controls muted playsInline className="max-w-full rounded-card" />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={previewUrl} alt={messages.operator.bannerPreview} className="max-w-full rounded-card" />
+        )
       ) : null}
       <label className="inline-flex cursor-pointer">
         <span className="rounded-button border border-border px-4 py-2 text-sm">{messages.operator.bannerChoose}</span>
@@ -130,7 +170,7 @@ export function BannerPanel({
           id="banner"
           className="sr-only"
           type="file"
-          accept="image/*"
+          accept="image/*,video/mp4,.mp4"
           onChange={(event) => {
             const input = event.currentTarget;
             const read = () => {

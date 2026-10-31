@@ -13,7 +13,10 @@ import {
 } from "./public-query";
 import { createPublicClient } from "./supabase/public";
 
-export type PublishedCampaign = Omit<PublicCampaign, "bannerId"> & { bannerUrl: string | null };
+export type PublishedCampaign = Omit<PublicCampaign, "bannerId"> & {
+  bannerUrl: string | null;
+  bannerKind: "image" | "video" | null;
+};
 
 export type ViewedAttachment = PublicAttachment & { url: string };
 
@@ -30,9 +33,13 @@ export const loadPublishedCampaign = cache(async (): Promise<PublishedCampaign |
   const row = await readCampaignRow(supabase);
   if (!row) return null;
   let bannerUrl: string | null = null;
+  let bannerKind: "image" | "video" | null = null;
   if (row.isPublished && row.bannerId) {
-    const objectKey = await readBannerKey(supabase, row.bannerId);
-    if (objectKey) bannerUrl = await presignView(objectKey);
+    const banner = await readBannerKey(supabase, row.bannerId);
+    if (banner) {
+      bannerUrl = await presignView(banner.objectKey);
+      bannerKind = banner.kind;
+    }
   }
   return {
     isPublished: row.isPublished,
@@ -43,6 +50,7 @@ export const loadPublishedCampaign = cache(async (): Promise<PublishedCampaign |
     hotlineDial: row.hotlineDial,
     nelSiteUrl: row.nelSiteUrl,
     bannerUrl,
+    bannerKind,
   };
 });
 

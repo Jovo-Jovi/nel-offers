@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
-import { readCampaignRow } from "./public-query";
+import { readBannerKey, readCampaignRow } from "./public-query";
 
 function campaignClient(data: Record<string, unknown> | null) {
   return {
@@ -82,5 +82,20 @@ describe("readCampaignRow contact values", () => {
       nelSiteUrl: "https://example.com",
       bannerId: "banner-1",
     });
+  });
+});
+
+describe("readBannerKey", () => {
+  it("returns the key and kind of an image row and of a video row", async () => {
+    const image = await readBannerKey(campaignClient({ object_key: "media/image.webp", kind: "image" }), "banner-1");
+    const video = await readBannerKey(campaignClient({ object_key: "media/clip.mp4", kind: "video" }), "banner-1");
+    expect(image).toEqual({ objectKey: "media/image.webp", kind: "image" });
+    expect(video).toEqual({ objectKey: "media/clip.mp4", kind: "video" });
+  });
+
+  it("rejects any other kind", async () => {
+    await expect(readBannerKey(campaignClient({ object_key: "media/image.webp", kind: "other" }), "banner-1")).rejects.toThrow(
+      "public-read-failed",
+    );
   });
 });

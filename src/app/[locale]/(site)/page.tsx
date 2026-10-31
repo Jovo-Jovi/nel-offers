@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Phone } from "lucide-react";
+import { BannerVideo } from "@/components/public/banner-video";
 import { CampaignOfferGrid } from "@/components/public/campaign-offer-grid";
 import { NumberedLine } from "@/components/public/numbered-line";
 import { PageShell } from "@/components/public/page-shell";
@@ -28,13 +29,22 @@ function HomeHero({ messages, campaign }: { messages: Catalogue; campaign: Publi
         }`}
       >
         {campaign?.bannerUrl ? (
-          // CSP has no style-src, and next/image writes an inline style.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={campaign.bannerUrl}
-            alt={messages.a11y.banner}
-            className="h-64 w-full object-contain sm:h-80 lg:h-full lg:min-h-[28rem]"
-          />
+          campaign.bannerKind === "video" ? (
+            <BannerVideo
+              src={campaign.bannerUrl}
+              label={messages.a11y.bannerVideo}
+              pauseLabel={messages.a11y.pauseBanner}
+              playLabel={messages.a11y.playBanner}
+            />
+          ) : (
+            // CSP has no style-src, and next/image writes an inline style.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={campaign.bannerUrl}
+              alt={messages.a11y.banner}
+              className="h-64 w-full object-contain sm:h-80 lg:h-full lg:min-h-[28rem]"
+            />
+          )
         ) : null}
         <div className="flex flex-col justify-center gap-5 px-5 py-8 text-start sm:px-8 sm:py-10 lg:px-10">
           {campaign ? (

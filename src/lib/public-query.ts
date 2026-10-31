@@ -111,13 +111,17 @@ export async function readCampaignRow(supabase: SupabaseClient): Promise<PublicC
   };
 }
 
-export async function readBannerKey(supabase: SupabaseClient, bannerId: string) {
-  const { data, error } = await supabase.from("MediaObject").select("object_key").eq("id", bannerId).maybeSingle();
+export async function readBannerKey(
+  supabase: SupabaseClient,
+  bannerId: string,
+): Promise<{ objectKey: string; kind: "image" | "video" } | null> {
+  const { data, error } = await supabase.from("MediaObject").select("object_key, kind").eq("id", bannerId).maybeSingle();
   if (error) halt();
   if (!data) return null;
   const row = data as Record<string, unknown>;
   if (typeof row.object_key !== "string") halt();
-  return row.object_key;
+  const kind = row.kind === "image" || row.kind === "video" ? row.kind : halt();
+  return { objectKey: row.object_key, kind };
 }
 
 export async function readVisibleCampaignOffers(supabase: SupabaseClient) {

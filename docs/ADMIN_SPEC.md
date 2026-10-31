@@ -113,8 +113,10 @@ form, the three links the public site will build (WhatsApp, call, NEL site) are 
 Operator can try them.
 
 - **Card price switch** — "show the price on the home cards", on by default (OD-02 item 5).
-- **Campaign banner** — one image for the home hero (OD-02 item 6): choose, preview, upload with
-  the same browser checks and re-encoding as §5, replace, or remove. Removing deletes the object
+- **Campaign banner** — one image or one MP4 video for the home hero (OD-02 item 6, OD-08):
+  choose, preview, upload, replace, or remove. An image has the same browser checks and re-encoding
+  as §5; a video has §5's video size limit and location check. `operator.bannerHint` under the
+  heading names both. Choosing either kind replaces the current banner. Removing deletes the object
   in R2.
 
 ## 7. Publish switch

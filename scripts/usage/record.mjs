@@ -4,7 +4,7 @@ import path from "node:path";
 const ledgerPath = path.join("docs", "usage", "runs.jsonl");
 const stages = new Set(["blueprint", "builder", "reviewer", "review-gate"]);
 const sources = new Set(["tool-report", "session-records", "not-reported"]);
-const taskPattern = /^(?:blueprint|go-live|T0[1-8](?:-F\d*)?)$/;
+const taskPattern = /^(?:blueprint|go-live|T0[1-9](?:-F\d*)?)$/;
 const runAtPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const toolPattern = /^[a-z0-9-]+$/;
 const modelPattern = /^[A-Za-z0-9._:-]+$/;
