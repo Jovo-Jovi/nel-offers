@@ -628,3 +628,14 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Before the merge the human asked that the WhatsApp link text read "عروض — معامل النيل مصر":
   OD-11 signed; T11-F issued on the same branch, rehearsed (the four guards, lint, typecheck,
   46 unit specs, build).
+
+## 2026-10-31 — T11-F (builder)
+
+- LANDING `4e425951bf25db334533b847342f3527d9594e7e`. Bundle `T11F BUNDLE PASS 2 / 2 []` at LANDING. Carry-forwards `50 14 ['51']`: 50 rows, next free 51, open 15 − 1 = 14. CF-50's status cell is `CLOSED (T11)`. No other cell changed.
+- Ids: `4e425951bf25db334533b847342f3527d9594e7e` OD-11, CF-50 closure, reviewer entry and usage records; `2ef547a2eb9639aa5d0d805371144f2a9736a8ca` the campaign title is عروض.
+- On `2ef547a2eb9639aa5d0d805371144f2a9736a8ca`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 46 passed. `git diff --name-only` from LANDING printed only `src/i18n/ar.ts` and `src/i18n/en.ts`. The secret sweep printed nothing. Tracked count 0.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (9 moderate, none high). No dependency was added. No SQL, scan, Playwright spec or Operator action ran.
+- Titles from the local production build: `'\u0639\u0631\u0648\u0636 \u2014 \u0645\u0639\u0627\u0645\u0644 \u0627\u0644\u0646\u064a\u0644 \u0645\u0635\u0631'` and `'<meta property="og:title" content="\u0639\u0631\u0648\u0636 \u2014 \u0645\u0639\u0627\u0645\u0644 \u0627\u0644\u0646\u064a\u0644 \u0645\u0635\u0631"/>'`; `'Offers \u2014 Nile Egypt Labs'` and `'<meta property="og:title" content="Offers \u2014 Nile Egypt Labs"/>'`.
+- Deviation: the first step 2 found no zip and `git status --porcelain` printed nothing, so the task halted (H3). The human asked to check again. The zip was then untracked, with the expected hash and length.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
