@@ -158,7 +158,7 @@ export function BannerPanel({
       )}
       {previewUrl ? (
         previewVideo ? (
-          <video src={previewUrl} controls muted playsInline className="max-w-full rounded-card" />
+          <video src={previewUrl} controls muted playsInline aria-label={messages.operator.bannerPreview} className="max-w-full rounded-card" />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={previewUrl} alt={messages.operator.bannerPreview} className="max-w-full rounded-card" />
