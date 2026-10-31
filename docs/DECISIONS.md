@@ -331,3 +331,30 @@ media".
 2. **Empty frame unchanged.** With neither, the designer's empty 16:10 `primary-soft` frame stays.
 3. **Unchanged:** the play button, the poster and first-frame rules, the thumbnails, the dashboard
    tiles and the gallery preview (which already shows the whole image).
+
+## OD-08 — The campaign banner may be a video
+
+**Status:** SIGNED. The signature is the human's message of 31 Oct 2026 in the reviewer session, with
+the site live on the laboratory's real data: "site main image لافتة الحملة need to had option to be
+videos or image not image only", asking that nothing in the database or the uploads be lost or
+reset. It is recorded by the commit that lands this text on the T09 branch and ratified when the
+human merges T09.
+
+**Amends:** OD-02 item 6 (one image for the home hero); `DATA_MODEL.md` §2.1; `ADMIN_SPEC.md` §6;
+`DESIGN_SYSTEM.md` §§9 and 11.1 "Hero"; `BOUNDARY_MODEL.md` §3.1; PR-33 for T09 only (item 4).
+
+1. **Image or video.** The campaign banner is one image or one MP4 video. An image is re-encoded
+   as today; a video has the CampaignOffer videos' size limit (100 MB) and their location check
+   (`BOUNDARY_MODEL.md` §3.1). Choosing either replaces the current banner, whichever kind it is.
+2. **On the home page.** A video banner plays muted, looped and inline in the designer's image
+   cell, whole (`object-contain`), with a small pause and play button. It does not start by itself
+   when the Visitor's device asks for reduced motion.
+3. **Nothing lost.** `20261031000000_nelo_banner_video.sql` replaces two functions in place
+   (`campaign_banner_kind_check`, `attach_campaign_banner`). No table, column, row, policy or grant
+   changes; the current banner, the 47 CampaignOffers and every uploaded object stay as they are.
+   Its rolled-back proof is `nelo_rls_proof_banner_video.sql`, which supersedes item 5 of
+   `nelo_rls_proof_presentation.sql` ("video accepted as banner"); that older proof is not run again.
+4. **The writes T09 may make.** T09's fence writes to the project only by running the migration
+   once with `--apply` and the rolled-back proof through the runner. No other write, no Playwright
+   spec, no `check:r2`, no Operator action; the human tries a video banner in the dashboard after
+   the merge.

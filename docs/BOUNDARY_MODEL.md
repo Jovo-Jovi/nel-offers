@@ -42,7 +42,8 @@ NELO holds the laboratory's campaign and nothing about people.
    stored**; the object key is `media/<uuid>.<ext>`, chosen by the server.
 2. **Images are re-encoded** in the browser (decode → canvas → WebP) before upload. Re-encoding
    drops EXIF, XMP and IPTC, including GPS and device owner.
-3. **Videos with a location atom are refused.** The browser scans the MP4 for `©xyz` and
+3. **Videos with a location atom are refused** — CampaignOffer videos and a banner video alike
+   (OD-08). The browser scans the MP4 for `©xyz` and
    `udta`/`meta` location keys before requesting an upload URL; a hit refuses the file with a
    message to export it without location. Device model and creation time may remain; neither
    identifies a person.

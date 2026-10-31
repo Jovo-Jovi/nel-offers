@@ -530,3 +530,18 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
 - Deviation: the first anonymous visibility check exited 128 and the API returned 404. The human asked for the check again. The second check exited 0 with `api status=200`.
 - Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
 - Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
+
+## 2026-10-31 — Reviewer sessions 17 and 18 (T08 verdict, T09)
+
+- 30 Oct: fetched `t08-whole-frame` at `9618963` (PR #13). Verified the bundle (4/4 at LANDING and
+  HEAD), compared the carry-forward rows, the journal entries and the usage records with the fence
+  (exact), re-ran the four guards, lint, typecheck, the unit specs (43) and the build, and viewed
+  the four screenshots: the laboratory's tall video whole at 390 and 1440 in both locales.
+  Verdict T08: PASS; PR #13 merged. CF-47 closes.
+- 31 Oct: the human asked that the campaign banner may be a video, with nothing in the database
+  or the uploads lost. OD-08 signed. The reviewer authored
+  `20261031000000_nelo_banner_video.sql` (two functions replaced in place) and its rolled-back
+  proof, and rehearsed both on PostgreSQL 16 with every migration and a live image banner:
+  APPLIED, proof PASS 13/13, the banner and every row unchanged, grants unchanged, a second run
+  harmless. T09 issued, rehearsed on a clean clone of `824b030` (landing counts, the four guards,
+  lint, typecheck, 45 unit specs, build).

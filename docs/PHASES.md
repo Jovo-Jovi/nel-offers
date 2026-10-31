@@ -1,6 +1,6 @@
 # NELO — Phases
 
-Eight tasks, four gates (T05 added by OD-04, T06 by OD-05, T07 by OD-06, T08 by OD-07). One task per branch; a task starts only when the previous
+Nine tasks, four gates (T05 added by OD-04, T06 by OD-05, T07 by OD-06, T08 by OD-07, T09 by OD-08). One task per branch; a task starts only when the previous
 one is pushed and verified. The reviewer ticks a task at its verdict; a halted task is never
 ticked.
 
@@ -58,9 +58,12 @@ ticked.
   page, the subtitle, the link preview and the WhatsApp order message without the code; the card's
   call to action. Checked by unit specs and a read-only look at the public pages: the project holds
   the laboratory's real data, and no build fence writes to it (`PRECEDENTS.md`, "Production data").
-- [ ] **T08 — The whole frame of the main video and image** (OD-07). The CampaignOffer page shows
+- [x] **T08 — The whole frame of the main video and image** (OD-07). The CampaignOffer page shows
   the main video or image uncropped, in its own shape, up to 75% of the screen's height. Checked by
   the guards, a build and a read-only look at the page that holds the laboratory's video.
+- [ ] **T09 — The campaign banner may be a video** (OD-08). Two functions replaced in place by a
+  reviewer-authored migration, run once with its rolled-back proof; the banner routes, the
+  dashboard's banner panel and the home hero accept and show a video. No data changes.
 
 ## 3. Gate evidence
 
@@ -136,7 +139,7 @@ recorded with `--not-reported`.
 | `tool` | `^[a-z0-9-]+$` — e.g. `claude-app`, `cursor`, `claude-code` |
 | `model` | the model id as the tool reports it, `^[A-Za-z0-9._:-]+$` |
 | `stage` | `blueprint` · `builder` · `reviewer` · `review-gate` |
-| `task` | `blueprint` · `T01`–`T08`, optionally with a fix suffix `-F` or `-F2`… · `go-live` |
+| `task` | `blueprint` · `T01`–`T09`, optionally with a fix suffix `-F` or `-F2`… · `go-live` |
 | `input` · `output` · `cache_read` · `cache_write` | whole numbers ≥ 0 as reported; all four `null` when not reported |
 | `cost_usd` | the tool's own cost figure, or `null` |
 | `source` | `tool-report` · `session-records` · `not-reported` |
