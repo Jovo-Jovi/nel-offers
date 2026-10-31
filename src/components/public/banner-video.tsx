@@ -1,43 +1,35 @@
 "use client";
 
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-
-const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+import { useEffect, useRef } from "react";
 
 type BannerVideoProps = {
   src: string;
   label: string;
-  pauseLabel: string;
-  playLabel: string;
 };
 
-export function BannerVideo({ src, label, pauseLabel, playLabel }: BannerVideoProps) {
+export function BannerVideo({ src, label }: BannerVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    video.muted = true;
-    const playback = video.play();
-    if (playback) void playback.then(() => setPlaying(true), () => undefined);
-  }, []);
-
-  function toggle() {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      video.muted = true;
-      const playback = video.play();
-      if (playback) void playback.then(() => setPlaying(true), () => undefined);
-      return;
+    const player = video;
+    function start() {
+      player.muted = true;
+      const playback = player.play();
+      if (playback) void playback.then(() => undefined, () => undefined);
     }
-    video.pause();
-    setPlaying(false);
-  }
+    function onVisible() {
+      if (document.visibilityState === "visible" && player.paused) start();
+    }
+    start();
+    player.addEventListener("pause", start);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      player.removeEventListener("pause", start);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
 
   return (
     <div className="relative h-64 w-full sm:h-80 lg:h-full lg:min-h-[28rem]">
@@ -45,20 +37,13 @@ export function BannerVideo({ src, label, pauseLabel, playLabel }: BannerVideoPr
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-contain"
         src={src}
+        autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         aria-label={label}
       />
-      <button
-        type="button"
-        className={`absolute bottom-3 end-3 inline-flex h-11 w-11 items-center justify-center rounded-button bg-surface text-primary shadow-card ${focusRing}`}
-        aria-label={playing ? pauseLabel : playLabel}
-        onClick={toggle}
-      >
-        {playing ? <Pause className="h-5 w-5" aria-hidden="true" /> : <Play className="h-5 w-5" aria-hidden="true" />}
-      </button>
     </div>
   );
 }

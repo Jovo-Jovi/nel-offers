@@ -358,3 +358,26 @@ human merges T09.
    once with `--apply` and the rolled-back proof through the runner. No other write, no Playwright
    spec, no `check:r2`, no Operator action; the human tries a video banner in the dashboard after
    the merge.
+
+## OD-09 — The banner video always plays
+
+**Status:** SIGNED. The signature is the human's message of 31 Oct 2026 in the reviewer session, after
+T09 went live: "i need video to be auto replay always", and the human's answer "Banner video only"
+to the reviewer's question (the banner always starts and loops, with no reduced-motion exception and
+no pause button). It is recorded by the commit that lands this text on the T10 branch and ratified
+when the human merges T10.
+
+**Amends:** OD-08 item 2; `DESIGN_SYSTEM.md` §§9 and 11.1 "Hero".
+
+1. **Always on.** The home banner video starts by itself, muted, and loops for as long as the page
+   is open. It has no pause or play button and no native controls, and it starts whatever the
+   Visitor's reduced-motion setting. When the browser pauses it while the page is visible, the page
+   starts it again.
+2. **Accepted trade-off.** The reviewer stated that a moving video with no way to pause it does not
+   meet WCAG 2.2.2 (Pause, Stop, Hide) or the Visitor's reduced-motion preference; the human
+   accepted that for the banner. A device that refuses muted autoplay (a phone in power saving, for
+   example) shows the video's first frame.
+3. **Strings.** `a11y.pauseBanner` and `a11y.playBanner` leave both catalogues.
+4. **Unchanged:** CampaignOffer videos (they wait for a tap), an image banner, the dashboard — except
+   that the preview of a chosen banner video is named `operator.bannerPreview`, as the image preview
+   is.

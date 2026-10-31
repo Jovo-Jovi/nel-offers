@@ -8,9 +8,9 @@ State is taken from this file and the repository, never from conversation.
 | | |
 |---|---|
 | Phase | P04 Public site and go-live |
-| Task in flight | T09 — The campaign banner may be a video (`t09-banner-video`, OD-08) |
+| Task in flight | T10 — The banner video always plays (`t10-banner-always`, OD-09) |
 | Next | Go-live with the human (`PHASES.md` §4), staging on the Vercel address first |
-| Last verdict | T08 — PASS, 30 Oct 2026 (PR #13 merged). Since 30 Oct the project holds the laboratory's real data: no build fence writes to it (`PRECEDENTS.md`, "Production data") |
+| Last verdict | T09 — PASS, 31 Oct 2026 (PR #14 merged; the banner migration is applied). Since 30 Oct the project holds the laboratory's real data: no build fence writes to it (`PRECEDENTS.md`, "Production data") |
 | Deadline | live by 30 Oct 2026 |
 | Scope | frozen by OD-01 (`DECISIONS.md`) |
 

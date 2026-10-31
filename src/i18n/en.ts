@@ -71,9 +71,7 @@ export const catalogue: Catalogue = {
     nextImage: "Next image",
     closePreview: "Close",
     banner: "Nile Egypt Labs campaign banner",
-    bannerVideo: "Nile Egypt Labs campaign video",
-    pauseBanner: "Pause the banner video",
-    playBanner: "Play the banner video"
+    bannerVideo: "Nile Egypt Labs campaign video"
   },
   header: {
     homeSubtitle: "Lab to Lab — Online offers guide",
