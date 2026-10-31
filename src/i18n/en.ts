@@ -70,7 +70,10 @@ export const catalogue: Catalogue = {
     previousImage: "Previous image",
     nextImage: "Next image",
     closePreview: "Close",
-    banner: "Nile Egypt Labs campaign banner"
+    banner: "Nile Egypt Labs campaign banner",
+    bannerVideo: "Nile Egypt Labs campaign video",
+    pauseBanner: "Pause the banner video",
+    playBanner: "Play the banner video"
   },
   header: {
     homeSubtitle: "Lab to Lab — Online offers guide",
@@ -232,6 +235,7 @@ export const catalogue: Catalogue = {
     linkNel: "NEL site link",
     showCardPrice: "Show the price on the home cards",
     bannerHeading: "Campaign banner",
+    bannerHint: "An image, or an MP4 video up to {megabytes} MB.",
     bannerChoose: "Choose a banner",
     bannerUpload: "Upload banner",
     bannerReplace: "Replace banner",

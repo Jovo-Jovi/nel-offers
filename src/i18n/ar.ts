@@ -68,7 +68,10 @@ export const catalogue = {
     previousImage: "الصورة السابقة",
     nextImage: "الصورة التالية",
     closePreview: "إغلاق",
-    banner: "صورة حملة معامل النيل مصر"
+    banner: "صورة حملة معامل النيل مصر",
+    bannerVideo: "فيديو حملة معامل النيل مصر",
+    pauseBanner: "إيقاف فيديو اللافتة",
+    playBanner: "تشغيل فيديو اللافتة"
   },
   header: {
     homeSubtitle: "Lab to Lab ـــ دليل العروض الإلكترونية",
@@ -230,6 +233,7 @@ export const catalogue = {
     linkNel: "رابط موقع المعمل",
     showCardPrice: "أظهر السعر على بطاقات الصفحة الرئيسية",
     bannerHeading: "لافتة الحملة",
+    bannerHint: "صورة، أو فيديو MP4 حتى {megabytes} ميجابايت.",
     bannerChoose: "اختر لافتة",
     bannerUpload: "رفع اللافتة",
     bannerReplace: "استبدال اللافتة",
