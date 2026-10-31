@@ -607,3 +607,13 @@ Facts here are history; current state is in `SESSION_CONTEXT.md`.
   The human's checks closed it: the iPhone had "Auto-Play Video Previews" off, and a W3Schools
   autoplay example also needed a tap there. OD-10 signed; T11 issued, rehearsed on a clean clone
   of `e6e9eda` (landing counts, the four guards, lint, typecheck, 46 unit specs, build).
+
+## 2026-10-31 — T11 (builder)
+
+- LANDING `5ad2ab38e74c0a637e0f2e9dc48ca32cf421564d`. Bundle `T11 BUNDLE PASS 4 / 4 []` at LANDING. Carry-forwards `50 15 ['51']`: 49 + 1 = 50 rows, next free 51, open 15 − 1 + 1 = 15. CF-49's status cell is `CLOSED (T10)`. CF-50 holds the landed row and stays `OPEN`. No other cell changed.
+- Ids: `5ad2ab38e74c0a637e0f2e9dc48ca32cf421564d` OD-10 and amendments, carry-forward changes, reviewer entry and usage records; `0e4fe506fc1b2716e5e12a5ee1e61ba1288573c1` a banner the phone holds back.
+- On `0e4fe506fc1b2716e5e12a5ee1e61ba1288573c1`, `git status --porcelain` was empty. All four guards exited 0. Self-checks: naming string fail 5/5 pass 7/7, file fail 5/5 pass 7/7; design string fail 9/9 pass 6/6, file fail 9/9 pass 6/6; literals string fail 7/7 pass 3/3, file fail 7/7 pass 3/3; boundary string fail 4/4 pass 4/4, file fail 4/4 pass 4/4. `report.mjs --check` exited 0. Lint exited 0. Typecheck exited 0. Unit tests: 46 passed. `git diff --name-only` from LANDING printed only files under `src/`. The secret sweep printed nothing. Tracked count 0.
+- `npm run build` exited 0. `npm audit --omit=dev --audit-level=high` exited 0 (9 moderate, none high). No dependency was added. No SQL, scan, Playwright spec or Operator action ran.
+- Two screenshots of the home page, Arabic at 390 and English at 1440, were written outside the repository. The hero shows the live banner, which is a still image.
+- Deviation: `npm run build` warns that a lockfile outside this repository was ignored, and exits 0.
+- Deviation: `npm run test:unit` warns that `vitest.config.ts` is loaded as CommonJS and exits 0.
