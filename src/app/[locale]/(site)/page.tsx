@@ -30,7 +30,7 @@ function HomeHero({ messages, campaign }: { messages: Catalogue; campaign: Publi
       >
         {campaign?.bannerUrl ? (
           campaign.bannerKind === "video" ? (
-            <BannerVideo src={campaign.bannerUrl} label={messages.a11y.bannerVideo} />
+            <BannerVideo src={campaign.bannerUrl} label={messages.a11y.bannerVideo} playLabel={messages.a11y.playVideo} />
           ) : (
             // CSP has no style-src, and next/image writes an inline style.
             // eslint-disable-next-line @next/next/no-img-element
