@@ -4,7 +4,7 @@ import type { Catalogue } from "./ar";
 export const catalogue: Catalogue = {
   site: {
     name: "Nile Egypt Labs",
-    campaignTitle: "Opening offers",
+    campaignTitle: "Offers",
     pageNotFound: "Page not found.",
     errorMessage: "This page could not be shown right now.",
     tryAgain: "Try again"

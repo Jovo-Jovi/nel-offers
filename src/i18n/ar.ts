@@ -2,7 +2,7 @@
 export const catalogue = {
   site: {
     name: "معامل النيل مصر",
-    campaignTitle: "عروض الافتتاح",
+    campaignTitle: "عروض",
     pageNotFound: "الصفحة غير موجودة.",
     errorMessage: "تعذّر عرض هذه الصفحة الآن.",
     tryAgain: "حاول مرة أخرى"
